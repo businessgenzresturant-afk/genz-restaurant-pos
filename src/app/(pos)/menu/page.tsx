@@ -1,90 +1,118 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { prisma } from '@/lib/prisma';
+'use client';
+
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Card } from '@/components/ui/card';
 
-const menuItemSchema = z.object({
-  name: z.string().min(1, "Item name is required"),
-  description: z.string().optional(),
-  price: z.number().min(0, "Price must be greater than or equal to 0"),
-  category: z.string().min(1, "Category is required"),
-  isAvailable: z.boolean(),
-  imageUrl: z.string().url("Invalid URL").optional()
-});
-
-export default async function MenuPage() {
-  // Fetch menu items from database
-  const menuItems = await prisma.menuItem.findMany({
-    orderBy: {
-      category: 'asc',
-      name: 'asc',
-    }
-  });
-
+export default function MenuPage() {
+  const [menuItems, setMenuItems] = useState<any[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors }
-  } = useForm<z.infer<typeof menuItemSchema>>({
-    resolver: zodResolver(menuItemSchema),
-    defaultValues: {
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    price: 0,
+    category: '',
+    isAvailable: true,
+    imageUrl: ''
+  });
+
+  useEffect(() => {
+    fetchMenuItems();
+  }, []);
+
+  const fetchMenuItems = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/menu');
+      const data = await res.json();
+      setMenuItems(data);
+    } catch (err) {
+      console.error('Failed to fetch menu items:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmitMenu = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const url = selectedItem ? `/api/menu/${selectedItem.id}` : '/api/menu';
+      const method = selectedItem ? 'PUT' : 'POST';
+      
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      
+      if (!res.ok) throw new Error('Failed to save menu item');
+      
+      resetForm();
+      await fetchMenuItems();
+    } catch (err) {
+      console.error('Error saving menu item:', err);
+    }
+  };
+
+  const handleEdit = (item: any) => {
+    setSelectedItem(item);
+    setFormData({
+      name: item.name,
+      description: item.description || '',
+      price: item.price,
+      category: item.category,
+      isAvailable: item.isAvailable,
+      imageUrl: item.imageUrl || ''
+    });
+    setShowAddForm(true);
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      await fetch(`/api/menu/${id}`, { method: 'DELETE' });
+      await fetchMenuItems();
+    } catch (err) {
+      console.error('Error deleting menu item:', err);
+    }
+  };
+
+  const handleToggleAvailability = async (id: number) => {
+    try {
+      await fetch(`/api/menu/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ toggleAvailability: true })
+      });
+      await fetchMenuItems();
+    } catch (err) {
+      console.error('Error toggling availability:', err);
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
       name: '',
       description: '',
       price: 0,
       category: '',
       isAvailable: true,
       imageUrl: ''
-    }
-  });
-
-  const handleSubmitMenu = async (data: z.infer<typeof menuItemSchema>) => {
-    if (selectedItem) {
-      // Update existing item
-      await prisma.menuItem.update({
-        where: { id: selectedItem.id },
-        data: data
-      });
-    } else {
-      // Create new item
-      await prisma.menuItem.create({
-        data: data
-      });
-    }
-
-    // Reset form and refresh
-    reset();
+    });
     setSelectedItem(null);
     setShowAddForm(false);
-    window.location.reload();
   };
 
-  const handleEdit = (item: any) => {
-    setSelectedItem(item);
-    // Set form values for editing
-    register; // This is needed to trigger re-registration
-  };
-
-  const handleDelete = async (id: number) => {
-    await prisma.menuItem.delete({
-      where: { id }
-    });
-    window.location.reload();
-  };
-
-  const handleToggleAvailability = async (id: number, currentStatus: boolean) => {
-    await prisma.menuItem.update({
-      where: { id },
-      data: { isAvailable: !currentStatus }
-    });
-    window.location.reload();
-  };
+  if (loading) {
+    return (
+      <div className="flex h-[600px] items-center justify-center">
+        <div className="animate-spin rounded-full border-4 border-primary border-t-transparent h-12 w-12"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -95,79 +123,66 @@ export default async function MenuPage() {
         </p>
       </div>
 
-      {/* Add/Edit Menu Item Form */}
       {showAddForm && (
-        <div className="bg-white rounded-lg shadow p-6">
+        <Card className="p-6">
           <h2 className="text-xl font-semibold mb-4">
             {selectedItem ? 'Edit Menu Item' : 'Add New Menu Item'}
           </h2>
-          <form onSubmit={(e) => { e.preventDefault(); handleSubmit(handleSubmitMenu); }} className="space-y-4">
+          <form onSubmit={handleSubmitMenu} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Item Name</label>
                 <Input
-                  {...register("name")}
                   type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
                   placeholder="Enter item name"
-                  className={errors.name ? "border-red-500" : ""}
+                  required
                 />
-                {errors.name && (
-                  <p className="text-xs text-red-500 mt-1">{errors.name?.message}</p>
-                )}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Category</label>
                 <Input
-                  {...register("category")}
                   type="text"
+                  value={formData.category}
+                  onChange={(e) => setFormData({...formData, category: e.target.value})}
                   placeholder="e.g., appetizer, main, dessert"
-                  className={errors.category ? "border-red-500" : ""}
+                  required
                 />
-                {errors.category && (
-                  <p className="text-xs text-red-500 mt-1">{errors.category?.message}</p>
-                )}
               </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-2">Description</label>
-              <Input
-                {...register("description")}
-                type="textarea"
+              <textarea
+                value={formData.description}
+                onChange={(e) => setFormData({...formData, description: e.target.value})}
                 placeholder="Enter item description"
-                className={errors.description ? "border-red-500" : ""}
-                className="h-20"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent h-20"
               />
-              {errors.description && (
-                <p className="text-xs text-red-500 mt-1">{errors.description?.message}</p>
-              )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Price (₹)</label>
                 <Input
-                  {...register("price")}
                   type="number"
+                  value={formData.price}
+                  onChange={(e) => setFormData({...formData, price: parseFloat(e.target.value)})}
                   placeholder="0.00"
                   step="0.01"
-                  className={errors.price ? "border-red-500" : ""}
+                  min="0"
+                  required
                 />
-                {errors.price && (
-                  <p className="text-xs text-red-500 mt-1">{errors.price?.message}</p>
-                )}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-2">Image URL (optional)</label>
                 <Input
-                  {...register("imageUrl")}
-                  type="text"
+                  type="url"
+                  value={formData.imageUrl}
+                  onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
                   placeholder="https://example.com/image.jpg"
-                  className={errors.imageUrl ? "border-red-500" : ""}
                 />
-                {errors.imageUrl && (
-                  <p className="text-xs text-red-500 mt-1">{errors.imageUrl?.message}</p>
-                )}
               </div>
             </div>
 
@@ -175,7 +190,9 @@ export default async function MenuPage() {
               <label className="flex items-center text-sm font-medium">
                 <input
                   type="checkbox"
-                  {...register("isAvailable")}
+                  checked={formData.isAvailable}
+                  onChange={(e) => setFormData({...formData, isAvailable: e.target.checked})}
+                  className="mr-2"
                 />
                 Available for sale
               </label>
@@ -184,11 +201,8 @@ export default async function MenuPage() {
             <div className="flex justify-end space-x-3 mt-4">
               <Button
                 variant="outline"
-                onClick={() => {
-                  reset();
-                  setShowAddForm(false);
-                  setSelectedItem(null);
-                }}
+                onClick={resetForm}
+                type="button"
               >
                 Cancel
               </Button>
@@ -197,11 +211,10 @@ export default async function MenuPage() {
               </Button>
             </div>
           </form>
-        </div>
+        </Card>
       )}
 
-      {/* Menu Items List and Controls */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <Card className="p-6">
         <div className="flex justify-between items-start mb-4">
           <h2 className="text-xl font-semibold">Menu Items</h2>
           <Button
@@ -242,10 +255,7 @@ export default async function MenuPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => {
-                          setSelectedItem(item);
-                          setShowAddForm(true);
-                        }}
+                        onClick={() => handleEdit(item)}
                         className="text-blue-600 hover:bg-blue-50"
                       >
                         Edit
@@ -261,11 +271,8 @@ export default async function MenuPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleToggleAvailability(item.id, item.isAvailable)}
-                        className={`
-                          text-sm
-                          ${item.isAvailable ? 'text-red-600 hover:bg-red-50' : 'text-green-600 hover:bg-green-50'}
-                        `}
+                        onClick={() => handleToggleAvailability(item.id)}
+                        className={`text-sm ${item.isAvailable ? 'text-red-600 hover:bg-red-50' : 'text-green-600 hover:bg-green-50'}`}
                       >
                         {item.isAvailable ? 'Hide' : 'Show'}
                       </Button>
@@ -276,7 +283,7 @@ export default async function MenuPage() {
             ))}
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

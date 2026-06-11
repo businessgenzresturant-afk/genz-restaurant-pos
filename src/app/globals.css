@@ -24,5 +24,90 @@ body {
       var(--background-start-rgb),
       var(--background-end-rgb)
     );
-  @apply bg-gray-50;
+  @apply bg-gray-50 antialiased;
+}
+
+/* Mobile touch target optimization */
+@media (hover: none) {
+  .touch-enhanced {
+    @apply min-h-[48px] min-w-[48px];
+  }
+
+  /* Increase hit area for interactive elements on touch devices */
+  button,
+  [role="button"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  .btn,
+  .clickable {
+    @apply min-h-[48px] min-w-[48px] flex items-center justify-center;
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Improved focus visibility for accessibility */
+:focus-visible {
+  @apply outline-none ring-2 ring-primary ring-offset-2;
+}
+
+/* Prevent text selection on interactive elements */
+button,
+input,
+select,
+textarea,
+[role="button"] {
+  user-select: none;
+}
+
+/* Subtle animations for better UX */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Override transition duration for specific cases where we want it faster */
+input, textarea {
+  transition-duration: 200ms;
+}
+
+/* Card enhancements for better depth */
+.card-enhanced {
+  @apply bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200;
+}
+
+/* Enhanced form fields */
+.input-enhanced {
+  @apply focus:ring-2 focus:ring-primary focus:ring-offset-2;
+}
+
+/* Button enhancements */
+.button-enhanced {
+  @apply transition-all duration-200 ease-in-out shadow-sm hover:shadow-md active:shadow-lg;
+}
+
+/* Dark mode improvements */
+.dark {
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 0, 0, 0;
+}
+
+/* Mobile-first spacing */
+@media (max-width: 640px) {
+  .p-mobile {
+    @apply p-4;
+  }
+
+  .gap-mobile {
+    @apply gap-4;
+  }
+
+  .text-mobile {
+    @apply text-base;
+  }
 }

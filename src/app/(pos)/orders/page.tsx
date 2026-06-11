@@ -1,167 +1,122 @@
-import { useState, useEffect } from 'react';
-import { prisma } from '@/lib/prisma';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+'use client';
 
-export default async function OrdersPage() {
-  // Fetch data for the order interface
-  const [tables, setTables] = useState([]);
-  const [menuItems, setMenuItems] = useState([]);
-  const [activeOrders, setActiveOrders] = useState([]);
+import { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+
+export default function OrdersPage() {
+  const [tables, setTables] = useState<any[]>([]);
+  const [menuItems, setMenuItems] = useState<any[]>([]);
+  const [activeOrders, setActiveOrders] = useState<any[]>([]);
   
-  const [orderState, setOrderState] = useState({
-    tableId: null,
-    items: [] as Array<{ menuItemId: number; quantity: number; specialInstructions: string }>,
-    customerName: '',
-    customerPhone: ''
-  });
+  const [selectedTable, setSelectedTable] = useState<number | null>(null);
+  const [orderItems, setOrderItems] = useState<{menuItemId: number, quantity: number, specialInstructions: string}[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch initial data
-    const loadData = async () => {
-      const [tablesData, menuItemsData, ordersData] = await Promise.all([
-        prisma.table.findMany({ orderBy: { number: 'asc' } }),
-        prisma.menuItem.findMany({ where: { isAvailable: true }, orderBy: { category: 'asc', name: 'asc' } }),
-        prisma.order.findMany({
-          where: { status: { in: ['pending', 'preparing', 'ready'] } },
-          include: { table: true, items: { include: { menuItem: true } } },
-          orderBy: { createdAt: 'desc' }
-        })
-      ]);
-      
-      setTables(tablesData);
-      setMenuItems(menuItemsData);
-      setActiveOrders(ordersData);
-    };
-    
-    loadData();
+    fetchData();
   }, []);
 
-  const handleTableSelect = (tableId: number) => {
-    setOrderState(prev => ({...prev, tableId}));
-  };
-
-  const handleAddItem = (menuItemId: number) => {
-    setOrderState(prev => {
-      const existingItemIndex = prev.items.findIndex(item => item.menuItemId === menuItemId);
-      if (existingItemIndex >= 0) {
-        // Item already in cart, increase quantity
-        const newItems = [...prev.items];
-        newItems[existingItemIndex] = {
-          ...newItems[existingItemIndex],
-          quantity: newItems[existingItemIndex].quantity + 1
-        };
-        return {...prev, items: newItems};
-      } else {
-        // New item to cart
-        return {...prev, items: [...prev.items, { menuItemId, quantity: 1, specialInstructions: '' }]};
-      }
-    });
-  };
-
-  const handleUpdateQuantity = (menuItemId: number, quantity: number) => {
-    if (quantity <= 0) {
-      // Remove item if quantity is 0 or less
-      setOrderState(prev => ({
-        ...prev,
-        items: prev.items.filter(item => item.menuItemId !== menuItemId)
-      }));
-    } else {
-      // Update quantity
-      setOrderState(prev => ({
-        ...prev,
-        items: prev.items.map(item => 
-          item.menuItemId === menuItemId 
-            ? {...item, quantity} 
-            : item
-        )
-      }));
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const [tablesRes, menuRes, ordersRes] = await Promise.all([
+        fetch('/api/tables'),
+        fetch('/api/menu'),
+        fetch('/api/orders?status=pending,preparing,ready')
+      ]);
+      
+      const tablesData = await tablesRes.json();
+      const menuData = await menuRes.json();
+      const ordersData = await ordersRes.json();
+      
+      setTables(tablesData);
+      setMenuItems(menuData.filter((item: any) => item.isAvailable));
+      setActiveOrders(ordersData);
+    } catch (err) {
+      console.error('Error fetching data:', err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleUpdateSpecialInstructions = (menuItemId: number, instructions: string) => {
-    setOrderState(prev => ({
-      ...prev,
-      items: prev.items.map(item => 
-        item.menuItemId === menuItemId 
-          ? {...item, specialInstructions: instructions} 
+  const handleAddItem = (menuItem: any) => {
+    const existing = orderItems.find(item => item.menuItemId === menuItem.id);
+    if (existing) {
+      setOrderItems(orderItems.map(item => 
+        item.menuItemId === menuItem.id 
+          ? { ...item, quantity: item.quantity + 1 } 
           : item
-      )
-    }));
+      ));
+    } else {
+      setOrderItems([...orderItems, { menuItemId: menuItem.id, quantity: 1, specialInstructions: '' }]);
+    }
   };
 
   const handleRemoveItem = (menuItemId: number) => {
-    setOrderState(prev => ({
-      ...prev,
-      items: prev.items.filter(item => item.menuItemId !== menuItemId)
-    }));
+    const existing = orderItems.find(item => item.menuItemId === menuItemId);
+    if (existing && existing.quantity > 1) {
+      setOrderItems(orderItems.map(item => 
+        item.menuItemId === menuItemId 
+          ? { ...item, quantity: item.quantity - 1 } 
+          : item
+      ));
+    } else {
+      setOrderItems(orderItems.filter(item => item.menuItemId !== menuItemId));
+    }
   };
 
-  const handleSubmitOrder = async () => {
-    if (!orderState.tableId || orderState.items.length === 0) {
-      alert('Please select a table and add items to the order');
-      return;
-    }
-
-    // Calculate total amount
-    let totalAmount = 0;
-    const orderItemsWithDetails = await Promise.all(
-      orderState.items.map(async (item) => {
-        const menuItem = await prisma.menuItem.findUnique({
-          where: { id: item.menuItemId }
-        });
-        totalAmount += menuItem.price * item.quantity;
-        return {
-          menuItemId: item.menuItemId,
-          quantity: item.quantity,
-          unitPrice: menuItem.price,
-          totalPrice: menuItem.price * item.quantity,
-          specialInstructions: item.specialInstructions
-        };
-      })
-    );
-
-    // Create the order
-    await prisma.order.create({
-      data: {
-        tableId: orderState.tableId,
-        customerName: orderState.customerName,
-        customerPhone: orderState.customerPhone,
-        totalAmount,
-        items: {
-          create: orderItemsWithDetails
-        }
-      }
-    });
-
-    // Reset order state
-    setOrderState({
-      tableId: null,
-      items: [],
-      customerName: '',
-      customerPhone: ''
-    });
+  const handlePlaceOrder = async () => {
+    if (!selectedTable || orderItems.length === 0) return;
     
-    // Refresh to show new order
-    window.location.reload();
+    try {
+      await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tableId: selectedTable,
+          items: orderItems
+        })
+      });
+      
+      // Reset form
+      setSelectedTable(null);
+      setOrderItems([]);
+      await fetchData();
+    } catch (err) {
+      console.error('Error placing order:', err);
+    }
   };
 
   const handleCompleteOrder = async (orderId: number) => {
-    await prisma.order.update({
-      where: { id: orderId },
-      data: { status: 'completed' }
-    });
-    window.location.reload();
+    try {
+      await fetch(`/api/orders/${orderId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'completed' })
+      });
+      await fetchData();
+    } catch (err) {
+      console.error('Error completing order:', err);
+    }
   };
 
-  if (tables.length === 0 || menuItems.length === 0) {
+  const getMenuItemPrice = (id: number) => {
+    const item = menuItems.find(m => m.id === id);
+    return item ? item.price : 0;
+  };
+  
+  const getMenuItemName = (id: number) => {
+    const item = menuItems.find(m => m.id === id);
+    return item ? item.name : 'Unknown';
+  };
+
+  const currentTotal = orderItems.reduce((sum, item) => sum + (getMenuItemPrice(item.menuItemId) * item.quantity), 0);
+
+  if (loading) {
     return (
-      <div className="p-6">
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
-          <p className="text-yellow-800">
-            Loading data... Please make sure you have tables and menu items set up.
-          </p>
-        </div>
+      <div className="flex h-[600px] items-center justify-center">
+        <div className="animate-spin rounded-full border-4 border-primary border-t-transparent h-12 w-12"></div>
       </div>
     );
   }
@@ -171,213 +126,152 @@ export default async function OrdersPage() {
       <div className="pb-4">
         <h1 className="text-2xl font-bold">Take Order</h1>
         <p className="text-sm text-gray-500">
-          Create new orders for your tables
+          Create new orders and manage active ones
         </p>
       </div>
-      
-      {/* Order Interface */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          {/* Table Selection */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Select Table</h2>
-            <div className="space-y-3">
-              {tables.map((table) => (
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-2 space-y-6">
+          <Card className="p-4">
+            <h2 className="text-lg font-semibold mb-4">1. Select Table</h2>
+            <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2">
+              {tables.map(table => (
                 <Button
                   key={table.id}
-                  onClick={() => handleTableSelect(table.id)}
-                  className={ orderState.tableId === table.id
-                    ? 'w-full text-left bg-primary text-white'
-                    : table.status === 'available'
-                      ? 'w-full text-left bg-green-50 text-green-800 hover:bg-green-100'
-                      : 'w-full text-left bg-gray-50 text-gray-700 hover:bg-gray-100'
-                  }
+                  onClick={() => setSelectedTable(table.id)}
+                  variant={selectedTable === table.id ? "outline" : "outline"}
+                  className={`p-3 rounded-lg border-2 text-center transition-colors ${
+                    selectedTable === table.id
+                      ? 'border-primary bg-primary text-white'
+                      : 'border-gray-200 hover:border-primary/50 text-gray-700'
+                  }`}
                 >
-                  <div className="flex items-center space-x-3">
-                    <div className="flex-shrink-0">
-                      <div className={table.status === 'available'
-                        ? 'h-8 w-8 flex items-center justify-center bg-green-200 text-green-800 rounded-full'
-                        : table.status === 'occupied'
-                          ? 'h-8 w-8 flex items-center justify-center bg-red-200 text-red-800 rounded-full'
-                          : table.status === 'reserved'
-                            ? 'h-8 w-8 flex items-center justify-center bg-blue-200 text-blue-800 rounded-full'
-                            : 'h-8 w-8 flex items-center justify-center bg-gray-200 text-gray-800 rounded-full'
-                      }>
-                        #{table.number}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="font-medium">Table {table.number}</div>
-                      <div className="text-xs text-gray-500">
-                        {table.capacity} seats • {table.status.charAt(0).toUpperCase() + table.status.slice(1)}
-                      </div>
-                    </div>
-                  </div>
+                  <span className="block font-bold">T{table.number}</span>
+                  <span className="text-xs opacity-80">{table.capacity} pax</span>
                 </Button>
               ))}
             </div>
-          </div>
-          
-          {/* Menu Items */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Menu Items</h2>
-            <div className="space-y-3">
-              {menuItems.map((item) => (
-                <div key={item.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-medium">{item.name}</h3>
-                      <p className="text-sm text-gray-500">{item.category}</p>
+          </Card>
+
+          <Card className="p-4">
+            <h2 className="text-lg font-semibold mb-4">2. Select Items</h2>
+            {menuItems.length === 0 ? (
+              <p className="text-gray-500">No available menu items found.</p>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                {menuItems.map(item => (
+                  <button
+                    key={item.id}
+                    onClick={() => handleAddItem(item)}
+                    className="p-3 rounded-lg border border-gray-200 hover:border-primary hover:bg-primary/5 text-left transition-colors flex flex-col h-full justify-between"
+                  >
+                    <div>
+                      <span className="block font-medium line-clamp-2 leading-tight">{item.name}</span>
+                      <span className="text-xs text-gray-500 mt-1 block">{item.category}</span>
                     </div>
-                    <div className="flex items-baseline gap-3">
-                      <div className="text-lg font-medium">₹{item.price}</div>
-                      <Button variant="outline" size="sm" onClick={() => handleAddItem(item.id)} className="bg-primary text-white">
-                        Add
+                    <span className="block font-bold text-primary mt-2">₹{item.price}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </Card>
+        </div>
+
+        <div className="space-y-6">
+          <Card className="p-4 flex flex-col h-[500px]">
+            <h2 className="text-lg font-semibold mb-4 pb-2 border-b">Current Order</h2>
+            
+            <div className="flex-1 overflow-y-auto pr-2 space-y-3">
+              {orderItems.length === 0 ? (
+                <p className="text-gray-500 text-center py-8">Select items to build order</p>
+              ) : (
+                orderItems.map((item, index) => (
+                  <div key={index} className="flex justify-between items-center bg-gray-50 p-2 rounded">
+                    <div className="flex-1 min-w-0 pr-2">
+                      <p className="font-medium truncate">{getMenuItemName(item.menuItemId)}</p>
+                      <p className="text-sm text-gray-500">₹{getMenuItemPrice(item.menuItemId)} x {item.quantity}</p>
+                    </div>
+                    <div className="flex items-center space-x-2 shrink-0">
+                      <Button variant="outline" size="sm" onClick={() => handleRemoveItem(item.menuItemId)} className="h-7 w-7 p-0">
+                        -
+                      </Button>
+                      <span className="w-4 text-center font-medium">{item.quantity}</span>
+                      <Button variant="outline" size="sm" onClick={() => handleAddItem({id: item.menuItemId})} className="h-7 w-7 p-0">
+                        +
                       </Button>
                     </div>
                   </div>
-                </div>
+                ))
               )}
             </div>
-          </div>
-          
-          {/* Current Order Summary */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold">Current Order</h2>
-            
-            {/* Customer Info */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-medium mb-2">Customer Information</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Name</label>
-                  <input
-                    type="text"
-                    placeholder="Enter customer name"
-                    value={orderState.customerName}
-                    onChange={(e) => setOrderState(prev => ({...prev, customerName: e.target.value}))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Phone</label>
-                  <input
-                    type="tel"
-                    placeholder="Enter phone number"
-                    value={orderState.customerPhone}
-                    onChange={(e) => setOrderState(prev => ({...prev, customerPhone: e.target.value}))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                  />
-                </div>
+
+            <div className="pt-4 border-t mt-4">
+              <div className="flex justify-between mb-4">
+                <span className="font-semibold text-lg">Total</span>
+                <span className="font-bold text-lg text-primary">₹{currentTotal.toFixed(2)}</span>
               </div>
-            </div>
-            
-            {/* Order Items */}
-            {orderState.items.length === 0 ? (
-              <p className="text-center py-6 text-gray-500">
-                No items added yet. Select menu items to begin.
-              </p>
-            ) : (
-              <div className="space-y-4">
-                <div className="border-t border-gray-200 pt-4">
-                  {orderState.items.map((cartItem, index) => (
-                    <div key={index} className="flex justify-between items-start py-2 border-t border-gray-200">
-                      <div className="flex-1">
-                        <div className="font-medium">Item {index + 1}</div>
-                      </div>
-                      <div className="text-right space-x-3">
-                        <div className="flex items-center space-x-2 text-sm">
-                          <Button 
-                            variant="outline"
-                            size="xs"
-                            onClick={() => handleUpdateQuantity(cartItem.menuItemId, Math.max(0, cartItem.quantity - 1))}
-                            className="text-gray-500 hover:bg-gray-100"
-                          >
-                            −
-                          </Button>
-                          <span className="w-8 text-center">{cartItem.quantity}</span>
-                          <Button
-                            variant="outline"
-                            size="xs"
-                            onClick={() => handleUpdateQuantity(cartItem.menuItemId, cartItem.quantity + 1)}
-                            className="text-gray-500 hover:bg-gray-100"
-                          >
-                            +
-                          </Button>
-                          <Button 
-                            variant="outline"
-                            size="xs"
-                            onClick={() => handleRemoveItem(cartItem.menuItemId)}
-                            className="text-red-600 hover:bg-red-50"
-                          >
-                            Remove
-                          </Button>
-                        </div>
-                      </div>
-                    )
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            <div className="mt-6">
               <Button 
-                onClick={handleSubmitOrder}
-                className="w-full bg-primary text-white py-3"
+                onClick={handlePlaceOrder}
+                disabled={!selectedTable || orderItems.length === 0}
+                className="w-full bg-primary text-white py-6 text-lg"
               >
                 Place Order
               </Button>
+              {!selectedTable && orderItems.length > 0 && (
+                <p className="text-red-500 text-sm text-center mt-2">Please select a table first</p>
+              )}
             </div>
-          </div>
+          </Card>
         </div>
       </div>
-      
-      {/* Active Orders Section */}
-      <div className="bg-white rounded-lg shadow p-6">
+
+      <Card className="p-6">
         <h2 className="text-xl font-semibold mb-4">Active Orders</h2>
-        
         {activeOrders.length === 0 ? (
-          <p className="text-center py-8 text-gray-500">
-            No active orders.
-          </p>
+          <p className="text-gray-500 text-center py-8">No active orders</p>
         ) : (
-          <div className="space-y-4">
-            {activeOrders.map((order) => (
-              <div key={order.id} className="border border-gray-200 rounded-lg p-4">
-                <div className="flex justify-between items-start mb-3">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-medium">Order #{order.id}</h3>
-                    <p className="text-sm text-gray-500">
-                      Table #{order.table.number} • 
-                      {order.customerName || 'Walk-in'} • 
-                      {new Date(order.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <span className={order.status === 'pending'
-                        ? 'px-3 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800'
-                        : order.status === 'preparing'
-                          ? 'px-3 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800'
-                          : 'px-3 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800'
-                      }>
-                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                    </span>
-                    <Button
-                      variant="outline"
-                      size="sm"
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {activeOrders.map(order => (
+              <div key={order.id} className="border border-gray-200 rounded-lg p-4 flex flex-col">
+                <div className="flex justify-between items-center border-b pb-2 mb-2">
+                  <h3 className="font-bold text-lg">Table {order.table.number}</h3>
+                  <span className={`px-2 py-1 text-xs font-semibold rounded-full uppercase
+                    ${order.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
+                      order.status === 'preparing' ? 'bg-blue-100 text-blue-800' : 
+                      'bg-green-100 text-green-800'}`}>
+                    {order.status}
+                  </span>
+                </div>
+                
+                <div className="flex-1 mb-4 text-sm space-y-1">
+                  {order.items.slice(0, 3).map((item: any, i: number) => (
+                    <div key={i} className="flex justify-between">
+                      <span className="truncate pr-2">{item.quantity}x {item.menuItem.name}</span>
+                      <span className="text-gray-500">₹{item.totalPrice}</span>
+                    </div>
+                  ))}
+                  {order.items.length > 3 && (
+                    <div className="text-gray-500 italic">+ {order.items.length - 3} more items</div>
+                  )}
+                </div>
+                
+                <div className="flex justify-between items-center mt-auto pt-3 border-t">
+                  <span className="font-bold text-primary">₹{order.totalAmount}</span>
+                  {order.status === 'ready' && (
+                    <Button 
                       onClick={() => handleCompleteOrder(order.id)}
-                      className="text-green-600 hover:bg-green-50"
+                      size="sm"
+                      className="bg-green-600 hover:bg-green-700 text-white"
                     >
                       Complete
                     </Button>
-                  </div>
+                  )}
                 </div>
               </div>
-            )}
+            ))}
           </div>
-        }
-      </div>
+        )}
+      </Card>
     </div>
   );
 }

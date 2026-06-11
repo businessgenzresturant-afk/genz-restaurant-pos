@@ -48,7 +48,7 @@ export const authOptions = {
     error: '/auth/login',
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user }: { token: any; user: any }) {
       if (user) {
         token.id = user.id;
         token.name = user.name;
@@ -56,8 +56,9 @@ export const authOptions = {
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session, token }: { session: any; token: any }) {
       if (token) {
+        if (!session.user) session.user = {};
         session.user.id = token.id as string;
         session.user.name = token.name;
         session.user.email = token.email;
@@ -67,7 +68,7 @@ export const authOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
   },
 };
 

@@ -9,6 +9,11 @@ export const metadata: Metadata = {
   description: "Restaurant Point of Sale System",
 };
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -47,7 +52,7 @@ export default function RootLayout({
             </div>
           </div>
         </nav>
-        
+
         {/* Main Content */}
         <main className="flex min-h-[calc(100vh-16rem)]">
           <div className="overflow-y-auto flex-1 pb-6">

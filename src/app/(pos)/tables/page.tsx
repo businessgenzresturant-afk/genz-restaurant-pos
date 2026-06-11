@@ -1,22 +1,18 @@
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+'use client';
+
 import { useState, useEffect } from 'react';
-import { prisma } from '@/lib/prisma';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-
-const tableSchema = z.object({
-  number: z.number().int().positive("Table number must be a positive integer"),
-  capacity: z.number().int().positive("Capacity must be a positive integer")
-});
+import { Card } from '@/components/ui/card';
 
 export default function TablesPage() {
-  const [tables, setTables] = useState([]);
+  const [tables, setTables] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  const [number, setNumber] = useState(1);
+  const [capacity, setCapacity] = useState(4);
 
-  // Fetch tables from database
   useEffect(() => {
     fetchTables();
   }, []);
@@ -25,11 +21,9 @@ export default function TablesPage() {
     try {
       setLoading(true);
       setError(null);
-      const data = await prisma.table.findMany({
-        orderBy: {
-          number: 'asc',
-        }
-      });
+      const res = await fetch('/api/tables');
+      if (!res.ok) throw new Error('Failed to fetch tables');
+      const data = await res.json();
       setTables(data);
     } catch (err) {
       setError('Failed to fetch tables');
@@ -39,29 +33,18 @@ export default function TablesPage() {
     }
   };
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors }
-  } = useForm<z.infer<typeof tableSchema>>({
-    resolver: zodResolver(tableSchema),
-    defaultValues: {
-      number: 1,
-      capacity: 4
-    }
-  });
-
-  const handleSubmitTable = async (data: z.infer<typeof tableSchema>) => {
+  const handleSubmitTable = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      await prisma.table.create({
-        data: {
-          number: data.number,
-          capacity: data.capacity,
-        }
+      const res = await fetch('/api/tables', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ number, capacity })
       });
-      reset();
-      // Refetch tables instead of reloading page
+      if (!res.ok) throw new Error('Failed to create table');
+      
+      setNumber(1);
+      setCapacity(4);
       await fetchTables();
     } catch (err) {
       setError('Failed to create table');
@@ -71,10 +54,10 @@ export default function TablesPage() {
 
   const handleDelete = async (id: number) => {
     try {
-      await prisma.table.delete({
-        where: { id }
+      const res = await fetch(`/api/tables/${id}`, {
+        method: 'DELETE'
       });
-      // Refetch tables instead of reloading page
+      if (!res.ok) throw new Error('Failed to delete table');
       await fetchTables();
     } catch (err) {
       setError('Failed to delete table');
@@ -107,44 +90,40 @@ export default function TablesPage() {
         </p>
       </div>
 
-      {/* Add Table Form */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <Card className="p-6">
         <h2 className="text-xl font-semibold mb-4">Add New Table</h2>
-        <form onSubmit={handleSubmit(handleSubmitTable)} className="space-y-4">
+        <form onSubmit={handleSubmitTable} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-2">Table Number</label>
               <Input
-                {...register("number")}
                 type="number"
+                value={number}
+                onChange={(e) => setNumber(parseInt(e.target.value))}
                 placeholder="Enter table number"
-                className={errors.number ? "border-red-500" : ""}
+                required
+                min={1}
               />
-              {errors.number && (
-                <p className="text-xs text-red-500 mt-1">{errors.number?.message}</p>
-              )}
             </div>
             <div>
               <label className="block text-sm font-medium mb-2">Capacity</label>
               <Input
-                {...register("capacity")}
                 type="number"
+                value={capacity}
+                onChange={(e) => setCapacity(parseInt(e.target.value))}
                 placeholder="Enter seating capacity"
-                className={errors.capacity ? "border-red-500" : ""}
+                required
+                min={1}
               />
-              {errors.capacity && (
-                <p className="text-xs text-red-500 mt-1">{errors.capacity?.message}</p>
-              )}
             </div>
           </div>
           <Button type="submit" className="w-full bg-primary text-white">
             Add Table
           </Button>
         </form>
-      </div>
+      </Card>
 
-      {/* Tables List */}
-      <div className="bg-white rounded-lg shadow p-6">
+      <Card className="p-6">
         <h2 className="text-xl font-semibold mb-4">Current Tables</h2>
 
         {tables.length === 0 ? (
@@ -203,7 +182,7 @@ export default function TablesPage() {
             </table>
           </div>
         )}
-      </div>
+      </Card>
     </div>
   );
 }

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Gen-Z Restaurant POS",
@@ -18,7 +17,7 @@ export default function POSLayout({
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <img className="h-8 w-auto" src="/logo.svg" alt="Restaurant POS" />
+                <span className="text-xl font-bold text-primary">RagsPOS</span>
               </div>
               <div className="hidden md:block">
                 <div className="ml-10 flex items-baseline space-x-4">

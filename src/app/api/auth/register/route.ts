@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import * as z from 'zod';
-import { bcrypt } from 'bcryptjs';
+import * as bcrypt from 'bcryptjs';
 
 const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -44,8 +44,9 @@ export async function POST(request: Request) {
     return NextResponse.json(userWithoutPassword, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
+      const zodError = error as any;
       return NextResponse.json(
-        { error: error.errors[0].message },
+        { error: zodError.errors[0].message },
         { status: 400 }
       );
     }
