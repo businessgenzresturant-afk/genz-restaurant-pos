@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { IconMarquee } from '@/app/_components/scroll/icon-marquee';
 import Sidebar from '@/components/sidebar';
 
 export const metadata: Metadata = {
@@ -12,22 +11,18 @@ export default function POSLayout({
 }: {
   children: React.ReactNode
 }) {
-  const restaurantIcons = [
-    '🍽️', '🍴', '🥘', '🍲', '🍕', '🍔', '🌮', '🌯', '🥗', '🍰',
-    '☕', '🍵', '🍶', '🍷', '🍸', '🍹', '🍺', '🍻', '🥂', '🥃',
-    '🥤', '🧃', '🧋', '🧉', '🧊', '🍞', '🥐', '🥖', '🥨', '🥯',
-    '🥞', '🧇', '🥚', '🍳', '🥓', '🥩', '🍗', '🍖', '🦞', '🦐'
-  ];
-
   return (
-    <div className="flex h-full w-full">
+    <div className="flex h-screen w-full bg-slate-50">
       <Sidebar />
-      <div className="flex-1 flex flex-col min-h-screen overflow-hidden bg-gray-50/50">
-        <div className="w-full bg-white/40 backdrop-blur-md border-b border-gray-200/50">
-          <IconMarquee items={restaurantIcons} speed={40} reverse={false} />
-        </div>
-        <main className="flex-1 overflow-y-auto p-4 md:p-8">
-          <div className="max-w-7xl mx-auto h-full w-full">
+      {/* We use h-screen on the wrapper and overflow-y-auto on the main content area */}
+      <div className="flex-1 flex flex-col h-screen overflow-hidden">
+        {/* Optional Top Header can go here if needed, keeping it clean for now */}
+        <header className="w-full bg-white/80 backdrop-blur-md border-b border-slate-200/50 h-14 flex-shrink-0 flex items-center px-6">
+          <div className="text-sm font-semibold text-slate-500">Workspace</div>
+        </header>
+        
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 scroll-smooth">
+          <div className="max-w-7xl mx-auto h-full w-full pb-10">
             {children}
           </div>
         </main>

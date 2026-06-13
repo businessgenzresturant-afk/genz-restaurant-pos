@@ -2,6 +2,10 @@ import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { checkAuth } from '@/lib/api-auth';
 
+// Force dynamic route to prevent caching
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(request: Request) {
   const auth = await checkAuth(request);
   if (auth.error) return auth.error;

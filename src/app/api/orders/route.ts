@@ -2,6 +2,10 @@ import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { checkAuth } from '@/lib/api-auth';
 
+// Force dynamic route to prevent caching
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(request: Request) {
   const auth = await checkAuth(request);
   if (auth.error) return auth.error;
@@ -12,7 +16,17 @@ export async function GET(request: Request) {
     const tableId = searchParams.get('tableId');
 
     let whereClause: any = {};
-    if (status) whereClause.status = status.toUpperCase();
+    
+    // Handle multiple statuses (comma-separated)
+    if (status) {
+      const statuses = status.split(',').map(s => s.trim().toUpperCase());
+      if (statuses.length === 1) {
+        whereClause.status = statuses[0];
+      } else {
+        whereClause.status = { in: statuses };
+      }
+    }
+    
     if (tableId) whereClause.tableId = tableId;
 
     const orders = await prisma.order.findMany({
