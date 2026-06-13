@@ -47,7 +47,7 @@ export default function ReportsPage() {
       <div className="pb-4">
         <h1 className="text-2xl font-bold">Sales & Reports</h1>
         <p className="text-sm text-gray-500">
-          Analyze your restaurant's performance
+          Analyze your restaurant&apos;s performance
         </p>
       </div>
 

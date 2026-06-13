@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Input } from '@/components/ui/input';
 import { QRCodeSVG } from 'qrcode.react';
+import Image from 'next/image';
 
 export default function BillsPage() {
   const [bills, setBills] = useState<any[]>([]);
@@ -313,7 +314,7 @@ export default function BillsPage() {
               <div className="text-center mb-4">
                 <div className="flex justify-center mb-3">
                   <div className="w-32">
-                    <img src="/logo.svg" alt="Gen-Z Restaurant" className="w-full" />
+                    <Image src="/logo.svg" alt="Gen-Z Restaurant" width={128} height={128} className="w-full" />
                   </div>
                 </div>
                 <h2 className="text-lg font-black uppercase tracking-wider mb-1">GEN-Z RESTAURANT</h2>

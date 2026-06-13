@@ -1,0 +1,108 @@
+- generic [active] [ref=e1]:
+  - complementary [ref=e2]:
+    - generic [ref=e3]:
+      - heading "RagsPOS" [level=2] [ref=e4]
+      - navigation [ref=e5]:
+        - link "🏠 Dashboard" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e7]: 🏠
+          - text: Dashboard
+        - link "🪑 Tables" [ref=e8] [cursor=pointer]:
+          - /url: /tables
+          - generic [ref=e9]: 🪑
+          - text: Tables
+        - link "🍽️ Menu" [ref=e10] [cursor=pointer]:
+          - /url: /menu
+          - generic [ref=e11]: 🍽️
+          - text: Menu
+        - link "📋 Orders" [ref=e12] [cursor=pointer]:
+          - /url: /orders
+          - generic [ref=e13]: 📋
+          - text: Orders
+        - link "👨‍🍳 KOT" [ref=e14] [cursor=pointer]:
+          - /url: /kot
+          - generic [ref=e15]: 👨‍🍳
+          - text: KOT
+        - link "🧾 Bills" [ref=e16] [cursor=pointer]:
+          - /url: /bills
+          - generic [ref=e17]: 🧾
+          - text: Bills
+        - link "📊 Reports" [ref=e18] [cursor=pointer]:
+          - /url: /reports
+          - generic [ref=e19]: 📊
+          - text: Reports
+  - main [ref=e20]:
+    - generic [ref=e21]:
+      - generic [ref=e22]:
+        - heading "Dashboard" [level=1] [ref=e23]
+        - paragraph [ref=e24]: Gen-Z Restaurant Overview
+      - generic [ref=e25]:
+        - generic [ref=e26]:
+          - generic [ref=e27]:
+            - generic [ref=e28]:
+              - paragraph [ref=e29]: Tables
+              - paragraph [ref=e30]: 0 / 10
+            - generic [ref=e31]: 🪑
+          - paragraph [ref=e32]: 10 tables available
+        - generic [ref=e33]:
+          - generic [ref=e34]:
+            - generic [ref=e35]:
+              - paragraph [ref=e36]: Active Orders
+              - paragraph [ref=e37]: "11"
+            - generic [ref=e38]: 📋
+          - paragraph [ref=e39]: Orders in progress
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - generic [ref=e42]:
+              - paragraph [ref=e43]: Today's Revenue
+              - paragraph [ref=e44]: ₹0
+            - generic [ref=e45]: 💰
+          - paragraph [ref=e46]: Total sales today
+        - generic [ref=e47]:
+          - generic [ref=e48]:
+            - generic [ref=e49]:
+              - paragraph [ref=e50]: Kitchen Status
+              - paragraph [ref=e51]: Busy
+            - generic [ref=e52]: 👨‍🍳
+          - paragraph [ref=e53]: Kitchen workload
+      - generic [ref=e54]:
+        - generic [ref=e55]:
+          - heading "Table Management" [level=3] [ref=e56]
+          - paragraph [ref=e57]: View and manage restaurant tables
+          - link "Manage Tables" [ref=e58] [cursor=pointer]:
+            - /url: /tables
+            - button "Manage Tables" [ref=e59]
+        - generic [ref=e60]:
+          - heading "Create Order" [level=3] [ref=e61]
+          - paragraph [ref=e62]: Take new customer orders
+          - link "New Order" [ref=e63] [cursor=pointer]:
+            - /url: /orders
+            - button "New Order" [ref=e64]
+        - generic [ref=e65]:
+          - heading "Kitchen Queue" [level=3] [ref=e66]
+          - paragraph [ref=e67]: View pending orders in kitchen
+          - link "View KOT" [ref=e68] [cursor=pointer]:
+            - /url: /kot
+            - button "View KOT" [ref=e69]
+        - generic [ref=e70]:
+          - heading "Menu Items" [level=3] [ref=e71]
+          - paragraph [ref=e72]: Manage menu and prices
+          - link "Edit Menu" [ref=e73] [cursor=pointer]:
+            - /url: /menu
+            - button "Edit Menu" [ref=e74]
+        - generic [ref=e75]:
+          - heading "Billing" [level=3] [ref=e76]
+          - paragraph [ref=e77]: Generate and view bills
+          - link "View Bills" [ref=e78] [cursor=pointer]:
+            - /url: /bills
+            - button "View Bills" [ref=e79]
+        - generic [ref=e80]:
+          - heading "Reports" [level=3] [ref=e81]
+          - paragraph [ref=e82]: Sales and analytics
+          - link "View Reports" [ref=e83] [cursor=pointer]:
+            - /url: /reports
+            - button "View Reports" [ref=e84]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e90] [cursor=pointer]:
+    - img [ref=e91]
+  - alert [ref=e94]

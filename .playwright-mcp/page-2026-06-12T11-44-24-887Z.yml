@@ -1,0 +1,110 @@
+- generic [active] [ref=e1]:
+  - complementary [ref=e2]:
+    - link "Gen-Z Restaurant" [ref=e4] [cursor=pointer]:
+      - /url: /
+      - img "Gen-Z Restaurant" [ref=e5]
+    - navigation [ref=e6]:
+      - link "🏠 Dashboard" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e8]: 🏠
+        - text: Dashboard
+      - link "🪑 Tables" [ref=e9] [cursor=pointer]:
+        - /url: /tables
+        - generic [ref=e10]: 🪑
+        - text: Tables
+      - link "🍽️ Menu" [ref=e11] [cursor=pointer]:
+        - /url: /menu
+        - generic [ref=e12]: 🍽️
+        - text: Menu
+      - link "📋 Orders" [ref=e13] [cursor=pointer]:
+        - /url: /orders
+        - generic [ref=e14]: 📋
+        - text: Orders
+      - link "👨‍🍳 KOT" [ref=e15] [cursor=pointer]:
+        - /url: /kot
+        - generic [ref=e16]: 👨‍🍳
+        - text: KOT
+      - link "🧾 Bills" [ref=e17] [cursor=pointer]:
+        - /url: /bills
+        - generic [ref=e18]: 🧾
+        - text: Bills
+      - link "📊 Reports" [ref=e20] [cursor=pointer]:
+        - /url: /reports
+        - generic [ref=e21]: 📊
+        - text: Reports
+    - generic [ref=e23]:
+      - paragraph [ref=e24]: Powered by
+      - paragraph [ref=e25]: RagsPro™
+  - main [ref=e26]:
+    - generic [ref=e27]:
+      - generic [ref=e28]:
+        - heading "Bills & Payments Generate Bill" [level=1] [ref=e29]:
+          - text: Bills & Payments
+          - button "Generate Bill" [disabled]
+        - paragraph [ref=e30]: Generate and manage bills for completed orders
+      - generic [ref=e31]:
+        - heading "Bill History" [level=2] [ref=e32]
+        - generic [ref=e33]:
+          - generic [ref=e34]:
+            - generic [ref=e35]:
+              - generic [ref=e36]:
+                - 'heading "Bill #14f0ef6d-6313-450d-83c5-ebea7f3f1c9f" [level=3] [ref=e37]'
+                - paragraph [ref=e38]: "Order #6dc8a1c3-672b-4134-9ab0-496825a0e600 • Table #5 •12/06/2026"
+              - generic [ref=e40]: PENDING
+            - generic [ref=e42]: "Amount: ₹1996.56"
+          - generic [ref=e43]:
+            - generic [ref=e44]:
+              - generic [ref=e45]:
+                - 'heading "Bill #f2902916-5b85-4f2b-999a-84ec51724296" [level=3] [ref=e46]'
+                - paragraph [ref=e47]: "Order #02daf53f-8514-415c-98e7-089b18e6203b • Table #10 •12/06/2026"
+              - generic [ref=e48]:
+                - generic [ref=e49]: PAID
+                - button "Print" [ref=e50]
+            - generic [ref=e52]: "Amount: ₹2173.56"
+          - generic [ref=e53]:
+            - generic [ref=e54]:
+              - generic [ref=e55]:
+                - 'heading "Bill #1145c662-e710-4b5a-af12-eaf42457c55c" [level=3] [ref=e56]'
+                - paragraph [ref=e57]: "Order #bb19bced-2e6f-4eba-8a94-5b567a9c045f • Table #4 •12/06/2026"
+              - generic [ref=e58]:
+                - generic [ref=e59]: PAID
+                - button "Print" [ref=e60]
+            - generic [ref=e62]: "Amount: ₹1447.86"
+          - generic [ref=e63]:
+            - generic [ref=e64]:
+              - generic [ref=e65]:
+                - 'heading "Bill #57e9816b-4c3d-4e23-8c8f-d1ae27f8e456" [level=3] [ref=e66]'
+                - paragraph [ref=e67]: "Order #9962ee46-485f-407f-83d5-3077dbe2eaf1 • Table #2 •12/06/2026"
+              - generic [ref=e68]:
+                - generic [ref=e69]: PAID
+                - button "Print" [ref=e70]
+            - generic [ref=e72]: "Amount: ₹739.86"
+          - generic [ref=e73]:
+            - generic [ref=e74]:
+              - generic [ref=e75]:
+                - 'heading "Bill #dcf39592-28a1-4860-9417-bb86c0c58cdf" [level=3] [ref=e76]'
+                - paragraph [ref=e77]: "Order #9f5d701c-f4ef-473f-b18f-c21c3c52c051 • Table #7 •12/06/2026"
+              - generic [ref=e79]: PENDING
+            - generic [ref=e81]: "Amount: ₹669.06"
+          - generic [ref=e82]:
+            - generic [ref=e83]:
+              - generic [ref=e84]:
+                - 'heading "Bill #60a8355d-9721-4461-8f95-abacbe96c00a" [level=3] [ref=e85]'
+                - paragraph [ref=e86]: "Order #340f366b-a10c-4289-9b25-818b3401beea • Table #9 •12/06/2026"
+              - generic [ref=e87]:
+                - generic [ref=e88]: PAID
+                - button "Print" [ref=e89]
+            - generic [ref=e91]: "Amount: ₹1233.10"
+          - generic [ref=e92]:
+            - generic [ref=e93]:
+              - generic [ref=e94]:
+                - 'heading "Bill #ae491fd3-09ca-4784-b4f1-f26487fa8c72" [level=3] [ref=e95]'
+                - paragraph [ref=e96]: "Order #64583996-3114-497c-94b0-53fbf5243fad • Table #2 •12/06/2026"
+              - generic [ref=e97]:
+                - generic [ref=e98]: PAID
+                - button "Print" [ref=e99]
+            - generic [ref=e101]: "Amount: ₹1231.92"
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e107] [cursor=pointer]:
+    - img [ref=e108]
+  - alert [ref=e111]

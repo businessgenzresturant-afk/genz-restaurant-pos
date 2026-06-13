@@ -1,0 +1,101 @@
+- generic [active] [ref=e1]:
+  - complementary [ref=e2]:
+    - link "Gen-Z Restaurant" [ref=e4] [cursor=pointer]:
+      - /url: /
+      - img "Gen-Z Restaurant" [ref=e5]
+    - navigation [ref=e6]:
+      - link "🏠 Dashboard" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e8]: 🏠
+        - text: Dashboard
+      - link "🪑 Tables" [ref=e9] [cursor=pointer]:
+        - /url: /tables
+        - generic [ref=e10]: 🪑
+        - text: Tables
+      - link "🍽️ Menu" [ref=e11] [cursor=pointer]:
+        - /url: /menu
+        - generic [ref=e12]: 🍽️
+        - text: Menu
+      - link "📋 Orders" [ref=e13] [cursor=pointer]:
+        - /url: /orders
+        - generic [ref=e14]: 📋
+        - text: Orders
+      - link "👨‍🍳 KOT" [ref=e15] [cursor=pointer]:
+        - /url: /kot
+        - generic [ref=e16]: 👨‍🍳
+        - text: KOT
+      - link "🧾 Bills" [ref=e17] [cursor=pointer]:
+        - /url: /bills
+        - generic [ref=e18]: 🧾
+        - text: Bills
+      - link "📊 Reports" [ref=e19] [cursor=pointer]:
+        - /url: /reports
+        - generic [ref=e20]: 📊
+        - text: Reports
+      - link "⚙️ Settings" [ref=e21] [cursor=pointer]:
+        - /url: /settings
+        - generic [ref=e22]: ⚙️
+        - text: Settings
+    - generic [ref=e25]:
+      - paragraph [ref=e26]: Powered by
+      - paragraph [ref=e27]: RagsPro™
+  - main [ref=e28]:
+    - generic [ref=e29]:
+      - generic [ref=e30]:
+        - heading "Settings" [level=1] [ref=e31]
+        - paragraph [ref=e32]: Manage restaurant configuration
+      - generic [ref=e33]:
+        - generic [ref=e34]:
+          - generic [ref=e35]: 🏪
+          - generic [ref=e36]:
+            - heading "Restaurant Information" [level=2] [ref=e37]
+            - paragraph [ref=e38]: Basic details about your restaurant
+        - generic [ref=e39]:
+          - generic [ref=e40]:
+            - generic [ref=e41]: Restaurant Name
+            - textbox "Enter restaurant name" [ref=e42]: Gen-Z Restaurant
+          - generic [ref=e43]:
+            - generic [ref=e44]: Address
+            - textbox "Enter address" [ref=e45]: 123 Main Street, New Delhi, India
+          - generic [ref=e46]:
+            - generic [ref=e47]:
+              - generic [ref=e48]: Phone Number
+              - textbox "+91 XXXXX XXXXX" [ref=e49]: +91 98765 43210
+            - generic [ref=e50]:
+              - generic [ref=e51]: Email
+              - textbox "contact@restaurant.com" [ref=e52]: contact@genz-restaurant.com
+      - generic [ref=e53]:
+        - generic [ref=e54]:
+          - generic [ref=e55]: 🧾
+          - generic [ref=e56]:
+            - heading "Tax & Billing" [level=2] [ref=e57]
+            - paragraph [ref=e58]: GST and tax configuration
+        - generic [ref=e59]:
+          - generic [ref=e60]:
+            - generic [ref=e61]: GST Number
+            - textbox "07AABCG1234A1Z5" [ref=e62]
+          - generic [ref=e63]:
+            - generic [ref=e64]: Tax Rate (%)
+            - spinbutton [ref=e65]: "18"
+          - paragraph [ref=e66]: 💡 Current tax rate of 18% will be applied to all bills.CGST and SGST will be split equally.
+      - generic [ref=e67]:
+        - generic [ref=e68]:
+          - generic [ref=e69]: ⚠️
+          - generic [ref=e70]:
+            - heading "Danger Zone" [level=2] [ref=e71]
+            - paragraph [ref=e72]: Irreversible actions
+        - generic [ref=e73]:
+          - generic [ref=e74]:
+            - generic [ref=e75]:
+              - paragraph [ref=e76]: Clear All Orders
+              - paragraph [ref=e77]: Delete all order history
+            - button "Clear Orders" [ref=e78]
+          - generic [ref=e79]:
+            - generic [ref=e80]:
+              - paragraph [ref=e81]: Reset Database
+              - paragraph [ref=e82]: Clear all data and start fresh
+            - button "Reset" [ref=e83]
+      - button "Save Changes" [ref=e85]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e91] [cursor=pointer]:
+    - img [ref=e92]

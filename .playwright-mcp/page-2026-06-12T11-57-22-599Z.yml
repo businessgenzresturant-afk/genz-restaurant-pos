@@ -1,0 +1,41 @@
+- generic [active] [ref=e1]:
+  - complementary [ref=e2]:
+    - link "Gen-Z Restaurant" [ref=e4] [cursor=pointer]:
+      - /url: /
+      - img "Gen-Z Restaurant" [ref=e5]
+    - navigation [ref=e6]:
+      - link "🏠 Dashboard" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e8]: 🏠
+        - text: Dashboard
+      - link "🪑 Tables" [ref=e9] [cursor=pointer]:
+        - /url: /tables
+        - generic [ref=e10]: 🪑
+        - text: Tables
+      - link "🍽️ Menu" [ref=e12] [cursor=pointer]:
+        - /url: /menu
+        - generic [ref=e13]: 🍽️
+        - text: Menu
+      - link "📋 Orders" [ref=e14] [cursor=pointer]:
+        - /url: /orders
+        - generic [ref=e15]: 📋
+        - text: Orders
+      - link "👨‍🍳 KOT" [ref=e16] [cursor=pointer]:
+        - /url: /kot
+        - generic [ref=e17]: 👨‍🍳
+        - text: KOT
+      - link "🧾 Bills" [ref=e18] [cursor=pointer]:
+        - /url: /bills
+        - generic [ref=e19]: 🧾
+        - text: Bills
+      - link "📊 Reports" [ref=e20] [cursor=pointer]:
+        - /url: /reports
+        - generic [ref=e21]: 📊
+        - text: Reports
+    - generic [ref=e23]:
+      - paragraph [ref=e24]: Powered by
+      - paragraph [ref=e25]: RagsPro™
+  - main [ref=e26]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e34] [cursor=pointer]:
+    - img [ref=e35]

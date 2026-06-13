@@ -1,0 +1,4 @@
+[     813ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://genz-restaurant-pos.vercel.app/pos/tables?_rsc=9ehs5:0
+[     821ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://genz-restaurant-pos.vercel.app/favicon.ico:0
+[     947ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://genz-restaurant-pos.vercel.app/pos/tables:0
+[  305309ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://genz-restaurant-pos.vercel.app/pos/tables:0

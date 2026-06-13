@@ -1,0 +1,23 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]: RagsPOS
+        - generic [ref=e8]:
+          - link "Home" [ref=e9] [cursor=pointer]:
+            - /url: /
+          - link "Tables" [ref=e10] [cursor=pointer]:
+            - /url: /pos/tables
+          - link "Menu" [ref=e11] [cursor=pointer]:
+            - /url: /pos/menu
+          - link "Orders" [ref=e12] [cursor=pointer]:
+            - /url: /pos/orders
+          - link "KOT" [ref=e13] [cursor=pointer]:
+            - /url: /pos/kot
+          - link "Bills" [ref=e14] [cursor=pointer]:
+            - /url: /pos/bills
+          - link "Reports" [ref=e15] [cursor=pointer]:
+            - /url: /pos/reports
+      - button "User" [ref=e18]
+  - main
+  - alert [ref=e19]

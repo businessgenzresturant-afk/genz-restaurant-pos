@@ -1,0 +1,49 @@
+- generic [active] [ref=e1]:
+  - complementary [ref=e2]:
+    - generic [ref=e3]:
+      - heading "RagsPOS" [level=2] [ref=e4]
+      - navigation [ref=e5]:
+        - link "🏠 Dashboard" [ref=e6] [cursor=pointer]:
+          - /url: /
+          - generic [ref=e7]: 🏠
+          - text: Dashboard
+        - link "🪑 Tables" [ref=e8] [cursor=pointer]:
+          - /url: /tables
+          - generic [ref=e9]: 🪑
+          - text: Tables
+        - link "🍽️ Menu" [ref=e10] [cursor=pointer]:
+          - /url: /menu
+          - generic [ref=e11]: 🍽️
+          - text: Menu
+        - link "📋 Orders" [ref=e12] [cursor=pointer]:
+          - /url: /orders
+          - generic [ref=e13]: 📋
+          - text: Orders
+        - link "👨‍🍳 KOT" [ref=e14] [cursor=pointer]:
+          - /url: /kot
+          - generic [ref=e15]: 👨‍🍳
+          - text: KOT
+        - link "🧾 Bills" [ref=e16] [cursor=pointer]:
+          - /url: /bills
+          - generic [ref=e17]: 🧾
+          - text: Bills
+        - link "📊 Reports" [ref=e18] [cursor=pointer]:
+          - /url: /reports
+          - generic [ref=e19]: 📊
+          - text: Reports
+  - main [ref=e20]:
+    - generic [ref=e22]:
+      - heading "RagsPOS Login" [level=2] [ref=e23]
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - generic [ref=e26]: Email Address
+          - textbox "Email Address" [ref=e27]:
+            - /placeholder: Enter your email
+        - generic [ref=e28]:
+          - generic [ref=e29]: Password
+          - textbox "Password" [ref=e30]:
+            - /placeholder: Enter your password
+        - button "Sign In" [ref=e31]
+      - paragraph [ref=e32]: Powered by RagsPro
+  - region "Notifications alt+T"
+  - alert [ref=e33]

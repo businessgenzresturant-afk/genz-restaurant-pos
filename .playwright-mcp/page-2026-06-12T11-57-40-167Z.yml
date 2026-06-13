@@ -1,0 +1,151 @@
+- generic [active] [ref=e1]:
+  - complementary [ref=e2]:
+    - link "Gen-Z Restaurant" [ref=e4] [cursor=pointer]:
+      - /url: /
+      - img "Gen-Z Restaurant" [ref=e5]
+    - navigation [ref=e6]:
+      - link "🏠 Dashboard" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e8]: 🏠
+        - text: Dashboard
+      - link "🪑 Tables" [ref=e9] [cursor=pointer]:
+        - /url: /tables
+        - generic [ref=e10]: 🪑
+        - text: Tables
+      - link "🍽️ Menu" [ref=e11] [cursor=pointer]:
+        - /url: /menu
+        - generic [ref=e12]: 🍽️
+        - text: Menu
+      - link "📋 Orders" [ref=e14] [cursor=pointer]:
+        - /url: /orders
+        - generic [ref=e15]: 📋
+        - text: Orders
+      - link "👨‍🍳 KOT" [ref=e16] [cursor=pointer]:
+        - /url: /kot
+        - generic [ref=e17]: 👨‍🍳
+        - text: KOT
+      - link "🧾 Bills" [ref=e18] [cursor=pointer]:
+        - /url: /bills
+        - generic [ref=e19]: 🧾
+        - text: Bills
+      - link "📊 Reports" [ref=e20] [cursor=pointer]:
+        - /url: /reports
+        - generic [ref=e21]: 📊
+        - text: Reports
+    - generic [ref=e23]:
+      - paragraph [ref=e24]: Powered by
+      - paragraph [ref=e25]: RagsPro™
+  - main [ref=e26]:
+    - generic [ref=e27]:
+      - generic [ref=e28]:
+        - heading "Menu Management Add Item" [level=1] [ref=e29]:
+          - text: Menu Management
+          - button "Add Item" [ref=e30]
+        - paragraph [ref=e31]: View and manage restaurant menu items
+      - generic [ref=e32]:
+        - heading "Menu Items" [level=2] [ref=e33]
+        - generic [ref=e34]:
+          - generic [ref=e36]:
+            - generic [ref=e37]:
+              - heading "Caesar Salad" [level=3] [ref=e38]
+              - paragraph [ref=e39]: "Category: Starters"
+              - paragraph [ref=e40]: "Price: ₹199.00"
+              - paragraph [ref=e41]: "Status: Available"
+            - generic [ref=e42]:
+              - button "Edit" [ref=e43]
+              - button "Delete" [ref=e44]
+              - button "Hide" [ref=e45]
+          - generic [ref=e47]:
+            - generic [ref=e48]:
+              - heading "Cheesecake" [level=3] [ref=e49]
+              - paragraph [ref=e50]: "Category: Desserts"
+              - paragraph [ref=e51]: "Price: ₹229.00"
+              - paragraph [ref=e52]: "Status: Available"
+            - generic [ref=e53]:
+              - button "Edit" [ref=e54]
+              - button "Delete" [ref=e55]
+              - button "Hide" [ref=e56]
+          - generic [ref=e58]:
+            - generic [ref=e59]:
+              - heading "Coke" [level=3] [ref=e60]
+              - paragraph [ref=e61]: "Category: Beverages"
+              - paragraph [ref=e62]: "Price: ₹60.00"
+              - paragraph [ref=e63]: "Status: Available"
+            - generic [ref=e64]:
+              - button "Edit" [ref=e65]
+              - button "Delete" [ref=e66]
+              - button "Hide" [ref=e67]
+          - generic [ref=e69]:
+            - generic [ref=e70]:
+              - heading "Fries" [level=3] [ref=e71]
+              - paragraph [ref=e72]: "Category: Sides"
+              - paragraph [ref=e73]: "Price: ₹99.00"
+              - paragraph [ref=e74]: "Status: Available"
+            - generic [ref=e75]:
+              - button "Edit" [ref=e76]
+              - button "Delete" [ref=e77]
+              - button "Hide" [ref=e78]
+          - generic [ref=e80]:
+            - generic [ref=e81]:
+              - heading "Garlic Bread" [level=3] [ref=e82]
+              - paragraph [ref=e83]: "Category: Starters"
+              - paragraph [ref=e84]: "Price: ₹149.00"
+              - paragraph [ref=e85]: "Status: Available"
+            - generic [ref=e86]:
+              - button "Edit" [ref=e87]
+              - button "Delete" [ref=e88]
+              - button "Hide" [ref=e89]
+          - generic [ref=e91]:
+            - generic [ref=e92]:
+              - heading "Margherita Pizza" [level=3] [ref=e93]
+              - paragraph [ref=e94]: "Category: Mains"
+              - paragraph [ref=e95]: "Price: ₹299.00"
+              - paragraph [ref=e96]: "Status: Available"
+            - generic [ref=e97]:
+              - button "Edit" [ref=e98]
+              - button "Delete" [ref=e99]
+              - button "Hide" [ref=e100]
+          - generic [ref=e102]:
+            - generic [ref=e103]:
+              - heading "Pasta Carbonara" [level=3] [ref=e104]
+              - paragraph [ref=e105]: "Category: Mains"
+              - paragraph [ref=e106]: "Price: ₹349.00"
+              - paragraph [ref=e107]: "Status: Available"
+            - generic [ref=e108]:
+              - button "Edit" [ref=e109]
+              - button "Delete" [ref=e110]
+              - button "Hide" [ref=e111]
+          - generic [ref=e113]:
+            - generic [ref=e114]:
+              - heading "Pepperoni Pizza" [level=3] [ref=e115]
+              - paragraph [ref=e116]: "Category: Mains"
+              - paragraph [ref=e117]: "Price: ₹399.00"
+              - paragraph [ref=e118]: "Status: Available"
+            - generic [ref=e119]:
+              - button "Edit" [ref=e120]
+              - button "Delete" [ref=e121]
+              - button "Hide" [ref=e122]
+          - generic [ref=e124]:
+            - generic [ref=e125]:
+              - heading "Sprite" [level=3] [ref=e126]
+              - paragraph [ref=e127]: "Category: Beverages"
+              - paragraph [ref=e128]: "Price: ₹60.00"
+              - paragraph [ref=e129]: "Status: Available"
+            - generic [ref=e130]:
+              - button "Edit" [ref=e131]
+              - button "Delete" [ref=e132]
+              - button "Hide" [ref=e133]
+          - generic [ref=e135]:
+            - generic [ref=e136]:
+              - heading "Tiramisu" [level=3] [ref=e137]
+              - paragraph [ref=e138]: "Category: Desserts"
+              - paragraph [ref=e139]: "Price: ₹249.00"
+              - paragraph [ref=e140]: "Status: Available"
+            - generic [ref=e141]:
+              - button "Edit" [ref=e142]
+              - button "Delete" [ref=e143]
+              - button "Hide" [ref=e144]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e150] [cursor=pointer]:
+    - img [ref=e151]
+  - alert [ref=e154]
