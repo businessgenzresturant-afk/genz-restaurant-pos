@@ -39,6 +39,7 @@ async function main() {
         role: 'STAFF',
       },
     ],
+    skipDuplicates: true,
   });
 
   // Create default restaurant
@@ -67,6 +68,7 @@ async function main() {
       { number: 5, capacity: 8, restaurantId: restaurant.id },
       { number: 6, capacity: 2, restaurantId: restaurant.id },
     ],
+    skipDuplicates: true,
   });
 
   // Create menu items
@@ -169,6 +171,7 @@ async function main() {
         restaurantId: restaurant.id,
       },
     ],
+    skipDuplicates: true,
   });
 
   console.log('✅ Seed completed!');

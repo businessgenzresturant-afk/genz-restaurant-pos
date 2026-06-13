@@ -37,7 +37,6 @@ export default function RootLayout({
         >
           <GrainOverlay />
           <CustomCursor />
-          <Sidebar />
           <main className="flex-1 flex flex-col overflow-y-auto p-6">
             {children}
           </main>

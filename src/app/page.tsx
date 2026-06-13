@@ -6,7 +6,7 @@ import { Dashboard } from '@/components/dashboard/dashboard';
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
   if (!session) {
-    redirect('/auth/login');
+    redirect('/login');
   }
   return <Dashboard />;
 }
