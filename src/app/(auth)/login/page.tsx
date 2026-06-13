@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
+import Link from 'next/link';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -36,6 +37,7 @@ export default function LoginPage() {
   const fillDemoCredentials = (email: string, password: string) => {
     setValue('email', email);
     setValue('password', password);
+    onSubmit({ email, password }); // Auto-submit when clicking demo accounts
   };
 
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
@@ -121,20 +123,31 @@ export default function LoginPage() {
           </Button>
         </form>
 
+        <div className="text-center">
+          <p className="text-sm text-gray-600">
+            Don't have an account?{' '}
+            <Link href="/register" className="font-semibold text-orange-600 hover:text-orange-500">
+              Create one
+            </Link>
+          </p>
+        </div>
+
         {/* Demo Accounts Section */}
         <div className="pt-4 border-t border-gray-200">
           <p className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
             <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Demo Accounts (Click to use):
+            Demo Accounts (Click to auto-login):
           </p>
           <div className="space-y-2">
             {DEMO_ACCOUNTS.map((account) => (
               <button
                 key={account.email}
+                type="button"
+                disabled={isLoading}
                 onClick={() => fillDemoCredentials(account.email, account.password)}
-                className="w-full text-left p-3 rounded-lg bg-gray-50 hover:bg-orange-50 border border-gray-200 hover:border-orange-300 transition-all duration-200 group"
+                className="w-full text-left p-3 rounded-lg bg-gray-50 hover:bg-orange-50 border border-gray-200 hover:border-orange-300 transition-all duration-200 group disabled:opacity-50"
               >
                 <div className="flex items-center justify-between">
                   <div>
@@ -157,7 +170,7 @@ export default function LoginPage() {
         <div className="pt-4 border-t border-gray-200 text-center">
           <p className="text-xs text-gray-500">
             Powered by{' '}
-            <span className="font-semibold bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
+            <span className="font-semibold text-orange-500">
               RagsPro
             </span>
           </p>

@@ -24,8 +24,15 @@ export const authOptions: NextAuthOptions = {
           if (userCount === 0) {
             const { hash } = await import('bcryptjs');
             const adminPassword = await hash('GenZ2026!', 12);
-            await prisma.user.create({
-              data: { name: 'Admin User', email: 'admin@genzrestaurant.com', password: adminPassword, role: 'ADMIN' }
+            const managerPassword = await hash('Manager2026!', 12);
+            const cashierPassword = await hash('Cashier2026!', 12);
+            
+            await prisma.user.createMany({
+              data: [
+                { name: 'Admin User', email: 'admin@genzrestaurant.com', password: adminPassword, role: 'ADMIN' },
+                { name: 'Restaurant Manager', email: 'manager@genzrestaurant.com', password: managerPassword, role: 'STAFF' },
+                { name: 'Cashier Staff', email: 'cashier@genzrestaurant.com', password: cashierPassword, role: 'STAFF' },
+              ]
             });
             // Auto-create a default restaurant as well so they don't crash elsewhere
             await prisma.restaurant.create({
