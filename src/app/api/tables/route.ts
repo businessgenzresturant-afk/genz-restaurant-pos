@@ -12,6 +12,7 @@ export async function GET(request: Request) {
 
   try {
     const tables = await prisma.table.findMany({
+      where: { restaurantId: (auth.session.user as any).restaurantId },
       orderBy: { number: 'asc' },
       include: { restaurant: true }
     });
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
       data: {
         number: parseInt(number),
         capacity: parseInt(capacity),
-        restaurantId: restaurantId || 'genz-restaurant'
+        restaurantId: (auth.session.user as any).restaurantId
       }
     });
     return NextResponse.json(table, { status: 201 });

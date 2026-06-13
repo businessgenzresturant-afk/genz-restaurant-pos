@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import ReactLenis from 'lenis/react';
 import { GrainOverlay } from '@/app/_components/scroll/grain-overlay';
 import { ThemeProvider } from "@/components/theme-provider";
 
@@ -31,21 +30,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <ReactLenis
-            root
-            options={{
-              duration: 1.2,
-              orientation: 'vertical' as const,
-              gestureOrientation: 'vertical' as const,
-              smoothWheel: true,
-            }}
-          >
-            <GrainOverlay />
-            <main className="flex-1 flex flex-col overflow-y-auto p-0 m-0">
-              {children}
-            </main>
-            <Toaster richColors position="top-right" />
-          </ReactLenis>
+          <GrainOverlay />
+          <main className="flex-1 flex flex-col p-0 m-0 w-full">
+            {children}
+          </main>
+          <Toaster richColors position="top-right" />
         </ThemeProvider>
       </body>
     </html>

@@ -69,7 +69,7 @@ export default function LoginPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 36v-3m-3 3h.01M9 17h.01M9 21h.01M15 17h.01M15 21h.01M5.01 17h.01M5.01 21h.01" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900">Gen-Z Restaurant POS</h2>
+          <h2 className="text-2xl font-bold text-foreground">Gen-Z Restaurant POS</h2>
           <p className="text-sm text-gray-600">Sign in to continue</p>
         </div>
 
@@ -150,7 +150,7 @@ export default function LoginPage() {
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-semibold text-gray-900 group-hover:text-orange-900">
+                    <p className="text-sm font-semibold text-foreground group-hover:text-orange-900">
                       {account.role}
                     </p>
                     <p className="text-xs text-gray-600 group-hover:text-orange-600">{account.email}</p>

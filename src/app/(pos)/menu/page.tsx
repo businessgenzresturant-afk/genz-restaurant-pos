@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
+import { Pencil, Eye, EyeOff, Trash2, Search, Plus, X, AlertTriangle } from 'lucide-react';
 
 const CATEGORIES = [
   'All',
@@ -100,7 +101,6 @@ export default function MenuPage() {
           price: parseFloat(price),
           imageUrl,
           available,
-          restaurantId: 'genz-restaurant', // Default restaurant ID from seed
         }),
       });
 
@@ -218,8 +218,8 @@ export default function MenuPage() {
     return (
       <div className="min-h-[600px] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full border-4 border-orange-600 border-t-transparent h-12 w-12 mx-auto"></div>
-          <p className="mt-4 text-gray-500">Loading delicious menu...</p>
+          <div className="animate-spin rounded-full border-4 border-primary border-t-transparent h-12 w-12 mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading delicious menu...</p>
         </div>
       </div>
     );
@@ -240,29 +240,30 @@ export default function MenuPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="pb-4 border-b border-gray-200">
+      <div className="pb-4 border-b border-border">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-black text-gray-900">Menu Management</h1>
-            <p className="text-sm text-gray-500 mt-1">Manage your restaurant delicious items</p>
+            <h1 className="text-3xl font-black text-foreground">Menu Management</h1>
+            <p className="text-sm text-muted-foreground mt-1">Manage your restaurant delicious items</p>
           </div>
           <Button
             onClick={() => setShowAddModal(true)}
             variant="gradient"
             size="lg"
+            className="gap-2"
           >
-            ➕ Add New Item
+            <Plus className="h-5 w-5" /> Add New Item
           </Button>
         </div>
       </div>
 
       {/* Search Bar */}
-      <Card className="p-4">
+      <Card className="p-4 border-border/60 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center text-xl">
-            🔍
+          <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+            <Search className="h-5 w-5" />
           </div>
-          <div className="flex-1">
+          <div className="flex-1 relative">
             <Input
               type="text"
               placeholder="Search menu items by name or category..."
@@ -273,9 +274,9 @@ export default function MenuPage() {
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
               >
-                ✕
+                <X className="h-5 w-5" />
               </button>
             )}
           </div>
@@ -290,8 +291,8 @@ export default function MenuPage() {
             onClick={() => setSelectedCategory(category)}
             className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all ${
               selectedCategory === category
-                ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-lg shadow-orange-500/30'
-                : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
+                ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30'
+                : 'bg-background text-foreground hover:bg-muted border border-border'
             }`}
           >
             {category}
@@ -301,14 +302,14 @@ export default function MenuPage() {
 
       {/* Results count */}
       <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-600">
-          Showing <span className="font-bold text-orange-600">{filteredItems.length}</span> of{' '}
-          <span className="font-bold text-amber-600">{menuItems.length}</span> items
+        <p className="text-sm text-muted-foreground">
+          Showing <span className="font-bold text-primary">{filteredItems.length}</span> of{' '}
+          <span className="font-bold text-primary/80">{menuItems.length}</span> items
         </p>
         {(searchQuery || selectedCategory !== 'All') && (
           <button
             onClick={() => { setSearchQuery(''); setSelectedCategory('All'); }}
-            className="text-sm text-orange-600 hover:text-orange-800 font-medium"
+            className="text-sm text-primary hover:text-primary/80 font-medium"
           >
             Clear filters
           </button>
@@ -317,15 +318,15 @@ export default function MenuPage() {
 
       {/* Add Menu Item Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-70 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="bg-card text-card-foreground border border-border rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center text-2xl">
-                ➕
+              <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <Plus className="h-6 w-6" />
               </div>
               <div>
-                <h2 className="text-2xl font-black text-gray-900">Add Menu Item</h2>
-                <p className="text-sm text-gray-500">Create a new delicious item</p>
+                <h2 className="text-2xl font-black text-foreground">Add Menu Item</h2>
+                <p className="text-sm text-muted-foreground">Create a new delicious item</p>
               </div>
             </div>
             <form onSubmit={handleAddMenuItem} className="space-y-4">
@@ -342,14 +343,14 @@ export default function MenuPage() {
                 />
               </div>
               <div>
-                <label htmlFor="itemCategory" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="itemCategory" className="block text-sm font-semibold text-foreground mb-2">
                   Category
                 </label>
                 <select
                   id="itemCategory"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
                   <option value="">Select a category</option>
                   {CATEGORIES.filter(c => c !== 'All').map((cat) => (
@@ -382,15 +383,15 @@ export default function MenuPage() {
                   placeholder="https://example.com/image.jpg"
                 />
               </div>
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border border-border">
                 <input
                   type="checkbox"
                   id="itemAvailable"
                   checked={available}
                   onChange={(e) => setAvailable(e.target.checked)}
-                  className="h-5 w-5 text-orange-600 rounded"
+                  className="h-5 w-5 text-primary rounded border-border"
                 />
-                <label htmlFor="itemAvailable" className="text-sm font-medium text-gray-700">
+                <label htmlFor="itemAvailable" className="text-sm font-medium text-foreground">
                   Available for order
                 </label>
               </div>
@@ -420,15 +421,15 @@ export default function MenuPage() {
 
       {/* Edit Menu Item Modal */}
       {showEditModal && itemToEdit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-70 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="bg-card text-card-foreground border border-border rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center text-2xl">
-                ✏️
+              <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                <Pencil className="h-6 w-6" />
               </div>
               <div>
-                <h2 className="text-2xl font-black text-gray-900">Edit Menu Item</h2>
-                <p className="text-sm text-gray-500">Update item details</p>
+                <h2 className="text-2xl font-black text-foreground">Edit Menu Item</h2>
+                <p className="text-sm text-muted-foreground">Update item details</p>
               </div>
             </div>
             <form onSubmit={handleUpdateMenuItem} className="space-y-4">
@@ -445,14 +446,14 @@ export default function MenuPage() {
                 />
               </div>
               <div>
-                <label htmlFor="editItemCategory" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="editItemCategory" className="block text-sm font-semibold text-foreground mb-2">
                   Category
                 </label>
                 <select
                   id="editItemCategory"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
                   {CATEGORIES.filter(c => c !== 'All').map((cat) => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -484,15 +485,15 @@ export default function MenuPage() {
                   placeholder="https://example.com/image.jpg"
                 />
               </div>
-              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border border-border">
                 <input
                   type="checkbox"
                   id="editItemAvailable"
                   checked={available}
                   onChange={(e) => setAvailable(e.target.checked)}
-                  className="h-5 w-5 text-orange-600 rounded"
+                  className="h-5 w-5 text-primary rounded border-border"
                 />
-                <label htmlFor="editItemAvailable" className="text-sm font-medium text-gray-700">
+                <label htmlFor="editItemAvailable" className="text-sm font-medium text-foreground">
                   Available for order
                 </label>
               </div>
@@ -523,18 +524,18 @@ export default function MenuPage() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && itemToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-70 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="bg-card text-card-foreground border border-border rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center text-2xl">
-                ⚠️
+              <div className="w-12 h-12 rounded-xl bg-destructive/10 text-destructive flex items-center justify-center">
+                <AlertTriangle className="h-6 w-6" />
               </div>
               <div>
-                <h2 className="text-2xl font-black text-gray-900">Delete Menu Item</h2>
-                <p className="text-sm text-gray-500">This action cannot be undone</p>
+                <h2 className="text-2xl font-black text-foreground">Delete Menu Item</h2>
+                <p className="text-sm text-muted-foreground">This action cannot be undone</p>
               </div>
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="text-muted-foreground mb-6">
               Are you sure you want to delete this menu item? This action cannot be undone.
             </p>
             <div className="flex gap-3">
@@ -563,10 +564,10 @@ export default function MenuPage() {
       {/* Menu Items Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {filteredItems.length === 0 ? (
-          <Card className="p-12 text-center col-span-full">
+          <Card className="p-12 text-center col-span-full border-border/60">
             <div className="text-6xl mb-4">📭</div>
-            <p className="text-gray-500 mb-4">No menu items found</p>
-            <p className="text-sm text-gray-400">
+            <p className="text-muted-foreground mb-4">No menu items found</p>
+            <p className="text-sm text-muted-foreground/70">
               {searchQuery || selectedCategory !== 'All'
                 ? 'Try adjusting your search or filters'
                 : 'Add your first menu item to get started'}
@@ -576,65 +577,62 @@ export default function MenuPage() {
           filteredItems.map((item) => (
             <div
               key={item.id}
-              className={`border-2 rounded-xl p-4 transition-all card-hover bg-white ${
-                item.available ? 'border-gray-200' : 'border-gray-100 opacity-60'
+              onClick={() => {
+                setItemToEdit(item);
+                setName(item.name);
+                setCategory(item.category);
+                setPrice(item.price.toString());
+                setImageUrl(item.imageUrl);
+                setAvailable(item.available);
+                setShowEditModal(true);
+              }}
+              className={`border rounded-xl p-4 transition-all cursor-pointer hover:border-primary/50 group card-enhanced ${
+                item.available ? 'border-border' : 'border-border/50 opacity-60'
               }`}
             >
               <div className="flex items-start justify-between mb-3">
-                <div className="flex-1">
-                  <h3 className="font-bold text-gray-900 text-lg leading-tight">{item.name}</h3>
-                  <p className="text-xs text-gray-500 mt-1">{item.category}</p>
+                <div className="flex-1 pr-2">
+                  <h3 className="font-bold text-foreground text-lg leading-tight group-hover:text-primary transition-colors">{item.name}</h3>
+                  <p className="text-xs text-muted-foreground mt-1">{item.category}</p>
                 </div>
                 <span
                   className={`px-2 py-1 text-xs font-semibold rounded-full ${
                     item.available
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-red-100 text-red-700'
+                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                      : 'bg-red-500/10 text-red-600 dark:text-red-400'
                   }`}
                 >
-                  {item.available ? '✓' : '✕'}
+                  {item.available ? 'Available' : 'Hidden'}
                 </span>
               </div>
 
               <div className="flex items-center justify-between mt-4">
-                <p className="text-xl font-black bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
+                <p className="text-xl font-black text-primary">
                   ₹{item.price.toFixed(2)}
                 </p>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <Button
-                    onClick={() => {
-                      setItemToEdit(item);
-                      setName(item.name);
-                      setCategory(item.category);
-                      setPrice(item.price.toString());
-                      setImageUrl(item.imageUrl);
-                      setAvailable(item.available);
-                      setShowEditModal(true);
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleAvailability(item.id, item.available);
                     }}
-                    variant="outline"
-                    size="sm"
-                    className="text-xs"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
                   >
-                    ✏️
+                    {item.available ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                   </Button>
                   <Button
-                    onClick={() => handleToggleAvailability(item.id, item.available)}
-                    variant="outline"
-                    size="sm"
-                    className="text-xs"
-                  >
-                    {item.available ? '👁️' : '🙈'}
-                  </Button>
-                  <Button
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setItemToDelete(item.id);
                       setShowDeleteModal(true);
                     }}
-                    variant="outline"
-                    size="sm"
-                    className="text-xs text-red-600 hover:bg-red-50"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-destructive hover:bg-destructive/10"
                   >
-                    🗑️
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>

@@ -13,6 +13,7 @@ export default function OrdersPage() {
   const [activeOrders, setActiveOrders] = useState<any[]>([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [categories, setCategories] = useState<string[]>(['All']);
+  const [searchQuery, setSearchQuery] = useState('');
   
   const [selectedTable, setSelectedTable] = useState<string | null>(null);
   const [orderItems, setOrderItems] = useState<{menuItemId: string, quantity: number, specialInstructions: string}[]>([]);
@@ -92,9 +93,12 @@ export default function OrdersPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTable, orderItems, isSubmitting]);
 
-  const filteredMenuItems = selectedCategory === 'All' 
-    ? menuItems 
-    : menuItems.filter(item => item.category === selectedCategory);
+  const filteredMenuItems = menuItems.filter(item => {
+    if (!item.available) return false;
+    const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   const handleAddItem = (menuItem: any) => {
     const existing = orderItems.find(item => item.menuItemId === menuItem.id);
@@ -184,6 +188,54 @@ export default function OrdersPage() {
     }
   };
 
+  const handleCancelOrder = async (orderId: string) => {
+    if (!window.confirm('Are you sure you want to cancel this order?')) return;
+    
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/orders/${orderId}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to cancel order');
+      }
+
+      toast.success('Order cancelled successfully');
+      await fetchData();
+    } catch (err: any) {
+      setError(err.message || 'Failed to cancel order. Please try again.');
+      console.error('Error cancelling order:', err);
+      toast.error('Failed to cancel order');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGenerateBill = async (orderId: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/bills', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate bill');
+      }
+
+      toast.success('Bill generated successfully! Redirecting...');
+      router.push('/bills');
+    } catch (err) {
+      setError('Failed to generate bill. Please try again.');
+      console.error('Error generating bill:', err);
+      toast.error('Failed to generate bill');
+      setLoading(false);
+    }
+  };
+
   const getMenuItemPrice = (id: string) => {
     const item = menuItems.find(m => m.id === id);
     return item ? item.price : 0;
@@ -221,18 +273,18 @@ export default function OrdersPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="pb-4 border-b border-gray-200">
-        <h1 className="text-3xl font-black text-gray-900">Take Order</h1>
-        <p className="text-sm text-gray-500 mt-1">
+      <div className="pb-4 border-b border-border">
+        <h1 className="text-3xl font-black text-foreground">Take Order</h1>
+        <p className="text-sm text-muted-foreground mt-1">
           Create new orders and manage active ones with ease
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <Card className="p-5 border-2 border-gray-100 shadow-sm rounded-2xl">
+          <Card className="p-5 border border-border shadow-sm rounded-2xl">
             <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-sm">1</span>
+              <span className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-sm">1</span>
               Select Table
             </h2>
             <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-3">
@@ -240,13 +292,12 @@ export default function OrdersPage() {
                 <button
                   key={table.id}
                   onClick={() => setSelectedTable(table.id)}
-                  disabled={table.status === 'OCCUPIED'}
-                  className={`p-3 rounded-xl border-2 text-center transition-all duration-200 ${
+                  className={`p-3 rounded-xl border text-center transition-all duration-200 ${
                     selectedTable === table.id
-                      ? 'border-orange-600 bg-gradient-to-br from-orange-600 to-amber-600 text-white shadow-lg shadow-orange-500/30 transform scale-105'
+                      ? 'border-primary bg-primary text-primary-foreground shadow-lg shadow-primary/30 transform scale-105'
                       : table.status === 'OCCUPIED'
-                        ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed opacity-60'
-                        : 'border-gray-200 hover:border-orange-300 hover:bg-orange-50 text-gray-700'
+                        ? 'border-amber-500/50 bg-amber-500/10 text-amber-600 hover:bg-amber-500/20'
+                        : 'border-border hover:border-primary/50 hover:bg-primary/5 text-foreground'
                   }`}
                 >
                   <span className="block font-bold text-lg">T{table.number}</span>
@@ -256,12 +307,23 @@ export default function OrdersPage() {
             </div>
           </Card>
 
-          <Card className="p-5 border-2 border-gray-100 shadow-sm rounded-2xl">
+          <Card className="p-5 border border-border shadow-sm rounded-2xl">
             <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-sm">2</span>
+              <span className="w-8 h-8 rounded-full bg-amber-500/10 text-amber-600 flex items-center justify-center text-sm">2</span>
               Select Items
             </h2>
             
+            {/* Search Bar */}
+            <div className="mb-4">
+              <Input
+                type="text"
+                placeholder="🔍 Search for any item... (e.g. Burger)"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-background border-border shadow-sm rounded-xl h-11 text-sm font-medium"
+              />
+            </div>
+
             {/* Category Filter Tabs */}
             <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide mb-2">
               {categories.map((category) => (
@@ -270,8 +332,8 @@ export default function OrdersPage() {
                   onClick={() => setSelectedCategory(category)}
                   className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all ${
                     selectedCategory === category
-                      ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-md shadow-orange-500/20'
-                      : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                      ? 'bg-primary text-primary-foreground shadow-md shadow-primary/20'
+                      : 'bg-background text-foreground hover:bg-muted border border-border'
                   }`}
                 >
                   {category}
@@ -280,20 +342,20 @@ export default function OrdersPage() {
             </div>
 
             {filteredMenuItems.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">No available menu items found in this category.</p>
+              <p className="text-gray-500 text-center py-8">No menu items found matching your search.</p>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 max-h-[400px] overflow-y-auto pr-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                 {filteredMenuItems.map(item => (
                   <button
                     key={item.id}
                     onClick={() => handleAddItem(item)}
-                    className="p-4 rounded-xl border-2 border-gray-100 hover:border-orange-300 hover:bg-orange-50 text-left transition-all flex flex-col h-full justify-between card-hover group"
+                    className="p-4 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 text-left transition-all flex flex-col h-full justify-between card-enhanced group"
                   >
                     <div>
-                      <span className="block font-bold text-gray-900 group-hover:text-orange-700 transition-colors leading-tight">{item.name}</span>
-                      <span className="text-xs text-gray-500 mt-1 block">{item.category}</span>
+                      <span className="block font-bold text-foreground group-hover:text-primary transition-colors leading-tight">{item.name}</span>
+                      <span className="text-xs text-muted-foreground mt-1 block">{item.category}</span>
                     </div>
-                    <span className="block font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-600 mt-3">
+                    <span className="block font-black text-primary mt-3">
                       ₹{item.price.toFixed(2)}
                     </span>
                   </button>
@@ -304,11 +366,11 @@ export default function OrdersPage() {
         </div>
 
         <div className="space-y-6 lg:sticky lg:top-6 h-fit">
-          <Card className="p-5 border-2 border-orange-100 shadow-xl shadow-orange-100/50 rounded-2xl flex flex-col h-[700px]">
-            <h2 className="text-xl font-bold mb-4 pb-3 border-b border-gray-100 flex items-center justify-between">
+          <Card className="p-5 border border-primary/20 shadow-xl shadow-primary/10 rounded-2xl flex flex-col h-[700px]">
+            <h2 className="text-xl font-bold mb-4 pb-3 border-b border-border flex items-center justify-between">
               <span>Current Order</span>
               {selectedTable && (
-                <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-bold">
+                <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-bold">
                   Table {tables.find(t => t.id === selectedTable)?.number}
                 </span>
               )}
@@ -316,10 +378,10 @@ export default function OrdersPage() {
 
             {/* Customer Data Capture */}
             {selectedTable && (
-              <div className="mb-4 p-3 bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl border border-orange-100">
+              <div className="mb-4 p-3 bg-muted/50 rounded-xl border border-border">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-lg">👤</span>
-                  <span className="font-bold text-gray-700 text-sm">Customer Details</span>
+                  <span className="font-bold text-foreground text-sm">Customer Details</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <Input
@@ -335,7 +397,7 @@ export default function OrdersPage() {
                     className="h-9 text-sm"
                   />
                 </div>
-                <p className="text-xs text-gray-500 mt-2">💡 Optional but helpful for future visits & offers</p>
+                <p className="text-xs text-muted-foreground mt-2">💡 Optional but helpful for future visits & offers</p>
               </div>
             )}
 
@@ -343,15 +405,15 @@ export default function OrdersPage() {
               {orderItems.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center opacity-50">
                   <div className="text-5xl mb-3">🛒</div>
-                  <p className="font-semibold text-gray-600">Your tray is empty</p>
-                  <p className="text-sm text-gray-400 mt-1">Select items to build an order</p>
+                  <p className="font-semibold text-muted-foreground">Your tray is empty</p>
+                  <p className="text-sm text-muted-foreground/70 mt-1">Select items to build an order</p>
                 </div>
               ) : (
                 orderItems.map((item, index) => (
-                  <div key={index} className="flex justify-between items-center bg-gray-50 hover:bg-gray-100 transition-colors p-3 rounded-xl border border-gray-100">
+                  <div key={index} className="flex justify-between items-center bg-muted/30 hover:bg-muted/50 transition-colors p-3 rounded-xl border border-border">
                     <div className="flex-1 min-w-0 pr-3">
-                      <p className="font-bold text-gray-900 truncate">{getMenuItemName(item.menuItemId)}</p>
-                      <p className="text-xs text-gray-500 mb-2 font-medium">₹{getMenuItemPrice(item.menuItemId)} × {item.quantity}</p>
+                      <p className="font-bold text-foreground truncate">{getMenuItemName(item.menuItemId)}</p>
+                      <p className="text-xs text-muted-foreground mb-2 font-medium">₹{getMenuItemPrice(item.menuItemId)} × {item.quantity}</p>
                       <Input
                         placeholder="Special instructions..."
                         value={item.specialInstructions || ''}
@@ -360,15 +422,15 @@ export default function OrdersPage() {
                           newOrderItems[index].specialInstructions = e.target.value;
                           setOrderItems(newOrderItems);
                         }}
-                        className="h-8 text-xs bg-white border-gray-200"
+                        className="h-8 text-xs bg-background border-border"
                       />
                     </div>
-                    <div className="flex items-center space-x-3 shrink-0 bg-white rounded-lg border border-gray-200 p-1 shadow-sm">
-                      <button onClick={() => handleRemoveItem(item.menuItemId)} className="w-7 h-7 flex items-center justify-center rounded bg-gray-50 hover:bg-gray-200 text-gray-700 font-bold transition-colors">
+                    <div className="flex items-center space-x-3 shrink-0 bg-background rounded-lg border border-border p-1 shadow-sm">
+                      <button onClick={() => handleRemoveItem(item.menuItemId)} className="w-7 h-7 flex items-center justify-center rounded bg-muted hover:bg-muted/80 text-foreground font-bold transition-colors">
                         -
                       </button>
                       <span className="w-4 text-center font-bold text-sm">{item.quantity}</span>
-                      <button onClick={() => handleAddItem({id: item.menuItemId})} className="w-7 h-7 flex items-center justify-center rounded bg-orange-50 hover:bg-orange-100 text-orange-700 font-bold transition-colors">
+                      <button onClick={() => handleAddItem({id: item.menuItemId})} className="w-7 h-7 flex items-center justify-center rounded bg-primary/10 hover:bg-primary/20 text-primary font-bold transition-colors">
                         +
                       </button>
                     </div>
@@ -377,10 +439,10 @@ export default function OrdersPage() {
               )}
             </div>
 
-            <div className="pt-5 border-t border-gray-100 mt-4 bg-white">
+            <div className="pt-5 border-t border-border mt-4 bg-background">
               <div className="flex justify-between items-end mb-5">
-                <span className="font-bold text-gray-500">Total Amount</span>
-                <span className="font-black text-3xl text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-600">
+                <span className="font-bold text-muted-foreground">Total Amount</span>
+                <span className="font-black text-3xl text-primary">
                   ₹{currentTotal.toFixed(2)}
                 </span>
               </div>
@@ -390,7 +452,7 @@ export default function OrdersPage() {
                 variant="gradient"
                 className="w-full h-14 text-lg shadow-lg shadow-orange-500/25"
               >
-                {isSubmitting ? 'Placing Order...' : 'Place Order 🚀'}
+                {isSubmitting ? 'Processing...' : (tables.find(t => t.id === selectedTable)?.status === 'OCCUPIED' ? 'Add to Order 📝' : 'Place Order 🚀')}
               </Button>
               {!selectedTable && orderItems.length > 0 && (
                 <p className="text-amber-500 text-sm font-semibold text-center mt-3 bg-amber-50 py-2 rounded-lg">
@@ -404,31 +466,31 @@ export default function OrdersPage() {
 
       {/* Active Orders Section */}
       <div className="pt-8">
-        <h2 className="text-2xl font-black text-gray-900 mb-6 flex items-center gap-2">
+        <h2 className="text-2xl font-black text-foreground mb-6 flex items-center gap-2">
           🔥 Active Orders
         </h2>
         {activeOrders.length === 0 ? (
-          <Card className="p-12 text-center border-dashed border-2">
+          <Card className="p-12 text-center border-dashed border">
             <div className="text-5xl mb-4">💤</div>
-            <p className="text-gray-500 font-medium">No active orders right now</p>
+            <p className="text-muted-foreground font-medium">No active orders right now</p>
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {activeOrders.map(order => (
-              <Card key={order.id} className="p-5 border-2 border-gray-100 hover:border-orange-200 transition-colors flex flex-col rounded-2xl shadow-sm hover:shadow-md">
-                <div className="flex justify-between items-center border-b border-gray-100 pb-3 mb-3">
+              <Card key={order.id} className="p-5 border border-border hover:border-primary/50 transition-colors flex flex-col rounded-2xl shadow-sm hover:shadow-md">
+                <div className="flex justify-between items-center border-b border-border pb-3 mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-black text-gray-700">
+                    <span className="w-8 h-8 rounded-full bg-muted flex items-center justify-center font-black text-foreground">
                       T{order.table?.number}
                     </span>
-                    <span className="text-sm text-gray-400 font-medium">#{order.id.slice(-4).toUpperCase()}</span>
+                    <span className="text-sm text-muted-foreground font-medium">#{order.id.slice(-4).toUpperCase()}</span>
                   </div>
                   <span className={`px-3 py-1 text-xs font-black rounded-full uppercase tracking-wider ${
-                    order.status === 'PENDING' ? 'bg-yellow-100 text-yellow-700' : 
-                    order.status === 'PREPARING' ? 'bg-blue-100 text-blue-700' : 
-                    order.status === 'READY' ? 'bg-green-100 text-green-700' : 
-                    order.status === 'SERVED' ? 'bg-indigo-100 text-indigo-700' : 
-                    'bg-gray-100 text-gray-700'
+                    order.status === 'PENDING' ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400' : 
+                    order.status === 'PREPARING' ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400' : 
+                    order.status === 'READY' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' : 
+                    order.status === 'SERVED' ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400' : 
+                    'bg-muted text-muted-foreground'
                   }`}>
                     {order.status}
                   </span>
@@ -437,26 +499,26 @@ export default function OrdersPage() {
                 <div className="flex-1 mb-5 space-y-2">
                   {order.items.slice(0, 3).map((item: any, i: number) => (
                     <div key={i} className="flex justify-between text-sm">
-                      <span className="font-medium text-gray-700 truncate pr-2">
-                        <span className="text-orange-600 font-bold mr-1">{item.quantity}×</span> 
+                      <span className="font-medium text-foreground truncate pr-2">
+                        <span className="text-primary font-bold mr-1">{item.quantity}×</span> 
                         {item.menuItem?.name || 'Unknown Item'}
                       </span>
-                      <span className="text-gray-500 font-medium whitespace-nowrap">
+                      <span className="text-muted-foreground font-medium whitespace-nowrap">
                         ₹{((item.quantity * (item.menuItem?.price || 0)).toFixed(2))}
                       </span>
                     </div>
                   ))}
                   {order.items.length > 3 && (
-                    <div className="text-xs font-bold text-orange-500 bg-orange-50 px-2 py-1 rounded inline-block mt-2">
+                    <div className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded inline-block mt-2">
                       + {order.items.length - 3} more items
                     </div>
                   )}
                 </div>
 
-                <div className="flex justify-between items-center pt-4 border-t border-gray-100 mt-auto">
+                <div className="flex justify-between items-center pt-4 border-t border-border mt-auto">
                   <div>
-                    <p className="text-xs text-gray-400 font-medium">Total</p>
-                    <span className="font-black text-lg text-gray-900">₹{order.totalAmount.toFixed(2)}</span>
+                    <p className="text-xs text-muted-foreground font-medium">Total</p>
+                    <span className="font-black text-lg text-foreground">₹{order.totalAmount.toFixed(2)}</span>
                   </div>
                   
                   {order.status === 'READY' && (
@@ -470,11 +532,21 @@ export default function OrdersPage() {
                   )}
                   {order.status === 'SERVED' && (
                     <Button
-                      onClick={() => handleUpdateOrderStatus(order.id, 'COMPLETED')}
+                      onClick={() => handleGenerateBill(order.id)}
                       size="sm"
-                      className="bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-md shadow-green-500/20"
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md shadow-indigo-500/20"
                     >
-                      ✅ Complete
+                      🧾 Generate Bill
+                    </Button>
+                  )}
+                  {(order.status === 'PENDING' || order.status === 'PREPARING') && (
+                    <Button
+                      onClick={() => handleCancelOrder(order.id)}
+                      size="sm"
+                      variant="outline"
+                      className="border-red-500/50 text-red-500 hover:bg-red-500/10 font-bold rounded-xl"
+                    >
+                      ❌ Cancel
                     </Button>
                   )}
                 </div>

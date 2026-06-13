@@ -15,7 +15,9 @@ export async function GET(request: Request) {
     const status = searchParams.get('status');
     const tableId = searchParams.get('tableId');
 
-    let whereClause: any = {};
+    let whereClause: any = {
+      table: { restaurantId: (auth.session.user as any).restaurantId }
+    };
     
     // Handle multiple statuses (comma-separated)
     if (status) {
@@ -96,13 +98,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Table not found' }, { status: 404 });
     }
 
-    if (table.status !== 'AVAILABLE') {
-      return NextResponse.json(
-        { error: 'Table is not available' },
-        { status: 400 }
-      );
-    }
-
     // Fetch all menu items to get prices and validate
     const menuItems = await prisma.menuItem.findMany({
       where: {
@@ -134,6 +129,44 @@ export async function POST(request: Request) {
         specialInstructions: item.specialInstructions || null
       };
     });
+
+    if (table.status === 'OCCUPIED') {
+      // Find the active order for this table
+      const activeOrder = await prisma.order.findFirst({
+        where: {
+          tableId,
+          status: { notIn: ['COMPLETED'] }
+        },
+        orderBy: { createdAt: 'desc' }
+      });
+
+      if (activeOrder) {
+        // Append items to the active order
+        const updatedOrder = await prisma.$transaction(async (tx) => {
+          await tx.orderItem.createMany({
+            data: orderItemsData.map(item => ({ ...item, orderId: activeOrder.id }))
+          });
+
+          return tx.order.update({
+            where: { id: activeOrder.id },
+            data: {
+              totalAmount: { increment: totalAmount },
+              status: 'PENDING' // Reset to PENDING so kitchen gets notified
+            },
+            include: {
+              table: true,
+              items: {
+                include: {
+                  menuItem: true
+                }
+              }
+            }
+          });
+        });
+
+        return NextResponse.json(updatedOrder, { status: 201 });
+      }
+    }
 
     // Create order and update table status in a transaction
     const order = await prisma.$transaction(async (tx) => {

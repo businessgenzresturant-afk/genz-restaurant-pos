@@ -60,26 +60,26 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="pb-4 border-b border-gray-200">
-        <h1 className="text-3xl font-black text-gray-900">⚙️ Settings</h1>
-        <p className="text-sm text-gray-500 mt-1">Configure your restaurant and system preferences</p>
+      <div className="pb-4 border-b border-border">
+        <h1 className="text-3xl font-black text-foreground">⚙️ Settings</h1>
+        <p className="text-sm text-muted-foreground mt-1">Configure your restaurant and system preferences</p>
       </div>
 
       {/* Restaurant Information */}
-      <Card className="p-6">
+      <Card className="p-6 border-border/60">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center text-2xl">
+          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl">
             🏪
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Restaurant Information</h2>
-            <p className="text-sm text-gray-500">Basic details about your restaurant</p>
+            <h2 className="text-xl font-bold text-foreground">Restaurant Information</h2>
+            <p className="text-sm text-muted-foreground">Basic details about your restaurant</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Restaurant Name</label>
+            <label className="block text-sm font-semibold text-foreground mb-2">Restaurant Name</label>
             <Input
               value={restaurantName}
               onChange={(e) => setRestaurantName(e.target.value)}
@@ -87,7 +87,7 @@ export default function SettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
+            <label className="block text-sm font-semibold text-foreground mb-2">Phone Number</label>
             <Input
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
@@ -95,7 +95,7 @@ export default function SettingsPage() {
             />
           </div>
           <div className="md:col-span-2">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Address</label>
+            <label className="block text-sm font-semibold text-foreground mb-2">Address</label>
             <Input
               value={restaurantAddress}
               onChange={(e) => setRestaurantAddress(e.target.value)}
@@ -103,7 +103,7 @@ export default function SettingsPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">GST Number</label>
+            <label className="block text-sm font-semibold text-foreground mb-2">GST Number</label>
             <Input
               value={gstNumber}
               onChange={(e) => setGstNumber(e.target.value)}
@@ -114,34 +114,34 @@ export default function SettingsPage() {
       </Card>
 
       {/* Tax & Currency Settings */}
-      <Card className="p-6">
+      <Card className="p-6 border-border/60">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center text-2xl">
+          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl">
             💰
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Tax & Currency</h2>
-            <p className="text-sm text-gray-500">Configure billing and pricing settings</p>
+            <h2 className="text-xl font-bold text-foreground">Tax & Currency</h2>
+            <p className="text-sm text-muted-foreground">Configure billing and pricing settings</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Tax Rate (%)</label>
+            <label className="block text-sm font-semibold text-foreground mb-2">Tax Rate (%)</label>
             <Input
               type="number"
               value={taxRate}
               onChange={(e) => setTaxRate(e.target.value)}
               placeholder="18"
             />
-            <p className="text-xs text-gray-500 mt-1">GST rate applied to bills</p>
+            <p className="text-xs text-muted-foreground mt-1">GST rate applied to bills</p>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Currency</label>
+            <label className="block text-sm font-semibold text-foreground mb-2">Currency</label>
             <select
               value={currency}
               onChange={(e) => setCurrency(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+              className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary"
             >
               <option value="INR">INR (₹)</option>
               <option value="USD">USD ($)</option>
@@ -149,11 +149,11 @@ export default function SettingsPage() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Time Zone</label>
+            <label className="block text-sm font-semibold text-foreground mb-2">Time Zone</label>
             <select
               value={timeZone}
               onChange={(e) => setTimeZone(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+              className="w-full px-4 py-2 bg-background border border-input rounded-lg focus:ring-2 focus:ring-primary"
             >
               <option value="Asia/Kolkata">India (IST)</option>
               <option value="America/New_York">New York (EST)</option>
@@ -164,14 +164,14 @@ export default function SettingsPage() {
       </Card>
 
       {/* Delivery Settings */}
-      <Card className="p-6">
+      <Card className="p-6 border-border/60">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center text-2xl">
+          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl">
             🛵
           </div>
           <div className="flex-1">
-            <h2 className="text-xl font-bold text-gray-900">Delivery Settings</h2>
-            <p className="text-sm text-gray-500">Configure home delivery options</p>
+            <h2 className="text-xl font-bold text-foreground">Delivery Settings</h2>
+            <p className="text-sm text-muted-foreground">Configure home delivery options</p>
           </div>
           <div className="flex items-center gap-2">
             <input
@@ -179,9 +179,9 @@ export default function SettingsPage() {
               id="enableDelivery"
               checked={enableDelivery}
               onChange={(e) => setEnableDelivery(e.target.checked)}
-              className="h-5 w-5 text-orange-600 rounded"
+              className="h-5 w-5 text-primary rounded border-input bg-background focus:ring-primary"
             />
-            <label htmlFor="enableDelivery" className="text-sm font-medium text-gray-700">
+            <label htmlFor="enableDelivery" className="text-sm font-medium text-foreground">
               Enable Delivery
             </label>
           </div>
@@ -190,75 +190,75 @@ export default function SettingsPage() {
         {enableDelivery && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Minimum Order Amount (₹)</label>
+              <label className="block text-sm font-semibold text-foreground mb-2">Minimum Order Amount (₹)</label>
               <Input
                 type="number"
                 value={minOrderAmount}
                 onChange={(e) => setMinOrderAmount(e.target.value)}
                 placeholder="300"
               />
-              <p className="text-xs text-gray-500 mt-1">Free delivery above this amount</p>
+              <p className="text-xs text-muted-foreground mt-1">Free delivery above this amount</p>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">Delivery Charge (₹)</label>
+              <label className="block text-sm font-semibold text-foreground mb-2">Delivery Charge (₹)</label>
               <Input
                 type="number"
                 value={deliveryCharge}
                 onChange={(e) => setDeliveryCharge(e.target.value)}
                 placeholder="0"
               />
-              <p className="text-xs text-gray-500 mt-1">Fixed delivery charge</p>
+              <p className="text-xs text-muted-foreground mt-1">Fixed delivery charge</p>
             </div>
           </div>
         )}
       </Card>
 
       {/* Print Settings */}
-      <Card className="p-6">
+      <Card className="p-6 border-border/60">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center text-2xl">
+          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl">
             🖨️
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Print Settings</h2>
-            <p className="text-sm text-gray-500">Configure receipt and KOT printing</p>
+            <h2 className="text-xl font-bold text-foreground">Print Settings</h2>
+            <p className="text-sm text-muted-foreground">Configure receipt and KOT printing</p>
           </div>
         </div>
 
         <div className="space-y-4">
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+          <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border border-border">
             <input
               type="checkbox"
               id="showLogo"
               checked={showLogo}
               onChange={(e) => setShowLogo(e.target.checked)}
-              className="h-5 w-5 text-orange-600 rounded"
+              className="h-5 w-5 text-primary rounded border-input bg-background focus:ring-primary"
             />
-            <label htmlFor="showLogo" className="text-sm font-medium text-gray-700">
+            <label htmlFor="showLogo" className="text-sm font-medium text-foreground">
               Show restaurant logo on bills
             </label>
           </div>
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+          <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border border-border">
             <input
               type="checkbox"
               id="showGST"
               checked={showGST}
               onChange={(e) => setShowGST(e.target.checked)}
-              className="h-5 w-5 text-orange-600 rounded"
+              className="h-5 w-5 text-primary rounded border-input bg-background focus:ring-primary"
             />
-            <label htmlFor="showGST" className="text-sm font-medium text-gray-700">
+            <label htmlFor="showGST" className="text-sm font-medium text-foreground">
               Show GST number on bills
             </label>
           </div>
-          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+          <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border border-border">
             <input
               type="checkbox"
               id="printKOTAuto"
               checked={printKOTAuto}
               onChange={(e) => setPrintKOTAuto(e.target.checked)}
-              className="h-5 w-5 text-orange-600 rounded"
+              className="h-5 w-5 text-primary rounded border-input bg-background focus:ring-primary"
             />
-            <label htmlFor="printKOTAuto" className="text-sm font-medium text-gray-700">
+            <label htmlFor="printKOTAuto" className="text-sm font-medium text-foreground">
               Auto-print KOT when order placed
             </label>
           </div>
@@ -266,29 +266,29 @@ export default function SettingsPage() {
       </Card>
 
       {/* User Info */}
-      <Card className="p-6">
+      <Card className="p-6 border-border/60">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center text-2xl">
+          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl">
             👤
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900">User Information</h2>
-            <p className="text-sm text-gray-500">Current logged in user details</p>
+            <h2 className="text-xl font-bold text-foreground">User Information</h2>
+            <p className="text-sm text-muted-foreground">Current logged in user details</p>
           </div>
         </div>
 
-        <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+        <div className="bg-muted/50 rounded-lg p-4 space-y-2 border border-border">
           <div className="flex justify-between">
-            <span className="text-sm font-medium text-gray-600">Name:</span>
-            <span className="text-sm font-bold text-gray-900">Admin User</span>
+            <span className="text-sm font-medium text-muted-foreground">Name:</span>
+            <span className="text-sm font-bold text-foreground">Admin User</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-sm font-medium text-gray-600">Email:</span>
-            <span className="text-sm font-bold text-gray-900">admin@genz.com</span>
+            <span className="text-sm font-medium text-muted-foreground">Email:</span>
+            <span className="text-sm font-bold text-foreground">admin@genz.com</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-sm font-medium text-gray-600">Role:</span>
-            <span className="text-sm font-bold text-orange-600">ADMIN</span>
+            <span className="text-sm font-medium text-muted-foreground">Role:</span>
+            <span className="text-sm font-bold text-primary">ADMIN</span>
           </div>
         </div>
       </Card>

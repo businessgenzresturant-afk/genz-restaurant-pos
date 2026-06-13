@@ -170,7 +170,7 @@ export function Dashboard() {
 
       {/* Quick Actions */}
       <div className="pt-4">
-        <h2 className="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2">
+        <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
           Quick Actions
         </h2>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

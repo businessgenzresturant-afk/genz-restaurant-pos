@@ -15,7 +15,9 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const statusParam = searchParams.get('status');
 
-    let whereClause: any = {};
+    let whereClause: any = {
+      table: { restaurantId: (auth.session.user as any).restaurantId }
+    };
     if (statusParam) {
       whereClause.status = statusParam.toUpperCase();
     }
@@ -77,9 +79,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
-    if (order.status !== 'COMPLETED') {
+    if (order.status !== 'COMPLETED' && order.status !== 'SERVED') {
       return NextResponse.json(
-        { error: 'Can only generate bill for completed orders' },
+        { error: 'Can only generate bill for served or completed orders' },
         { status: 400 }
       );
     }
@@ -103,28 +105,38 @@ export async function POST(request: Request) {
     const discount = 0; // Can be added later
     const total = subtotal + tax - discount;
 
-    const bill = await prisma.bill.create({
-      data: {
-        orderId,
-        tableId: order.tableId,
-        subtotal,
-        tax,
-        discount,
-        total,
-        status: 'PENDING'
-      },
-      include: {
-        order: {
-          include: {
-            items: {
-              include: {
-                menuItem: true
-              }
-            },
-            table: true
+    const bill = await prisma.$transaction(async (tx) => {
+      // If order is SERVED, mark it as COMPLETED
+      if (order.status === 'SERVED') {
+        await tx.order.update({
+          where: { id: orderId },
+          data: { status: 'COMPLETED' }
+        });
+      }
+
+      return tx.bill.create({
+        data: {
+          orderId,
+          tableId: order.tableId,
+          subtotal,
+          tax,
+          discount,
+          total,
+          status: 'PENDING'
+        },
+        include: {
+          order: {
+            include: {
+              items: {
+                include: {
+                  menuItem: true
+                }
+              },
+              table: true
+            }
           }
         }
-      }
+      });
     });
 
     return NextResponse.json(bill, { status: 201 });

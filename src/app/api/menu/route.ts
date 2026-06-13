@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const category = searchParams.get('category');
     
-    let whereClause: any = category ? { category } : {};
+    let whereClause: any = category ? { category, restaurantId: (auth.session.user as any).restaurantId } : { restaurantId: (auth.session.user as any).restaurantId };
     
     const menuItems = await prisma.menuItem.findMany({
       where: whereClause,
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
         price,
         imageUrl: imageUrl || '',
         available: available !== false,
-        restaurantId: restaurantId || 'genz-restaurant'
+        restaurantId: (auth.session.user as any).restaurantId
       }
     });
     return NextResponse.json(menuItem, { status: 201 });

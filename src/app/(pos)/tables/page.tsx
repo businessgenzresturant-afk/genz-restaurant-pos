@@ -18,7 +18,6 @@ export default function TablesPage() {
   // Form state for adding table
   const [number, setNumber] = useState('');
   const [capacity, setCapacity] = useState('');
-  const [restaurantId, setRestaurantId] = useState('genz-restaurant');
 
   useEffect(() => {
     fetchTables();
@@ -44,7 +43,7 @@ export default function TablesPage() {
 
   const handleAddTable = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!number || !capacity || !restaurantId) return;
+    if (!number || !capacity) return;
 
     setLoading(true);
     try {
@@ -54,7 +53,6 @@ export default function TablesPage() {
         body: JSON.stringify({
           number: parseInt(number),
           capacity: parseInt(capacity),
-          restaurantId,
         }),
       });
 
@@ -65,7 +63,6 @@ export default function TablesPage() {
       // Reset form
       setNumber('');
       setCapacity('');
-      setRestaurantId('');
       setShowAddModal(false);
       
       // Refresh tables
@@ -106,8 +103,8 @@ export default function TablesPage() {
     return (
       <div className="min-h-[600px] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full border-4 border-orange-600 border-t-transparent h-12 w-12 mx-auto"></div>
-          <p className="mt-4 text-gray-500">Loading seating arrangements...</p>
+          <div className="animate-spin rounded-full border-4 border-primary border-t-transparent h-12 w-12 mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading seating arrangements...</p>
         </div>
       </div>
     );
@@ -128,11 +125,11 @@ export default function TablesPage() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div className="pb-4 border-b border-gray-200">
+      <div className="pb-4 border-b border-border">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-black text-gray-900">Tables Management</h1>
-            <p className="text-sm text-gray-500 mt-1">Manage seating capacity and table statuses</p>
+            <h1 className="text-3xl font-black text-foreground">Tables Management</h1>
+            <p className="text-sm text-muted-foreground mt-1">Manage seating capacity and table statuses</p>
           </div>
           <Button
             onClick={() => setShowAddModal(true)}
@@ -146,20 +143,20 @@ export default function TablesPage() {
 
       {/* Add Table Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-70 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="bg-card rounded-2xl shadow-2xl border border-border w-full max-w-md p-6 animate-fade-in">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center text-2xl">
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl">
                 🪑
               </div>
               <div>
-                <h2 className="text-2xl font-black text-gray-900">Add New Table</h2>
-                <p className="text-sm text-gray-500">Add seating for your guests</p>
+                <h2 className="text-2xl font-black text-foreground">Add New Table</h2>
+                <p className="text-sm text-muted-foreground">Add seating for your guests</p>
               </div>
             </div>
             <form onSubmit={handleAddTable} className="space-y-4">
               <div>
-                <label htmlFor="tableNumber" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="tableNumber" className="block text-sm font-semibold text-foreground mb-2">
                   Table Number
                 </label>
                 <Input
@@ -172,7 +169,7 @@ export default function TablesPage() {
                 />
               </div>
               <div>
-                <label htmlFor="tableCapacity" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label htmlFor="tableCapacity" className="block text-sm font-semibold text-foreground mb-2">
                   Capacity (Seats)
                 </label>
                 <Input
@@ -182,18 +179,6 @@ export default function TablesPage() {
                   onChange={(e) => setCapacity(e.target.value)}
                   className="w-full"
                   placeholder="e.g., 4"
-                />
-              </div>
-              <div>
-                <label htmlFor="tableRestaurantId" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Restaurant ID
-                </label>
-                <Input
-                  id="tableRestaurantId"
-                  value={restaurantId}
-                  onChange={(e) => setRestaurantId(e.target.value)}
-                  className="w-full"
-                  placeholder="e.g., 1"
                 />
               </div>
               <div className="flex gap-3 pt-4">
@@ -215,18 +200,18 @@ export default function TablesPage() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && tableToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-70 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+          <div className="bg-card rounded-2xl shadow-2xl border border-border w-full max-w-md p-6 animate-fade-in">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-red-100 flex items-center justify-center text-2xl">
+              <div className="w-12 h-12 rounded-xl bg-destructive/10 flex items-center justify-center text-2xl">
                 ⚠️
               </div>
               <div>
-                <h2 className="text-2xl font-black text-gray-900">Delete Table</h2>
-                <p className="text-sm text-gray-500">This action cannot be undone</p>
+                <h2 className="text-2xl font-black text-foreground">Delete Table</h2>
+                <p className="text-sm text-muted-foreground">This action cannot be undone</p>
               </div>
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="text-muted-foreground mb-6">
               Are you sure you want to delete this table? This action cannot be undone.
             </p>
             <div className="flex gap-3">
@@ -255,10 +240,10 @@ export default function TablesPage() {
       {/* Tables Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {tables.length === 0 ? (
-          <Card className="p-12 text-center col-span-full">
+          <Card className="p-12 text-center col-span-full border-dashed bg-muted/50 border-border">
             <div className="text-6xl mb-4">🪑</div>
-            <p className="text-gray-500 mb-4">No tables found</p>
-            <p className="text-sm text-gray-400">
+            <p className="text-muted-foreground mb-4">No tables found</p>
+            <p className="text-sm text-muted-foreground/80">
               Add your first table to get started with seating arrangements
             </p>
           </Card>
@@ -266,28 +251,28 @@ export default function TablesPage() {
           tables.map((table) => (
             <div
               key={table.id}
-              className={`border-2 rounded-xl p-5 transition-all card-hover bg-white ${
+              className={`border-2 rounded-xl p-5 transition-all card-hover bg-card ${
                 table.status === 'AVAILABLE'
-                  ? 'border-green-200 shadow-sm shadow-green-100'
+                  ? 'border-green-500/20 shadow-sm shadow-green-500/10'
                   : table.status === 'OCCUPIED'
-                    ? 'border-red-200 shadow-sm shadow-red-100'
-                    : 'border-yellow-200 shadow-sm shadow-yellow-100'
+                    ? 'border-red-500/20 shadow-sm shadow-red-500/10'
+                    : 'border-yellow-500/20 shadow-sm shadow-yellow-500/10'
               }`}
             >
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold ${
                     table.status === 'AVAILABLE'
-                      ? 'bg-green-100 text-green-700'
+                      ? 'bg-green-500/10 text-green-500'
                       : table.status === 'OCCUPIED'
-                        ? 'bg-red-100 text-red-700'
-                        : 'bg-yellow-100 text-yellow-700'
+                        ? 'bg-red-500/10 text-red-500'
+                        : 'bg-yellow-500/10 text-yellow-500'
                   }`}>
                     T{table.number}
                   </div>
                   <div>
-                    <p className="text-sm text-gray-500">Capacity</p>
-                    <p className="font-bold text-gray-900">{table.capacity} Seats</p>
+                    <p className="text-sm text-muted-foreground">Capacity</p>
+                    <p className="font-bold text-foreground">{table.capacity} Seats</p>
                   </div>
                 </div>
                 <Button
@@ -297,24 +282,24 @@ export default function TablesPage() {
                   }}
                   variant="outline"
                   size="sm"
-                  className="text-xs text-red-600 hover:bg-red-50 border-transparent shadow-none"
+                  className="text-xs text-destructive hover:bg-destructive/10 border-transparent shadow-none"
                 >
                   🗑️
                 </Button>
               </div>
 
               <div className="flex items-center justify-between mt-6">
-                <span className={`px-3 py-1 text-xs font-bold rounded-full ${
+                <span className={`px-3 py-1 text-xs font-bold rounded-full border ${
                   table.status === 'AVAILABLE'
-                    ? 'bg-green-100 text-green-700'
+                    ? 'bg-green-500/10 text-green-500 border-green-500/20'
                     : table.status === 'OCCUPIED'
-                      ? 'bg-red-100 text-red-700'
-                      : 'bg-yellow-100 text-yellow-700'
+                      ? 'bg-red-500/10 text-red-500 border-red-500/20'
+                      : 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
                 }`}>
                   {table.status === 'AVAILABLE' ? '🟢 AVAILABLE' : table.status === 'OCCUPIED' ? '🔴 OCCUPIED' : '🟡 RESERVED'}
                 </span>
                 
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-muted-foreground/50">
                   Res ID: {table.restaurant?.id || table.restaurantId || 'N/A'}
                 </p>
               </div>
