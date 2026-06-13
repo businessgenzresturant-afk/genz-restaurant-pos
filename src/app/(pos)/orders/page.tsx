@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 
 export default function OrdersPage() {
+  const router = useRouter();
   const [tables, setTables] = useState<any[]>([]);
   const [menuItems, setMenuItems] = useState<any[]>([]);
   const [activeOrders, setActiveOrders] = useState<any[]>([]);
