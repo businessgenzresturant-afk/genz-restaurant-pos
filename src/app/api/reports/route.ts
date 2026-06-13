@@ -4,7 +4,7 @@ import { checkAuth } from '@/lib/api-auth';
 
 // GET reports data
 export async function GET(request: Request) {
-  const auth = await checkAuth();
+  const auth = await checkAuth(request);
   if (auth.error) return auth.error;
 
   try {

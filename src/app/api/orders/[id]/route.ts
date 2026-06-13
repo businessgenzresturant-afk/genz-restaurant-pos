@@ -6,7 +6,7 @@ export async function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const auth = await checkAuth();
+  const auth = await checkAuth(request);
   if (auth.error) return auth.error;
 
   try {
@@ -35,7 +35,7 @@ export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }
 ) {
-  const auth = await checkAuth();
+  const auth = await checkAuth(request);
   if (auth.error) return auth.error;
 
   try {

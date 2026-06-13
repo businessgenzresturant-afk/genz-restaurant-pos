@@ -4,7 +4,7 @@ import { checkAuth } from '@/lib/api-auth';
 
 // GET bills with optional filtering
 export async function GET(request: Request) {
-  const auth = await checkAuth();
+  const auth = await checkAuth(request);
   if (auth.error) return auth.error;
 
   try {
@@ -42,7 +42,7 @@ export async function GET(request: Request) {
 
 // POST create new bill
 export async function POST(request: Request) {
-  const auth = await checkAuth();
+  const auth = await checkAuth(request);
   if (auth.error) return auth.error;
 
   try {
