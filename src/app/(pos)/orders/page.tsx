@@ -199,7 +199,7 @@ export default function OrdersPage() {
     return (
       <div className="min-h-[600px] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full border-4 border-violet-600 border-t-transparent h-12 w-12 mx-auto"></div>
+          <div className="animate-spin rounded-full border-4 border-orange-600 border-t-transparent h-12 w-12 mx-auto"></div>
           <p className="mt-4 text-gray-500">Loading your ordering station...</p>
         </div>
       </div>
@@ -231,7 +231,7 @@ export default function OrdersPage() {
         <div className="lg:col-span-2 space-y-6">
           <Card className="p-5 border-2 border-gray-100 shadow-sm rounded-2xl">
             <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-full bg-violet-100 text-violet-600 flex items-center justify-center text-sm">1</span>
+              <span className="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-sm">1</span>
               Select Table
             </h2>
             <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-3">
@@ -242,10 +242,10 @@ export default function OrdersPage() {
                   disabled={table.status === 'OCCUPIED'}
                   className={`p-3 rounded-xl border-2 text-center transition-all duration-200 ${
                     selectedTable === table.id
-                      ? 'border-violet-600 bg-gradient-to-br from-violet-600 to-pink-600 text-white shadow-lg shadow-violet-500/30 transform scale-105'
+                      ? 'border-orange-600 bg-gradient-to-br from-orange-600 to-amber-600 text-white shadow-lg shadow-orange-500/30 transform scale-105'
                       : table.status === 'OCCUPIED'
                         ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed opacity-60'
-                        : 'border-gray-200 hover:border-violet-300 hover:bg-violet-50 text-gray-700'
+                        : 'border-gray-200 hover:border-orange-300 hover:bg-orange-50 text-gray-700'
                   }`}
                 >
                   <span className="block font-bold text-lg">T{table.number}</span>
@@ -257,7 +257,7 @@ export default function OrdersPage() {
 
           <Card className="p-5 border-2 border-gray-100 shadow-sm rounded-2xl">
             <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-              <span className="w-8 h-8 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-sm">2</span>
+              <span className="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-sm">2</span>
               Select Items
             </h2>
             
@@ -269,7 +269,7 @@ export default function OrdersPage() {
                   onClick={() => setSelectedCategory(category)}
                   className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all ${
                     selectedCategory === category
-                      ? 'bg-gradient-to-r from-violet-600 to-pink-600 text-white shadow-md shadow-violet-500/20'
+                      ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-md shadow-orange-500/20'
                       : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
                   }`}
                 >
@@ -286,13 +286,13 @@ export default function OrdersPage() {
                   <button
                     key={item.id}
                     onClick={() => handleAddItem(item)}
-                    className="p-4 rounded-xl border-2 border-gray-100 hover:border-violet-300 hover:bg-violet-50 text-left transition-all flex flex-col h-full justify-between card-hover group"
+                    className="p-4 rounded-xl border-2 border-gray-100 hover:border-orange-300 hover:bg-orange-50 text-left transition-all flex flex-col h-full justify-between card-hover group"
                   >
                     <div>
-                      <span className="block font-bold text-gray-900 group-hover:text-violet-700 transition-colors leading-tight">{item.name}</span>
+                      <span className="block font-bold text-gray-900 group-hover:text-orange-700 transition-colors leading-tight">{item.name}</span>
                       <span className="text-xs text-gray-500 mt-1 block">{item.category}</span>
                     </div>
-                    <span className="block font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-pink-600 mt-3">
+                    <span className="block font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-600 mt-3">
                       ₹{item.price.toFixed(2)}
                     </span>
                   </button>
@@ -303,11 +303,11 @@ export default function OrdersPage() {
         </div>
 
         <div className="space-y-6 lg:sticky lg:top-6 h-fit">
-          <Card className="p-5 border-2 border-violet-100 shadow-xl shadow-violet-100/50 rounded-2xl flex flex-col h-[700px]">
+          <Card className="p-5 border-2 border-orange-100 shadow-xl shadow-orange-100/50 rounded-2xl flex flex-col h-[700px]">
             <h2 className="text-xl font-bold mb-4 pb-3 border-b border-gray-100 flex items-center justify-between">
               <span>Current Order</span>
               {selectedTable && (
-                <span className="px-3 py-1 bg-violet-100 text-violet-700 rounded-full text-sm font-bold">
+                <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-sm font-bold">
                   Table {tables.find(t => t.id === selectedTable)?.number}
                 </span>
               )}
@@ -315,7 +315,7 @@ export default function OrdersPage() {
 
             {/* Customer Data Capture */}
             {selectedTable && (
-              <div className="mb-4 p-3 bg-gradient-to-br from-violet-50 to-pink-50 rounded-xl border border-violet-100">
+              <div className="mb-4 p-3 bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl border border-orange-100">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-lg">👤</span>
                   <span className="font-bold text-gray-700 text-sm">Customer Details</span>
@@ -367,7 +367,7 @@ export default function OrdersPage() {
                         -
                       </button>
                       <span className="w-4 text-center font-bold text-sm">{item.quantity}</span>
-                      <button onClick={() => handleAddItem({id: item.menuItemId})} className="w-7 h-7 flex items-center justify-center rounded bg-violet-50 hover:bg-violet-100 text-violet-700 font-bold transition-colors">
+                      <button onClick={() => handleAddItem({id: item.menuItemId})} className="w-7 h-7 flex items-center justify-center rounded bg-orange-50 hover:bg-orange-100 text-orange-700 font-bold transition-colors">
                         +
                       </button>
                     </div>
@@ -379,7 +379,7 @@ export default function OrdersPage() {
             <div className="pt-5 border-t border-gray-100 mt-4 bg-white">
               <div className="flex justify-between items-end mb-5">
                 <span className="font-bold text-gray-500">Total Amount</span>
-                <span className="font-black text-3xl text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-pink-600">
+                <span className="font-black text-3xl text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-600">
                   ₹{currentTotal.toFixed(2)}
                 </span>
               </div>
@@ -387,12 +387,12 @@ export default function OrdersPage() {
                 onClick={handlePlaceOrder}
                 disabled={!selectedTable || orderItems.length === 0 || isSubmitting}
                 variant="gradient"
-                className="w-full h-14 text-lg shadow-lg shadow-violet-500/25"
+                className="w-full h-14 text-lg shadow-lg shadow-orange-500/25"
               >
                 {isSubmitting ? 'Placing Order...' : 'Place Order 🚀'}
               </Button>
               {!selectedTable && orderItems.length > 0 && (
-                <p className="text-pink-500 text-sm font-semibold text-center mt-3 bg-pink-50 py-2 rounded-lg">
+                <p className="text-amber-500 text-sm font-semibold text-center mt-3 bg-amber-50 py-2 rounded-lg">
                   ⚠️ Please select a table first
                 </p>
               )}
@@ -414,7 +414,7 @@ export default function OrdersPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {activeOrders.map(order => (
-              <Card key={order.id} className="p-5 border-2 border-gray-100 hover:border-violet-200 transition-colors flex flex-col rounded-2xl shadow-sm hover:shadow-md">
+              <Card key={order.id} className="p-5 border-2 border-gray-100 hover:border-orange-200 transition-colors flex flex-col rounded-2xl shadow-sm hover:shadow-md">
                 <div className="flex justify-between items-center border-b border-gray-100 pb-3 mb-3">
                   <div className="flex items-center gap-2">
                     <span className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center font-black text-gray-700">
@@ -437,7 +437,7 @@ export default function OrdersPage() {
                   {order.items.slice(0, 3).map((item: any, i: number) => (
                     <div key={i} className="flex justify-between text-sm">
                       <span className="font-medium text-gray-700 truncate pr-2">
-                        <span className="text-violet-600 font-bold mr-1">{item.quantity}×</span> 
+                        <span className="text-orange-600 font-bold mr-1">{item.quantity}×</span> 
                         {item.menuItem?.name || 'Unknown Item'}
                       </span>
                       <span className="text-gray-500 font-medium whitespace-nowrap">
@@ -446,7 +446,7 @@ export default function OrdersPage() {
                     </div>
                   ))}
                   {order.items.length > 3 && (
-                    <div className="text-xs font-bold text-violet-500 bg-violet-50 px-2 py-1 rounded inline-block mt-2">
+                    <div className="text-xs font-bold text-orange-500 bg-orange-50 px-2 py-1 rounded inline-block mt-2">
                       + {order.items.length - 3} more items
                     </div>
                   )}

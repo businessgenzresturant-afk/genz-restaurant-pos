@@ -205,7 +205,7 @@ export default function BillsPage() {
             <div className="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-100">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm text-gray-600">Total Amount Due</span>
-                <span className="font-black text-2xl text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-pink-600">
+                <span className="font-black text-2xl text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-600">
                   ₹{selectedBill.total.toFixed(2)}
                 </span>
               </div>
@@ -241,7 +241,7 @@ export default function BillsPage() {
                 <button
                   onClick={() => setPaymentConfirmed('UPI' as any)}
                   className={`p-3 rounded-xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${
-                    paymentConfirmed === ('UPI' as any) ? 'border-violet-500 bg-violet-50' : 'border-gray-200 hover:border-violet-200 hover:bg-gray-50'
+                    paymentConfirmed === ('UPI' as any) ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-orange-200 hover:bg-gray-50'
                   }`}
                 >
                   <span className="text-2xl">📱</span>
@@ -252,7 +252,7 @@ export default function BillsPage() {
 
             {/* UPI QR Code Section */}
             {paymentConfirmed === ('UPI' as any) && (
-              <div className="bg-gradient-to-br from-violet-50 to-pink-50 rounded-xl p-4 mb-6 flex flex-col items-center animate-fade-in">
+              <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-4 mb-6 flex flex-col items-center animate-fade-in">
                 <div className="bg-white p-2 rounded-lg shadow-sm mb-2">
                   <QRCodeSVG
                     value={generateUPIPayload(selectedBill)}
@@ -335,7 +335,7 @@ export default function BillsPage() {
               </Button>
             </div>
 
-            <div id="print-receipt" className="mb-6 p-6 bg-gradient-to-br from-gray-50 to-white rounded-2xl border-2 border-violet-200 print:bg-white print:border-none print:w-full print:max-w-full print:p-4">
+            <div id="print-receipt" className="mb-6 p-6 bg-gradient-to-br from-gray-50 to-white rounded-2xl border-2 border-orange-200 print:bg-white print:border-none print:w-full print:max-w-full print:p-4">
               <div className="text-center mb-4">
                 <div className="flex justify-center mb-3">
                   <div className="w-32">
@@ -414,9 +414,9 @@ export default function BillsPage() {
                     <span>-₹{selectedBill.discount.toFixed(2)}</span>
                   </div>
                 )}
-                <div className="flex justify-between font-black text-lg mt-3 pt-3 border-t-2 border-gray-300 bg-gradient-to-r from-violet-50 to-pink-50 p-2 rounded">
+                <div className="flex justify-between font-black text-lg mt-3 pt-3 border-t-2 border-gray-300 bg-gradient-to-r from-orange-50 to-amber-50 p-2 rounded">
                   <span>TOTAL</span>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-pink-600">₹{selectedBill.total.toFixed(2)}</span>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-600">₹{selectedBill.total.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -460,7 +460,7 @@ export default function BillsPage() {
                       setShowPaymentModal(true);
                     }}
                     variant="gradient"
-                    className="bg-gradient-to-r from-violet-600 to-pink-600"
+                    className="bg-gradient-to-r from-orange-600 to-amber-600"
                   >
                     💳 Make Payment
                   </Button>

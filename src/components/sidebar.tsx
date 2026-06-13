@@ -21,12 +21,12 @@ export default function Sidebar() {
     <aside className="w-72 h-screen flex-shrink-0 bg-white/70 backdrop-blur-2xl border-r border-white/40 shadow-[4px_0_24px_-12px_rgba(0,0,0,0.1)] flex flex-col z-20 sticky top-0">
       <div className="p-6 border-b border-gray-200/50">
         <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-pink-600 flex items-center justify-center shadow-lg shadow-violet-500/30">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-lg shadow-orange-500/30">
             <span className="text-white font-black text-xl">Z</span>
           </div>
           <div>
             <h1 className="font-black text-xl text-gray-900 leading-tight tracking-tight">Gen-Z POS</h1>
-            <p className="text-xs font-bold text-violet-600 uppercase tracking-widest">Premium</p>
+            <p className="text-xs font-bold text-orange-500 uppercase tracking-widest">Premium</p>
           </div>
         </Link>
       </div>
@@ -40,7 +40,7 @@ export default function Sidebar() {
               href={item.href}
               className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300 group relative overflow-hidden ${
                 isActive
-                  ? 'bg-gradient-to-r from-violet-600 to-pink-600 text-white shadow-xl shadow-violet-500/25 scale-[1.02]'
+                  ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-xl shadow-orange-500/25 scale-[1.02]'
                   : 'text-gray-600 hover:bg-gray-100/80 hover:text-gray-900 hover:scale-[1.01]'
               }`}
             >
@@ -63,7 +63,7 @@ export default function Sidebar() {
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center justify-between">
           <div>
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Powered by</p>
-            <p className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-pink-600">RagsPro™</p>
+            <p className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-amber-500">RagsPro™</p>
           </div>
           <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-black text-gray-500">
             v1

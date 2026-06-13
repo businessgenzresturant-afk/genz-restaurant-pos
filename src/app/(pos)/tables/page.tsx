@@ -106,7 +106,7 @@ export default function TablesPage() {
     return (
       <div className="min-h-[600px] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full border-4 border-violet-600 border-t-transparent h-12 w-12 mx-auto"></div>
+          <div className="animate-spin rounded-full border-4 border-orange-600 border-t-transparent h-12 w-12 mx-auto"></div>
           <p className="mt-4 text-gray-500">Loading seating arrangements...</p>
         </div>
       </div>
@@ -149,7 +149,7 @@ export default function TablesPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-70 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-100 to-pink-100 flex items-center justify-center text-2xl">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center text-2xl">
                 🪑
               </div>
               <div>

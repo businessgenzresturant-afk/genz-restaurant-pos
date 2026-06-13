@@ -200,7 +200,7 @@ export default function KOTPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-start">
           {orderGroups.map(([tableNumber, tableOrders]) => (
             <Card key={tableNumber} className="overflow-hidden border-2 border-gray-100 shadow-lg shadow-gray-200/50 rounded-2xl hover:border-orange-200 transition-colors">
-              <div className="bg-gradient-to-r from-orange-500 to-pink-500 p-4 text-white flex justify-between items-center">
+              <div className="bg-gradient-to-r from-orange-500 to-amber-500 p-4 text-white flex justify-between items-center">
                 <h2 className="text-2xl font-black tracking-tight">Table {tableNumber}</h2>
                 <div className="bg-white/20 px-3 py-1 rounded-full text-sm font-bold backdrop-blur-md">
                   {tableOrders.length} Order{tableOrders.length !== 1 ? 's' : ''}

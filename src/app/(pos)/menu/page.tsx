@@ -218,7 +218,7 @@ export default function MenuPage() {
     return (
       <div className="min-h-[600px] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full border-4 border-violet-600 border-t-transparent h-12 w-12 mx-auto"></div>
+          <div className="animate-spin rounded-full border-4 border-orange-600 border-t-transparent h-12 w-12 mx-auto"></div>
           <p className="mt-4 text-gray-500">Loading delicious menu...</p>
         </div>
       </div>
@@ -259,7 +259,7 @@ export default function MenuPage() {
       {/* Search Bar */}
       <Card className="p-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-100 to-pink-100 flex items-center justify-center text-xl">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center text-xl">
             🔍
           </div>
           <div className="flex-1">
@@ -290,7 +290,7 @@ export default function MenuPage() {
             onClick={() => setSelectedCategory(category)}
             className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all ${
               selectedCategory === category
-                ? 'bg-gradient-to-r from-violet-600 to-pink-600 text-white shadow-lg shadow-violet-500/30'
+                ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-lg shadow-orange-500/30'
                 : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
             }`}
           >
@@ -302,13 +302,13 @@ export default function MenuPage() {
       {/* Results count */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-600">
-          Showing <span className="font-bold text-violet-600">{filteredItems.length}</span> of{' '}
-          <span className="font-bold text-pink-600">{menuItems.length}</span> items
+          Showing <span className="font-bold text-orange-600">{filteredItems.length}</span> of{' '}
+          <span className="font-bold text-amber-600">{menuItems.length}</span> items
         </p>
         {(searchQuery || selectedCategory !== 'All') && (
           <button
             onClick={() => { setSearchQuery(''); setSelectedCategory('All'); }}
-            className="text-sm text-violet-600 hover:text-violet-800 font-medium"
+            className="text-sm text-orange-600 hover:text-orange-800 font-medium"
           >
             Clear filters
           </button>
@@ -320,7 +320,7 @@ export default function MenuPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-70 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-100 to-pink-100 flex items-center justify-center text-2xl">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center text-2xl">
                 ➕
               </div>
               <div>
@@ -349,7 +349,7 @@ export default function MenuPage() {
                   id="itemCategory"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 >
                   <option value="">Select a category</option>
                   {CATEGORIES.filter(c => c !== 'All').map((cat) => (
@@ -388,7 +388,7 @@ export default function MenuPage() {
                   id="itemAvailable"
                   checked={available}
                   onChange={(e) => setAvailable(e.target.checked)}
-                  className="h-5 w-5 text-violet-600 rounded"
+                  className="h-5 w-5 text-orange-600 rounded"
                 />
                 <label htmlFor="itemAvailable" className="text-sm font-medium text-gray-700">
                   Available for order
@@ -423,7 +423,7 @@ export default function MenuPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-70 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-100 to-pink-100 flex items-center justify-center text-2xl">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center text-2xl">
                 ✏️
               </div>
               <div>
@@ -452,7 +452,7 @@ export default function MenuPage() {
                   id="editItemCategory"
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 >
                   {CATEGORIES.filter(c => c !== 'All').map((cat) => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -490,7 +490,7 @@ export default function MenuPage() {
                   id="editItemAvailable"
                   checked={available}
                   onChange={(e) => setAvailable(e.target.checked)}
-                  className="h-5 w-5 text-violet-600 rounded"
+                  className="h-5 w-5 text-orange-600 rounded"
                 />
                 <label htmlFor="editItemAvailable" className="text-sm font-medium text-gray-700">
                   Available for order
@@ -597,7 +597,7 @@ export default function MenuPage() {
               </div>
 
               <div className="flex items-center justify-between mt-4">
-                <p className="text-xl font-black bg-gradient-to-r from-violet-600 to-pink-600 bg-clip-text text-transparent">
+                <p className="text-xl font-black bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
                   ₹{item.price.toFixed(2)}
                 </p>
                 <div className="flex items-center gap-2">

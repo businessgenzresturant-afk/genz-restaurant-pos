@@ -60,10 +60,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
       <Card className="w-full max-w-md p-8 space-y-6 shadow-xl border-0 bg-white/90 backdrop-blur-sm">
         <div className="text-center space-y-2">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 mb-4">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 mb-4">
             <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 36v-3m-3 3h.01M9 17h.01M9 21h.01M15 17h.01M15 21h.01M5.01 17h.01M5.01 21h.01" />
             </svg>
@@ -80,7 +80,7 @@ export default function LoginPage() {
             <Input
               id="email"
               {...register('email')}
-              className={`${errors.email ? 'border-red-500 focus:ring-red-500' : 'focus:ring-indigo-500'} w-full`}
+              className={`${errors.email ? 'border-red-500 focus:ring-red-500' : 'focus:ring-orange-500'} w-full`}
               placeholder="Enter your email"
             />
             {errors.email && (
@@ -95,7 +95,7 @@ export default function LoginPage() {
               id="password"
               type="password"
               {...register('password')}
-              className={`${errors.password ? 'border-red-500 focus:ring-red-500' : 'focus:ring-indigo-500'} w-full`}
+              className={`${errors.password ? 'border-red-500 focus:ring-red-500' : 'focus:ring-orange-500'} w-full`}
               placeholder="Enter your password"
             />
             {errors.password && (
@@ -104,7 +104,7 @@ export default function LoginPage() {
           </div>
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-2.5"
+            className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold py-2.5"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -124,7 +124,7 @@ export default function LoginPage() {
         {/* Demo Accounts Section */}
         <div className="pt-4 border-t border-gray-200">
           <p className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-            <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             Demo Accounts (Click to use):
@@ -134,17 +134,17 @@ export default function LoginPage() {
               <button
                 key={account.email}
                 onClick={() => fillDemoCredentials(account.email, account.password)}
-                className="w-full text-left p-3 rounded-lg bg-gray-50 hover:bg-indigo-50 border border-gray-200 hover:border-indigo-300 transition-all duration-200 group"
+                className="w-full text-left p-3 rounded-lg bg-gray-50 hover:bg-orange-50 border border-gray-200 hover:border-orange-300 transition-all duration-200 group"
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-semibold text-gray-900 group-hover:text-indigo-900">
+                    <p className="text-sm font-semibold text-gray-900 group-hover:text-orange-900">
                       {account.role}
                     </p>
-                    <p className="text-xs text-gray-600 group-hover:text-indigo-700">{account.email}</p>
+                    <p className="text-xs text-gray-600 group-hover:text-orange-600">{account.email}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs font-mono text-gray-500 group-hover:text-indigo-600 bg-white px-2 py-1 rounded">
+                    <p className="text-xs font-mono text-gray-500 group-hover:text-orange-500 bg-white px-2 py-1 rounded">
                       {account.password}
                     </p>
                   </div>
@@ -157,7 +157,7 @@ export default function LoginPage() {
         <div className="pt-4 border-t border-gray-200 text-center">
           <p className="text-xs text-gray-500">
             Powered by{' '}
-            <span className="font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            <span className="font-semibold bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">
               RagsPro
             </span>
           </p>

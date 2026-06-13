@@ -54,7 +54,7 @@ export function Dashboard() {
     return (
       <div className="min-h-[600px] flex items-center justify-center">
         <div className="relative">
-          <div className="animate-spin rounded-full border-4 border-violet-200 border-t-violet-600 h-16 w-16"></div>
+          <div className="animate-spin rounded-full border-4 border-orange-200 border-t-orange-600 h-16 w-16"></div>
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-2xl">🍽️</span>
           </div>
@@ -68,7 +68,7 @@ export function Dashboard() {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">{title}</p>
-          <p className="text-4xl font-black mt-2 bg-gradient-to-r from-violet-600 to-pink-600 bg-clip-text text-transparent">
+          <p className="text-4xl font-black mt-2 bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
             {value}
           </p>
         </div>
@@ -84,10 +84,10 @@ export function Dashboard() {
     <Link href={href}>
       <Card className="p-6 card-hover bg-white border-0 shadow-lg shadow-gray-200/50 cursor-pointer group animate-slide-up">
         <div className="flex items-start justify-between mb-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-100 to-pink-100 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-300">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-300">
             {icon}
           </div>
-          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-violet-600 to-pink-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-600 to-amber-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
@@ -108,7 +108,7 @@ export function Dashboard() {
           <p className="text-sm text-gray-500 mt-1">Gen-Z Restaurant Overview</p>
         </div>
         <div className="flex items-center gap-3">
-          <span className="px-4 py-2 bg-gradient-to-r from-violet-600 to-pink-600 text-white text-sm font-bold rounded-full shadow-lg">
+          <span className="px-4 py-2 bg-gradient-to-r from-orange-600 to-amber-600 text-white text-sm font-bold rounded-full shadow-lg">
             Live
           </span>
         </div>
@@ -121,14 +121,14 @@ export function Dashboard() {
           value={`${stats?.occupiedTables ?? 0}/${stats?.totalTables ?? 0}`}
           subtext={`${(stats?.totalTables ?? 0) - (stats?.occupiedTables ?? 0)} tables available`}
           emoji="🪑"
-          color="violet"
+          color="orange"
         />
         <StatCard
           title="Active Orders"
           value={stats?.pendingOrders ?? 0}
           subtext="Orders in progress"
           emoji="📋"
-          color="pink"
+          color="amber"
         />
         <StatCard
           title="Today's Revenue"
