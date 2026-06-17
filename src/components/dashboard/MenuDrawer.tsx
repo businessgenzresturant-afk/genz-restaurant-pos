@@ -76,13 +76,13 @@ export function MenuDrawer({ isOpen, onClose, menuItems, tableId, onPlaceOrder }
   return (
     <>
       <div className="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm animate-fade-in" onClick={onClose} />
-      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] max-w-6xl h-[85vh] bg-background border border-border shadow-2xl rounded-3xl z-50 overflow-hidden animate-fade-in flex flex-col md:flex-row">
+      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[95vw] max-w-6xl h-[85vh] bg-background border border-border shadow-2xl rounded-3xl z-50 overflow-hidden animate-fade-in flex flex-row">
         
         {/* Left Side: Menu Selection */}
         <div className="flex-1 flex flex-col h-full bg-muted/10 border-r border-border min-h-0">
-          <div className="p-4 border-b border-border bg-background flex justify-between items-center">
+          <div className="p-4 border-b border-border bg-background grid grid-cols-3 items-center">
             <h2 className="text-2xl font-black text-foreground">Menu</h2>
-            <div className="relative w-64">
+            <div className="relative w-full max-w-xs justify-self-center">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input 
                 placeholder="Search items..." 
@@ -91,6 +91,7 @@ export function MenuDrawer({ isOpen, onClose, menuItems, tableId, onPlaceOrder }
                 className="pl-9 h-10 rounded-full"
               />
             </div>
+            <div className="justify-self-end" />
           </div>
 
           {/* Categories */}
@@ -116,21 +117,52 @@ export function MenuDrawer({ isOpen, onClose, menuItems, tableId, onPlaceOrder }
               <p className="text-muted-foreground text-center py-10">No items found.</p>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                {filteredItems.map(item => (
-                  <button
-                    key={item.id}
-                    onClick={() => handleAddItem(item)}
-                    className="p-4 rounded-xl border border-border hover:border-primary/50 hover:bg-primary/5 text-left transition-all flex flex-col h-full justify-between bg-card group"
-                  >
-                    <div>
-                      <span className="block font-bold text-foreground group-hover:text-primary leading-tight">{item.name}</span>
-                      <span className="text-xs text-muted-foreground mt-1 block">{item.category}</span>
+                {filteredItems.map(item => {
+                  const cartItem = cart.find(i => i.menuItemId === item.id);
+                  const quantity = cartItem ? cartItem.quantity : 0;
+                  
+                  return (
+                    <div
+                      key={item.id}
+                      className={`relative p-4 rounded-xl border transition-all flex flex-col h-full justify-between bg-card group ${
+                        quantity > 0 
+                          ? 'border-primary bg-primary/[0.02] shadow-md shadow-primary/5' 
+                          : 'border-border hover:border-primary/40'
+                      }`}
+                    >
+                      {/* Clickable Area to Add Item */}
+                      <div 
+                        className="cursor-pointer flex-1"
+                        onClick={() => handleAddItem(item)}
+                      >
+                        <span className="block font-bold text-foreground group-hover:text-primary leading-tight transition-colors">{item.name}</span>
+                        <span className="text-xs text-muted-foreground mt-1 block">{item.category}</span>
+                        <span className="block font-black text-primary mt-3">
+                          ₹{item.price.toFixed(2)}
+                        </span>
+                      </div>
+
+                      {/* Direct Quantity Adjuster on the Card */}
+                      {quantity > 0 && (
+                        <div className="absolute top-2 right-2 flex items-center gap-1 bg-background border border-border p-0.5 rounded-lg shadow-sm" onClick={(e) => e.stopPropagation()}>
+                          <button 
+                            onClick={() => handleRemoveItem(item.id)} 
+                            className="w-5 h-5 flex items-center justify-center rounded bg-muted hover:bg-muted/80 text-foreground font-black text-xs transition-colors"
+                          >
+                            -
+                          </button>
+                          <span className="w-4 text-center font-black text-xs text-foreground">{quantity}</span>
+                          <button 
+                            onClick={() => handleAddItem(item)} 
+                            className="w-5 h-5 flex items-center justify-center rounded bg-primary/10 hover:bg-primary/20 text-primary font-black text-xs transition-colors"
+                          >
+                            +
+                          </button>
+                        </div>
+                      )}
                     </div>
-                    <span className="block font-black text-primary mt-3">
-                      ₹{item.price.toFixed(2)}
-                    </span>
-                  </button>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
