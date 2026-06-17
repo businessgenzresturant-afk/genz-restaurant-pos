@@ -20,6 +20,9 @@ import { MenuDrawer } from './MenuDrawer';
 import { TableSelectModal } from './TableSelectModal';
 import { GuestCountModal } from './GuestCountModal';
 import { CustomerDetailsModal } from './CustomerDetailsModal';
+import { TablesOccupiedModal } from './TablesOccupiedModal';
+import { KitchenQueueModal } from './KitchenQueueModal';
+import { TodayRevenueModal } from './TodayRevenueModal';
 import { toast } from 'sonner';
 
 export function Dashboard() {
@@ -36,6 +39,10 @@ export function Dashboard() {
   
   const [isTableDrawerOpen, setTableDrawerOpen] = useState(false);
   const [isMenuDrawerOpen, setMenuDrawerOpen] = useState(false);
+
+  const [isTablesOccupiedModalOpen, setTablesOccupiedModalOpen] = useState(false);
+  const [isKitchenQueueModalOpen, setKitchenQueueModalOpen] = useState(false);
+  const [isTodayRevenueModalOpen, setTodayRevenueModalOpen] = useState(false);
 
   // Selected state
   const [selectedTable, setSelectedTable] = useState<any | null>(null);
@@ -101,6 +108,7 @@ export function Dashboard() {
 
   const handleSelectTable = (table: any, isOccupied: boolean) => {
     setTableSelectModalOpen(false);
+    setTablesOccupiedModalOpen(false);
     setSelectedTable(table);
     
     if (isOccupied) {
@@ -110,6 +118,21 @@ export function Dashboard() {
       setSelectedActiveOrder(null);
       setGuestCountModalOpen(true);
     }
+  };
+
+  const handleManageOrder = (order: any) => {
+    setKitchenQueueModalOpen(false);
+    setTablesOccupiedModalOpen(false);
+    
+    if (order.tableId) {
+      const tbl = tables.find(t => t.id === order.tableId);
+      setSelectedTable(tbl || null);
+      setSelectedActiveOrder(null);
+    } else {
+      setSelectedTable(null);
+      setSelectedActiveOrder(order);
+    }
+    setTableDrawerOpen(true);
   };
 
   const handleGuestCountContinue = (details: any) => {
@@ -229,26 +252,35 @@ export function Dashboard() {
       <div className="space-y-8">
         {/* Live Stats Row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="p-6 bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20 shadow-md shadow-blue-500/5">
+          <Card 
+            onClick={() => setTablesOccupiedModalOpen(true)}
+            className="p-6 bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20 shadow-md shadow-blue-500/5 cursor-pointer hover:scale-[1.02] hover:border-blue-500/40 transition-all select-none group active:scale-[0.99]"
+          >
             <div className="flex items-center justify-between">
-              <p className="text-sm font-bold text-blue-700 dark:text-blue-400 opacity-90 uppercase tracking-wider">Tables Occupied</p>
-              <Users className="w-5 h-5 text-blue-500" />
+              <p className="text-sm font-bold text-blue-700 dark:text-blue-400 opacity-90 uppercase tracking-wider group-hover:text-blue-500 transition-colors">Tables Occupied</p>
+              <Users className="w-5 h-5 text-blue-500 group-hover:scale-110 transition-transform" />
             </div>
             <p className="text-4xl font-black text-blue-900 dark:text-blue-300 mt-2">{occupiedTables}/{physicalTables.length}</p>
           </Card>
           
-          <Card className="p-6 bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-orange-500/20 shadow-md shadow-orange-500/5">
+          <Card 
+            onClick={() => setKitchenQueueModalOpen(true)}
+            className="p-6 bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-orange-500/20 shadow-md shadow-orange-500/5 cursor-pointer hover:scale-[1.02] hover:border-orange-500/40 transition-all select-none group active:scale-[0.99]"
+          >
             <div className="flex items-center justify-between">
-              <p className="text-sm font-bold text-orange-700 dark:text-orange-400 opacity-90 uppercase tracking-wider">Kitchen Queue</p>
-              <ChefHat className="w-5 h-5 text-orange-500" />
+              <p className="text-sm font-bold text-orange-700 dark:text-orange-400 opacity-90 uppercase tracking-wider group-hover:text-orange-500 transition-colors">Kitchen Queue</p>
+              <ChefHat className="w-5 h-5 text-orange-500 group-hover:scale-110 transition-transform" />
             </div>
             <p className="text-4xl font-black text-orange-900 dark:text-orange-300 mt-2">{kitchenQueue}</p>
           </Card>
           
-          <Card className="p-6 bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/20 shadow-md shadow-emerald-500/5">
+          <Card 
+            onClick={() => setTodayRevenueModalOpen(true)}
+            className="p-6 bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/20 shadow-md shadow-emerald-500/5 cursor-pointer hover:scale-[1.02] hover:border-emerald-500/40 transition-all select-none group active:scale-[0.99]"
+          >
             <div className="flex items-center justify-between">
-              <p className="text-sm font-bold text-emerald-700 dark:text-emerald-400 opacity-90 uppercase tracking-wider">Today&apos;s Revenue</p>
-              <span className="text-xl font-black text-emerald-500">₹</span>
+              <p className="text-sm font-bold text-emerald-700 dark:text-emerald-400 opacity-90 uppercase tracking-wider group-hover:text-emerald-500 transition-colors">Today&apos;s Revenue</p>
+              <span className="text-xl font-black text-emerald-500 group-hover:scale-110 transition-transform">₹</span>
             </div>
             <p className="text-4xl font-black text-emerald-900 dark:text-emerald-300 mt-2">₹{revenue.toLocaleString()}</p>
           </Card>
@@ -451,6 +483,27 @@ export function Dashboard() {
         menuItems={menuItems}
         tableId={selectedTable?.id || null}
         onPlaceOrder={handlePlaceOrder}
+      />
+
+      <TablesOccupiedModal
+        isOpen={isTablesOccupiedModalOpen}
+        onClose={() => setTablesOccupiedModalOpen(false)}
+        tables={tables}
+        activeOrders={activeOrders}
+        onSelectTable={handleSelectTable}
+      />
+
+      <KitchenQueueModal
+        isOpen={isKitchenQueueModalOpen}
+        onClose={() => setKitchenQueueModalOpen(false)}
+        activeOrders={activeOrders}
+        onManageOrder={handleManageOrder}
+      />
+
+      <TodayRevenueModal
+        isOpen={isTodayRevenueModalOpen}
+        onClose={() => setTodayRevenueModalOpen(false)}
+        todayRevenue={revenue}
       />
     </div>
   );
