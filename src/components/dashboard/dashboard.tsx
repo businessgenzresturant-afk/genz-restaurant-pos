@@ -120,6 +120,18 @@ export function Dashboard() {
     }
   };
 
+  const closeTablesOccupiedModal = useCallback(() => {
+    setTimeout(() => setTablesOccupiedModalOpen(false), 100);
+  }, []);
+
+  const closeKitchenQueueModal = useCallback(() => {
+    setTimeout(() => setKitchenQueueModalOpen(false), 100);
+  }, []);
+
+  const closeTodayRevenueModal = useCallback(() => {
+    setTimeout(() => setTodayRevenueModalOpen(false), 100);
+  }, []);
+
   const handleManageOrder = (order: any) => {
     setKitchenQueueModalOpen(false);
     setTablesOccupiedModalOpen(false);
@@ -487,7 +499,7 @@ export function Dashboard() {
 
       <TablesOccupiedModal
         isOpen={isTablesOccupiedModalOpen}
-        onClose={() => setTablesOccupiedModalOpen(false)}
+        onClose={closeTablesOccupiedModal}
         tables={tables}
         activeOrders={activeOrders}
         onSelectTable={handleSelectTable}
@@ -495,14 +507,14 @@ export function Dashboard() {
 
       <KitchenQueueModal
         isOpen={isKitchenQueueModalOpen}
-        onClose={() => setKitchenQueueModalOpen(false)}
+        onClose={closeKitchenQueueModal}
         activeOrders={activeOrders}
         onManageOrder={handleManageOrder}
       />
 
       <TodayRevenueModal
         isOpen={isTodayRevenueModalOpen}
-        onClose={() => setTodayRevenueModalOpen(false)}
+        onClose={closeTodayRevenueModal}
         todayRevenue={revenue}
       />
     </div>

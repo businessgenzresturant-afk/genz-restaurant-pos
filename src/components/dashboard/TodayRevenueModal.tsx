@@ -96,7 +96,11 @@ export function TodayRevenueModal({ isOpen, onClose, todayRevenue }: TodayRevenu
     <>
       <div 
         className="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm animate-fade-in" 
-        onClick={onClose} 
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onClose();
+        }} 
       />
       <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl bg-background border border-border shadow-2xl rounded-3xl z-50 overflow-hidden animate-fade-in max-h-[85vh] flex flex-col">
         
@@ -104,7 +108,11 @@ export function TodayRevenueModal({ isOpen, onClose, todayRevenue }: TodayRevenu
         <div className="p-6 border-b border-border flex justify-between items-center bg-muted/10">
           <div className="flex items-center gap-3">
             <button 
-              onClick={onClose}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onClose();
+              }}
               className="p-1.5 rounded-full hover:bg-muted text-muted-foreground transition-colors mr-1"
             >
               <ArrowLeft className="w-5 h-5" />
@@ -117,7 +125,14 @@ export function TodayRevenueModal({ isOpen, onClose, todayRevenue }: TodayRevenu
               <p className="text-sm text-muted-foreground mt-0.5">Summary of total sales, billing history, and payment collection for today</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-muted transition-colors">
+          <button 
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onClose();
+            }} 
+            className="p-2 rounded-full hover:bg-muted transition-colors"
+          >
             <X className="w-6 h-6 text-muted-foreground" />
           </button>
         </div>
@@ -318,7 +333,11 @@ export function TodayRevenueModal({ isOpen, onClose, todayRevenue }: TodayRevenu
         {/* Footer */}
         <div className="p-6 border-t border-border bg-muted/10 flex justify-end">
           <Button 
-            onClick={onClose}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onClose();
+            }}
             variant="outline"
             className="px-6 rounded-xl font-bold text-muted-foreground hover:bg-muted text-sm"
           >
