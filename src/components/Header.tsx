@@ -46,24 +46,24 @@ export default function Header() {
   };
 
   return (
-    <header className="w-full bg-background/80 backdrop-blur-md border-b border-border/50 h-16 flex-shrink-0 flex items-center justify-between px-6 z-30 sticky top-0">
+    <header className="w-full bg-background/80 backdrop-blur-md border-b border-border/50 h-16 flex-shrink-0 flex items-center justify-between px-4 sm:px-6 z-30 sticky top-0">
       
       {/* Left side: Logo & Brand */}
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-3 sm:gap-6">
         <Link href="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-md shadow-primary/20">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-md shadow-primary/20 flex-shrink-0">
             <span className="text-primary-foreground font-black text-md">Z</span>
           </div>
-          <div>
+          <div className="hidden sm:block">
             <h1 className="font-black text-md text-foreground leading-tight tracking-tight">Gen-Z POS</h1>
             <p className="text-[9px] font-black text-primary uppercase tracking-widest leading-none">Premium</p>
           </div>
         </Link>
         
-        <div className="h-5 w-[1px] bg-border/80" />
+        <div className="h-5 w-[1px] bg-border/80 hidden sm:block" />
         
         {/* Page Title */}
-        <div className="text-sm font-bold text-foreground tracking-wide">
+        <div className="text-sm font-bold text-foreground tracking-wide truncate max-w-[120px] xs:max-w-none">
           {getPageTitle()}
         </div>
       </div>

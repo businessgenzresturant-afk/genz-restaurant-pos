@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Portal } from '@/components/ui/portal';
 
 export default function TablesPage() {
   const [tables, setTables] = useState<any[]>([]);
@@ -143,98 +144,102 @@ export default function TablesPage() {
 
       {/* Add Table Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-          <div className="bg-card rounded-2xl shadow-2xl border border-border w-full max-w-md p-6 animate-fade-in">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl">
-                🪑
+        <Portal>
+          <div className="fixed inset-0 z-[150] flex items-center justify-center bg-background/80 backdrop-blur-sm">
+            <div className="bg-card rounded-2xl shadow-2xl border border-border w-full max-w-md p-6 animate-fade-in">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl">
+                  🪑
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-foreground">Add New Table</h2>
+                  <p className="text-sm text-muted-foreground">Add seating for your guests</p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-2xl font-black text-foreground">Add New Table</h2>
-                <p className="text-sm text-muted-foreground">Add seating for your guests</p>
-              </div>
+              <form onSubmit={handleAddTable} className="space-y-4">
+                <div>
+                  <label htmlFor="tableNumber" className="block text-sm font-semibold text-foreground mb-2">
+                    Table Number
+                  </label>
+                  <Input
+                    id="tableNumber"
+                    type="number"
+                    value={number}
+                    onChange={(e) => setNumber(e.target.value)}
+                    className="w-full"
+                    placeholder="e.g., 1"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="tableCapacity" className="block text-sm font-semibold text-foreground mb-2">
+                    Capacity (Seats)
+                  </label>
+                  <Input
+                    id="tableCapacity"
+                    type="number"
+                    value={capacity}
+                    onChange={(e) => setCapacity(e.target.value)}
+                    className="w-full"
+                    placeholder="e.g., 4"
+                  />
+                </div>
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    onClick={() => setShowAddModal(false)}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" variant="gradient" className="flex-1">
+                    Add Table
+                  </Button>
+                </div>
+              </form>
             </div>
-            <form onSubmit={handleAddTable} className="space-y-4">
-              <div>
-                <label htmlFor="tableNumber" className="block text-sm font-semibold text-foreground mb-2">
-                  Table Number
-                </label>
-                <Input
-                  id="tableNumber"
-                  type="number"
-                  value={number}
-                  onChange={(e) => setNumber(e.target.value)}
-                  className="w-full"
-                  placeholder="e.g., 1"
-                />
+          </div>
+        </Portal>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && tableToDelete && (
+        <Portal>
+          <div className="fixed inset-0 z-[150] flex items-center justify-center bg-background/80 backdrop-blur-sm">
+            <div className="bg-card rounded-2xl shadow-2xl border border-border w-full max-w-md p-6 animate-fade-in">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-destructive/10 flex items-center justify-center text-2xl">
+                  ⚠️
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-foreground">Delete Table</h2>
+                  <p className="text-sm text-muted-foreground">This action cannot be undone</p>
+                </div>
               </div>
-              <div>
-                <label htmlFor="tableCapacity" className="block text-sm font-semibold text-foreground mb-2">
-                  Capacity (Seats)
-                </label>
-                <Input
-                  id="tableCapacity"
-                  type="number"
-                  value={capacity}
-                  onChange={(e) => setCapacity(e.target.value)}
-                  className="w-full"
-                  placeholder="e.g., 4"
-                />
-              </div>
-              <div className="flex gap-3 pt-4">
+              <p className="text-muted-foreground mb-6">
+                Are you sure you want to delete this table? This action cannot be undone.
+              </p>
+              <div className="flex gap-3">
                 <Button
-                  onClick={() => setShowAddModal(false)}
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setTableToDelete(null);
+                  }}
                   variant="outline"
                   className="flex-1"
                 >
                   Cancel
                 </Button>
-                <Button type="submit" variant="gradient" className="flex-1">
-                  Add Table
+                <Button 
+                  onClick={handleDeleteTable}
+                  variant="destructive"
+                  className="flex-1"
+                >
+                  Delete Table
                 </Button>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && tableToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-          <div className="bg-card rounded-2xl shadow-2xl border border-border w-full max-w-md p-6 animate-fade-in">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-destructive/10 flex items-center justify-center text-2xl">
-                ⚠️
-              </div>
-              <div>
-                <h2 className="text-2xl font-black text-foreground">Delete Table</h2>
-                <p className="text-sm text-muted-foreground">This action cannot be undone</p>
-              </div>
-            </div>
-            <p className="text-muted-foreground mb-6">
-              Are you sure you want to delete this table? This action cannot be undone.
-            </p>
-            <div className="flex gap-3">
-              <Button
-                onClick={() => {
-                  setShowDeleteModal(false);
-                  setTableToDelete(null);
-                }}
-                variant="outline"
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button 
-                onClick={handleDeleteTable}
-                variant="destructive"
-                className="flex-1"
-              >
-                Delete Table
-              </Button>
             </div>
           </div>
-        </div>
+        </Portal>
       )}
 
       {/* Tables Grid */}

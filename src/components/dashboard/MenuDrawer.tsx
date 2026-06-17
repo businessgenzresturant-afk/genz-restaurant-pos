@@ -16,6 +16,13 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [cart, setCart] = useState<{menuItemId: string, quantity: number, specialInstructions: string}[]>([]);
+  const [activeTab, setActiveTab] = useState<'menu' | 'cart'>('menu');
+
+  React.useEffect(() => {
+    if (isOpen) {
+      setActiveTab('menu');
+    }
+  }, [isOpen]);
 
   const categories = useMemo(() => {
     return ['All', ...Array.from(new Set(menuItems.map(item => item.category)))];
@@ -76,14 +83,13 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm animate-fade-in" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/60 z-[150] backdrop-blur-sm animate-fade-in" onClick={onClose} />
       <div 
-        className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background border border-border shadow-2xl rounded-3xl z-50 overflow-hidden animate-fade-in flex flex-row"
-        style={{ width: '95vw', maxWidth: '1152px', height: '85vh' }}
+        className="fixed inset-x-0 bottom-0 top-0 md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 bg-background border-t md:border border-border shadow-2xl md:rounded-3xl z-[160] overflow-hidden animate-fade-in flex flex-col md:flex-row w-full h-full md:w-[95vw] md:max-w-[1152px] md:h-[85vh]"
       >
         
         {/* Left Side: Menu Selection */}
-        <div className="flex-1 flex flex-col h-full bg-muted/10 border-r border-border min-h-0 min-w-0">
+        <div className={`flex-1 flex flex-col h-full bg-muted/10 md:border-r border-border min-h-0 min-w-0 ${activeTab === 'menu' ? 'flex' : 'hidden md:flex'}`}>
           <div className="p-4 border-b border-border bg-background grid grid-cols-3 items-center">
             <div className="flex items-center gap-2">
               {onBack && (
@@ -180,15 +186,36 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
               </div>
             )}
           </div>
+
+          {/* Mobile View Cart Footer */}
+          {cart.length > 0 && (
+            <div className="md:hidden p-4 border-t border-border bg-background flex items-center justify-between gap-4 shrink-0">
+              <div>
+                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Total Amount</p>
+                <p className="text-xl font-black text-primary">₹{totalAmount.toFixed(2)}</p>
+              </div>
+              <Button 
+                onClick={() => setActiveTab('cart')}
+                className="bg-primary text-primary-foreground font-bold px-6 py-2 rounded-xl flex items-center gap-2"
+              >
+                View Cart ({cart.reduce((s, i) => s + i.quantity, 0)}) 🛒
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Right Side: Cart */}
         <div 
-          className="flex-shrink-0 flex flex-col h-full bg-background min-h-0 border-l border-border"
-          style={{ width: '350px', minWidth: '350px' }}
+          className={`flex-shrink-0 flex flex-col h-full bg-background min-h-0 border-l border-border w-full md:w-[350px] md:min-w-[350px] ${activeTab === 'cart' ? 'flex' : 'hidden md:flex'}`}
         >
           <div className="p-4 border-b border-border flex justify-between items-center bg-muted/30">
             <div className="flex items-center gap-2">
+              <button 
+                onClick={() => setActiveTab('menu')}
+                className="md:hidden p-1.5 rounded-full hover:bg-muted text-muted-foreground transition-colors mr-1"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
               <ShoppingCart className="w-5 h-5 text-primary" />
               <h2 className="text-lg font-black text-foreground">Current Order</h2>
             </div>

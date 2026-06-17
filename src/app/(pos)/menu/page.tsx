@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { Pencil, Eye, EyeOff, Trash2, Search, Plus, X, AlertTriangle } from 'lucide-react';
+import { Portal } from '@/components/ui/portal';
 
 const CATEGORIES = [
   'All',
@@ -318,247 +319,253 @@ export default function MenuPage() {
 
       {/* Add Menu Item Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-          <div className="bg-card text-card-foreground border border-border rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                <Plus className="h-6 w-6" />
+        <Portal>
+          <div className="fixed inset-0 z-[150] flex items-center justify-center bg-background/80 backdrop-blur-sm">
+            <div className="bg-card text-card-foreground border border-border rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                  <Plus className="h-6 w-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-foreground">Add Menu Item</h2>
+                  <p className="text-sm text-muted-foreground">Create a new delicious item</p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-2xl font-black text-foreground">Add Menu Item</h2>
-                <p className="text-sm text-muted-foreground">Create a new delicious item</p>
-              </div>
+              <form onSubmit={handleAddMenuItem} className="space-y-4">
+                <div>
+                  <label htmlFor="itemName" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Item Name
+                  </label>
+                  <Input
+                    id="itemName"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full"
+                    placeholder="e.g., Butter Chicken"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="itemCategory" className="block text-sm font-semibold text-foreground mb-2">
+                    Category
+                  </label>
+                  <select
+                    id="itemCategory"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  >
+                    <option value="">Select a category</option>
+                    {CATEGORIES.filter(c => c !== 'All').map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="itemPrice" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Price (₹)
+                  </label>
+                  <Input
+                    id="itemPrice"
+                    type="number"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    className="w-full"
+                    placeholder="0"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="itemImageUrl" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Image URL (Optional)
+                  </label>
+                  <Input
+                    id="itemImageUrl"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    className="w-full"
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border border-border">
+                  <input
+                    type="checkbox"
+                    id="itemAvailable"
+                    checked={available}
+                    onChange={(e) => setAvailable(e.target.checked)}
+                    className="h-5 w-5 text-primary rounded border-border"
+                  />
+                  <label htmlFor="itemAvailable" className="text-sm font-medium text-foreground">
+                    Available for order
+                  </label>
+                </div>
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    onClick={() => {
+                      setShowAddModal(false);
+                      setName('');
+                      setCategory('');
+                      setPrice('');
+                      setImageUrl('');
+                      setAvailable(true);
+                    }}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" variant="gradient" className="flex-1">
+                    Add Item
+                  </Button>
+                </div>
+              </form>
             </div>
-            <form onSubmit={handleAddMenuItem} className="space-y-4">
-              <div>
-                <label htmlFor="itemName" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Item Name
-                </label>
-                <Input
-                  id="itemName"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full"
-                  placeholder="e.g., Butter Chicken"
-                />
-              </div>
-              <div>
-                <label htmlFor="itemCategory" className="block text-sm font-semibold text-foreground mb-2">
-                  Category
-                </label>
-                <select
-                  id="itemCategory"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                >
-                  <option value="">Select a category</option>
-                  {CATEGORIES.filter(c => c !== 'All').map((cat) => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="itemPrice" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Price (₹)
-                </label>
-                <Input
-                  id="itemPrice"
-                  type="number"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  className="w-full"
-                  placeholder="0"
-                />
-              </div>
-              <div>
-                <label htmlFor="itemImageUrl" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Image URL (Optional)
-                </label>
-                <Input
-                  id="itemImageUrl"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  className="w-full"
-                  placeholder="https://example.com/image.jpg"
-                />
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border border-border">
-                <input
-                  type="checkbox"
-                  id="itemAvailable"
-                  checked={available}
-                  onChange={(e) => setAvailable(e.target.checked)}
-                  className="h-5 w-5 text-primary rounded border-border"
-                />
-                <label htmlFor="itemAvailable" className="text-sm font-medium text-foreground">
-                  Available for order
-                </label>
-              </div>
-              <div className="flex gap-3 pt-4">
-                <Button
-                  onClick={() => {
-                    setShowAddModal(false);
-                    setName('');
-                    setCategory('');
-                    setPrice('');
-                    setImageUrl('');
-                    setAvailable(true);
-                  }}
-                  variant="outline"
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" variant="gradient" className="flex-1">
-                  Add Item
-                </Button>
-              </div>
-            </form>
           </div>
-        </div>
+        </Portal>
       )}
 
       {/* Edit Menu Item Modal */}
       {showEditModal && itemToEdit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-          <div className="bg-card text-card-foreground border border-border rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
-                <Pencil className="h-6 w-6" />
+        <Portal>
+          <div className="fixed inset-0 z-[150] flex items-center justify-center bg-background/80 backdrop-blur-sm">
+            <div className="bg-card text-card-foreground border border-border rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+                  <Pencil className="h-6 w-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-foreground">Edit Menu Item</h2>
+                  <p className="text-sm text-muted-foreground">Update item details</p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-2xl font-black text-foreground">Edit Menu Item</h2>
-                <p className="text-sm text-muted-foreground">Update item details</p>
-              </div>
+              <form onSubmit={handleUpdateMenuItem} className="space-y-4">
+                <div>
+                  <label htmlFor="editItemName" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Item Name
+                  </label>
+                  <Input
+                    id="editItemName"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full"
+                    placeholder="Enter item name"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="editItemCategory" className="block text-sm font-semibold text-foreground mb-2">
+                    Category
+                  </label>
+                  <select
+                    id="editItemCategory"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                  >
+                    {CATEGORIES.filter(c => c !== 'All').map((cat) => (
+                      <option key={cat} value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="editItemPrice" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Price (₹)
+                  </label>
+                  <Input
+                    id="editItemPrice"
+                    type="number"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    className="w-full"
+                    placeholder="Enter price"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="editItemImageUrl" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Image URL (Optional)
+                  </label>
+                  <Input
+                    id="editItemImageUrl"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    className="w-full"
+                    placeholder="https://example.com/image.jpg"
+                  />
+                </div>
+                <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border border-border">
+                  <input
+                    type="checkbox"
+                    id="editItemAvailable"
+                    checked={available}
+                    onChange={(e) => setAvailable(e.target.checked)}
+                    className="h-5 w-5 text-primary rounded border-border"
+                  />
+                  <label htmlFor="editItemAvailable" className="text-sm font-medium text-foreground">
+                    Available for order
+                  </label>
+                </div>
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    onClick={() => {
+                      setShowEditModal(false);
+                      setItemToEdit(null);
+                      setName('');
+                      setCategory('');
+                      setPrice('');
+                      setImageUrl('');
+                      setAvailable(true);
+                    }}
+                    variant="outline"
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit" variant="gradient" className="flex-1">
+                    Update Item
+                  </Button>
+                </div>
+              </form>
             </div>
-            <form onSubmit={handleUpdateMenuItem} className="space-y-4">
-              <div>
-                <label htmlFor="editItemName" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Item Name
-                </label>
-                <Input
-                  id="editItemName"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full"
-                  placeholder="Enter item name"
-                />
+          </div>
+        </Portal>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && itemToDelete && (
+        <Portal>
+          <div className="fixed inset-0 z-[150] flex items-center justify-center bg-background/80 backdrop-blur-sm">
+            <div className="bg-card text-card-foreground border border-border rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-12 h-12 rounded-xl bg-destructive/10 text-destructive flex items-center justify-center">
+                  <AlertTriangle className="h-6 w-6" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-black text-foreground">Delete Menu Item</h2>
+                  <p className="text-sm text-muted-foreground">This action cannot be undone</p>
+                </div>
               </div>
-              <div>
-                <label htmlFor="editItemCategory" className="block text-sm font-semibold text-foreground mb-2">
-                  Category
-                </label>
-                <select
-                  id="editItemCategory"
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-2 bg-background text-foreground border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                >
-                  {CATEGORIES.filter(c => c !== 'All').map((cat) => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="editItemPrice" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Price (₹)
-                </label>
-                <Input
-                  id="editItemPrice"
-                  type="number"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  className="w-full"
-                  placeholder="Enter price"
-                />
-              </div>
-              <div>
-                <label htmlFor="editItemImageUrl" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Image URL (Optional)
-                </label>
-                <Input
-                  id="editItemImageUrl"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  className="w-full"
-                  placeholder="https://example.com/image.jpg"
-                />
-              </div>
-              <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg border border-border">
-                <input
-                  type="checkbox"
-                  id="editItemAvailable"
-                  checked={available}
-                  onChange={(e) => setAvailable(e.target.checked)}
-                  className="h-5 w-5 text-primary rounded border-border"
-                />
-                <label htmlFor="editItemAvailable" className="text-sm font-medium text-foreground">
-                  Available for order
-                </label>
-              </div>
-              <div className="flex gap-3 pt-4">
+              <p className="text-muted-foreground mb-6">
+                Are you sure you want to delete this menu item? This action cannot be undone.
+              </p>
+              <div className="flex gap-3">
                 <Button
                   onClick={() => {
-                    setShowEditModal(false);
-                    setItemToEdit(null);
-                    setName('');
-                    setCategory('');
-                    setPrice('');
-                    setImageUrl('');
-                    setAvailable(true);
+                    setShowDeleteModal(false);
+                    setItemToDelete(null);
                   }}
                   variant="outline"
                   className="flex-1"
                 >
                   Cancel
                 </Button>
-                <Button type="submit" variant="gradient" className="flex-1">
-                  Update Item
+                <Button
+                  onClick={handleDeleteMenuItem}
+                  variant="destructive"
+                  className="flex-1"
+                >
+                  Delete Item
                 </Button>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && itemToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-          <div className="bg-card text-card-foreground border border-border rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fade-in">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-12 h-12 rounded-xl bg-destructive/10 text-destructive flex items-center justify-center">
-                <AlertTriangle className="h-6 w-6" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-black text-foreground">Delete Menu Item</h2>
-                <p className="text-sm text-muted-foreground">This action cannot be undone</p>
-              </div>
-            </div>
-            <p className="text-muted-foreground mb-6">
-              Are you sure you want to delete this menu item? This action cannot be undone.
-            </p>
-            <div className="flex gap-3">
-              <Button
-                onClick={() => {
-                  setShowDeleteModal(false);
-                  setItemToDelete(null);
-                }}
-                variant="outline"
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleDeleteMenuItem}
-                variant="destructive"
-                className="flex-1"
-              >
-                Delete Item
-              </Button>
             </div>
           </div>
-        </div>
+        </Portal>
       )}
 
       {/* Menu Items Grid */}

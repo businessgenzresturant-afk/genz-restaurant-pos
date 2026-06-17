@@ -367,7 +367,7 @@ export default function OrdersPage() {
         </div>
 
         <div className="space-y-6 lg:sticky lg:top-6 h-fit">
-          <Card className="p-5 border border-primary/20 shadow-xl shadow-primary/10 rounded-2xl flex flex-col h-[700px]">
+          <Card id="current-order-card" className="p-5 border border-primary/20 shadow-xl shadow-primary/10 rounded-2xl flex flex-col h-[700px]">
             <h2 className="text-xl font-bold mb-4 pb-3 border-b border-border flex items-center justify-between">
               <span>Current Order</span>
               {selectedTable && (
@@ -556,6 +556,23 @@ export default function OrdersPage() {
           </div>
         )}
       </div>
+
+      {/* Floating Cart Button for Mobile */}
+      {orderItems.length > 0 && (
+        <div className="lg:hidden fixed bottom-6 right-6 z-[100]">
+          <button
+            onClick={() => {
+              document.getElementById('current-order-card')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            className="rounded-full h-14 w-14 bg-primary text-primary-foreground shadow-2xl flex items-center justify-center text-2xl relative border-2 border-primary-foreground hover:scale-105 active:scale-95 transition-all"
+          >
+            🛒
+            <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-black h-5 w-5 rounded-full flex items-center justify-center border-2 border-background">
+              {orderItems.reduce((s, i) => s + i.quantity, 0)}
+            </span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

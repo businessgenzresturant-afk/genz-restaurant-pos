@@ -18,8 +18,8 @@ export function TableDrawer({ isOpen, onClose, table, activeOrder, onAddItem, on
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm" onClick={onClose} />
-      <div className={`fixed right-0 top-0 h-full w-full max-w-md bg-background border-l border-border shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col`}>
+      <div className="fixed inset-0 bg-black/50 z-[150] backdrop-blur-sm" onClick={onClose} />
+      <div className={`fixed right-0 top-0 h-full w-full max-w-md bg-background border-l border-border shadow-2xl z-[160] transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col`}>
         
         {/* Header */}
         <div className="p-6 border-b border-border flex justify-between items-center bg-muted/30">

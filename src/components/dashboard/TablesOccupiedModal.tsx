@@ -61,14 +61,14 @@ export function TablesOccupiedModal({ isOpen, onClose, tables, activeOrders, onS
   return (
     <>
       <div 
-        className="fixed inset-0 bg-black/60 z-40 backdrop-blur-sm animate-fade-in" 
+        className="fixed inset-0 bg-black/60 z-[150] backdrop-blur-sm animate-fade-in" 
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
           onClose();
         }} 
       />
-      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl bg-background border border-border shadow-2xl rounded-3xl z-50 overflow-hidden animate-fade-in max-h-[85vh] flex flex-col">
+      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:w-full sm:max-w-3xl bg-background border border-border shadow-2xl rounded-3xl z-[160] overflow-hidden animate-fade-in max-h-[85vh] flex flex-col">
         
         {/* Header */}
         <div className="p-6 border-b border-border flex justify-between items-center bg-muted/10">
