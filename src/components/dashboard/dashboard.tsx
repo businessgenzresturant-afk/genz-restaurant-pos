@@ -46,12 +46,25 @@ export function Dashboard() {
         fetch('/api/menu'),
       ]);
 
-      const t = await tablesRes.json();
-      setTables(t);
-      setActiveOrders(await ordersRes.json());
-      const r = await reportsRes.json();
-      setRevenue(r.totalRevenue || 0);
-      setMenuItems(await menuRes.json());
+      // Handle auth errors gracefully - redirect to login
+      if (tablesRes.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
+
+      const t = tablesRes.ok ? await tablesRes.json() : [];
+      setTables(Array.isArray(t) ? t : []);
+
+      const o = ordersRes.ok ? await ordersRes.json() : [];
+      setActiveOrders(Array.isArray(o) ? o : []);
+
+      if (reportsRes.ok) {
+        const r = await reportsRes.json();
+        setRevenue(r.totalRevenue || 0);
+      }
+
+      const m = menuRes.ok ? await menuRes.json() : [];
+      setMenuItems(Array.isArray(m) ? m : []);
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
     } finally {
