@@ -73,7 +73,7 @@ export function Dashboard() {
 
       if (reportsRes.ok) {
         const r = await reportsRes.json();
-        setRevenue(r.totalRevenue || 0);
+        setRevenue(r.dailySalesTotal || 0);
       }
 
       const m = menuRes.ok ? await menuRes.json() : [];

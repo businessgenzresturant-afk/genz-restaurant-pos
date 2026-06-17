@@ -92,6 +92,8 @@ export function TodayRevenueModal({ isOpen, onClose, todayRevenue }: TodayRevenu
     return 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20';
   };
 
+  if (!isOpen) return null;
+
   return (
     <>
       <div 
