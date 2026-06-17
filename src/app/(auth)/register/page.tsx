@@ -43,7 +43,12 @@ export default function RegisterPage() {
 
           <div className="flex items-center justify-between text-xs font-semibold text-zinc-400 uppercase tracking-widest">
             <span>© 2026 Gen-Z Restaurant. All rights reserved.</span>
-            <span>Built by RAGSPRO</span>
+            <span className="flex items-center gap-1">
+              Built by{' '}
+              <a href="https://ragspro.com" target="_blank" rel="noopener noreferrer" className="hover:text-orange-400 transition-colors">
+                RAGSPRO
+              </a>
+            </span>
           </div>
         </div>
       </div>
@@ -75,7 +80,9 @@ export default function RegisterPage() {
           <div className="pt-4 border-t border-zinc-800 flex items-center justify-between">
             <p className="text-zinc-600 text-xs">
               Powered by{' '}
-              <span className="text-orange-500 font-bold">RAGSPRO Agency</span>
+              <a href="https://ragspro.com" target="_blank" rel="noopener noreferrer" className="text-orange-500 font-bold hover:text-orange-400 transition-colors">
+                RAGSPRO
+              </a>
             </p>
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-green-500 " />

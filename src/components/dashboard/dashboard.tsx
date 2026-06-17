@@ -466,7 +466,12 @@ export function Dashboard() {
 
       {/* RAGSPRO Footer Branding */}
       <footer className="pt-8 mt-12 border-t border-border/60 text-center text-xs text-muted-foreground/60">
-        <p>Gen-Z Restaurant POS • Private Software designed & developed by RAGSPRO Agency</p>
+        <p>
+          Gen-Z Restaurant POS &bull; Private Software designed & developed by{' '}
+          <a href="https://ragspro.com" target="_blank" rel="noopener noreferrer" className="font-semibold hover:text-foreground transition-colors">
+            RAGSPRO
+          </a>
+        </p>
       </footer>
 
       {/* Modals & Drawers */}
