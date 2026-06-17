@@ -65,14 +65,11 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex">
       {/* LEFT — Restaurant Image Panel */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <Image
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-zinc-950">
+        <img
           src="/images/restaurant-bg.jpg"
           alt="Gen-Z Restaurant"
-          fill
-          className="object-cover object-center"
-          priority
-          quality={100}
+          className="absolute inset-0 w-full h-full object-cover object-center"
         />
         {/* Dark overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/40 to-orange-900/50" />
@@ -82,7 +79,7 @@ export default function LoginPage() {
           {/* Top badge */}
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center shadow-lg bg-zinc-900 border border-zinc-800 flex-shrink-0 relative">
-              <Image src="/images/Gen-z-logo.jpg" alt="Gen-Z Logo" fill className="object-cover" sizes="48px" />
+              <img src="/images/Gen-z-logo.jpg" alt="Gen-Z Logo" className="w-full h-full object-cover" />
             </div>
             <div>
               <p className="text-white font-black text-lg tracking-tight leading-none">Gen-Z Restaurant</p>
@@ -123,7 +120,7 @@ export default function LoginPage() {
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center gap-3 mb-8">
             <div className="w-12 h-12 rounded-full overflow-hidden flex items-center justify-center bg-zinc-900 border border-zinc-800 flex-shrink-0 relative">
-              <Image src="/images/Gen-z-logo.jpg" alt="Gen-Z Logo" fill className="object-cover" sizes="48px" />
+              <img src="/images/Gen-z-logo.jpg" alt="Gen-Z Logo" className="w-full h-full object-cover" />
             </div>
             <div>
               <p className="text-white font-black text-lg leading-none">Gen-Z Restaurant</p>

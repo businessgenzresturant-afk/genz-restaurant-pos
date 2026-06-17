@@ -69,5 +69,5 @@ export const authOptions: NextAuthOptions = {
       user: { ...session.user, role: token.role as string, id: token.id as string, restaurantId: token.restaurantId as string }
     })
   },
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || "fallback-secret-for-demo-purposes-only-12345",
 };

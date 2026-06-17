@@ -35,12 +35,25 @@ export async function POST(request: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Get or create default restaurant
+    let restaurant = await prisma.restaurant.findFirst();
+    if (!restaurant) {
+      restaurant = await prisma.restaurant.create({
+        data: { 
+          id: '00000000-0000-0000-0000-000000000001', 
+          name: 'GenZ Restaurant', 
+          address: '123 Main Street' 
+        }
+      });
+    }
+
     // Create user
     const user = await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
+        restaurantId: restaurant.id,
       },
     });
 
