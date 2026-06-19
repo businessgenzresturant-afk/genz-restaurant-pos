@@ -10,13 +10,11 @@ interface GuestCountModalProps {
   onClose: () => void;
   onBack: () => void;
   tableNumber: number | null;
-  onContinue: (details: { guests: number; customerName: string; customerPhone: string }) => void;
+  onContinue: (details: { guests: number }) => void;
 }
 
 export function GuestCountModal({ isOpen, onClose, onBack, tableNumber, onContinue }: GuestCountModalProps) {
   const [guests, setGuests] = useState<string>('2');
-  const [customerName, setCustomerName] = useState('');
-  const [customerPhone, setCustomerPhone] = useState('');
 
   if (!isOpen) return null;
 
@@ -26,8 +24,6 @@ export function GuestCountModal({ isOpen, onClose, onBack, tableNumber, onContin
     const guestCount = parseInt(guests) || 1;
     onContinue({
       guests: guestCount,
-      customerName: customerName.trim() || `Table ${tableNumber} Customer`,
-      customerPhone: customerPhone.trim(),
     });
   };
 
@@ -96,31 +92,6 @@ export function GuestCountModal({ isOpen, onClose, onBack, tableNumber, onContin
               placeholder="Enter number of guests"
               className="h-12 rounded-xl border-2"
             />
-          </div>
-
-          {/* Customer Details */}
-          <div className="space-y-4 pt-4 border-t border-border">
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider" htmlFor="customer-name">Customer Name (Optional)</label>
-              <Input
-                id="customer-name"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="Walk-in Customer"
-                className="h-12 rounded-xl border-2"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider" htmlFor="customer-phone">Phone Number (Optional)</label>
-              <Input
-                id="customer-phone"
-                value={customerPhone}
-                onChange={(e) => setCustomerPhone(e.target.value)}
-                placeholder="Customer's phone number"
-                className="h-12 rounded-xl border-2"
-              />
-            </div>
           </div>
         </div>
 

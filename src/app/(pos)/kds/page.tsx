@@ -312,7 +312,6 @@ export default function KitchenDisplaySystem() {
 
   const dineIn = normalOrders.filter(o => o.orderType === 'DINE_IN');
   const takeaway = normalOrders.filter(o => o.orderType === 'TAKEAWAY');
-  const parcel = normalOrders.filter(o => o.orderType === 'PARCEL');
   const delivery = normalOrders.filter(o => o.orderType === 'DELIVERY');
 
   const OrderCard = ({ order, type, icon: Icon, isUrgent = false }: any) => {
@@ -494,7 +493,7 @@ export default function KitchenDisplaySystem() {
         )}
 
         {/* Regular Queues */}
-        <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
           
           {/* Dine In */}
           <div className="space-y-4">
@@ -526,21 +525,6 @@ export default function KitchenDisplaySystem() {
                 takeaway.map(order => <OrderCard key={order.id} order={order} type="Takeaway" icon={ShoppingBag} />)
               )}
               {!showSkeletons && takeaway.length === 0 && <p className="text-zinc-600 font-bold italic">No active orders</p>}
-            </div>
-          </div>
-
-          {/* Parcel */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-black text-emerald-400 flex items-center gap-2 border-b border-zinc-800 pb-2">
-              <Package /> PARCEL ({parcel.length})
-            </h2>
-            <div className="space-y-4">
-              {showSkeletons ? (
-                <SkeletonCard />
-              ) : (
-                parcel.map(order => <OrderCard key={order.id} order={order} type="Parcel" icon={Package} />)
-              )}
-              {!showSkeletons && parcel.length === 0 && <p className="text-zinc-600 font-bold italic">No active orders</p>}
             </div>
           </div>
 

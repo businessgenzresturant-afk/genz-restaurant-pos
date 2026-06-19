@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, ShoppingBag, Package, Bike, ArrowLeft } from 'lucide-react';
+import { X, ShoppingBag, Bike, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 interface CustomerDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  orderType: 'TAKEAWAY' | 'PARCEL' | 'DELIVERY' | null;
+  orderType: 'TAKEAWAY' | 'DELIVERY' | null;
   onContinue: (details: { customerName: string; customerPhone: string; address?: string }) => void;
 }
 
@@ -44,13 +44,6 @@ export function CustomerDetailsModal({ isOpen, onClose, orderType, onContinue }:
           desc: 'Setup takeaway customer information',
           icon: ShoppingBag,
           color: 'amber',
-        };
-      case 'PARCEL':
-        return {
-          title: 'New Parcel Order',
-          desc: 'Setup parcel customer information',
-          icon: Package,
-          color: 'emerald',
         };
       case 'DELIVERY':
         return {

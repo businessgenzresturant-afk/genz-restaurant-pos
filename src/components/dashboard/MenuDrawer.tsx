@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { X, Search, ShoppingCart, Send, Save, Receipt, ArrowLeft } from 'lucide-react';
+import { X, Search, ShoppingCart, Send, ArrowLeft } from 'lucide-react';
 
 interface MenuDrawerProps {
   isOpen: boolean;
@@ -265,20 +265,12 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
               <span className="font-black text-3xl text-primary">₹{totalAmount.toFixed(2)}</span>
             </div>
             <Button 
-              className="w-full h-12 text-md font-bold shadow-md shadow-orange-500/20 bg-orange-500 hover:bg-orange-600"
+              className="w-full h-14 text-lg font-bold shadow-md shadow-orange-500/20 bg-orange-500 hover:bg-orange-600"
               disabled={cart.length === 0}
               onClick={handleSubmit}
             >
-              <Send className="w-4 h-4 mr-2" /> Send to Kitchen
+              <Send className="w-5 h-5 mr-2" /> Send to Kitchen
             </Button>
-            <div className="flex gap-2">
-              <Button className="flex-1 h-10 bg-emerald-600 hover:bg-emerald-700" disabled={cart.length === 0}>
-                <Save className="w-4 h-4 mr-2" /> Save
-              </Button>
-              <Button className="flex-1 h-10 bg-indigo-600 hover:bg-indigo-700" disabled={cart.length === 0}>
-                <Receipt className="w-4 h-4 mr-2" /> Bill
-              </Button>
-            </div>
           </div>
         </div>
 

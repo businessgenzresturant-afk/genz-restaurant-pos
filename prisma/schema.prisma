@@ -107,6 +107,7 @@ model Bill {
   tax               Float
   discount          Float              @default(0)
   total             Float
+  gstApplied        Boolean            @default(true)
   status            BillStatus         @default(PENDING)
   paymentMethod     String?
   cashAmount        Float              @default(0)

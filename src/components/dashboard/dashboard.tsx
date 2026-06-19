@@ -9,7 +9,6 @@ import {
   ClipboardList, 
   ChefHat, 
   ShoppingBag,
-  Package,
   Bike,
   Loader2,
   Receipt,
@@ -203,7 +202,6 @@ export function Dashboard() {
   
   const dineInOrders = activeOrders.filter(o => o.orderType === 'DINE_IN').length;
   const takeawayOrders = activeOrders.filter(o => o.orderType === 'TAKEAWAY').length;
-  const parcelOrders = activeOrders.filter(o => o.orderType === 'PARCEL').length;
   const deliveryOrders = activeOrders.filter(o => o.orderType === 'DELIVERY').length;
 
   const handleSelectTable = (table: any, isOccupied: boolean) => {
@@ -254,7 +252,7 @@ export function Dashboard() {
     setMenuDrawerOpen(true);
   };
 
-  const handleOrderTypeCardClick = (type: 'TAKEAWAY' | 'PARCEL' | 'DELIVERY') => {
+  const handleOrderTypeCardClick = (type: 'TAKEAWAY' | 'DELIVERY') => {
     setSelectedOrderType(type);
     setSelectedTable(null);
     setSelectedActiveOrder(null);
@@ -401,7 +399,7 @@ export function Dashboard() {
         {/* Order Type Cards */}
         <div className="space-y-4">
           <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Select Order Type</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
             
             {/* Dine In Card */}
             <button 
@@ -435,23 +433,6 @@ export function Dashboard() {
                 <span className="font-black text-3xl text-foreground group-hover:text-amber-500 transition-colors">{takeawayOrders}</span>
               </div>
               <p className="font-black text-lg text-foreground mt-4">Takeaway</p>
-            </button>
-
-            {/* Parcel Card */}
-            <button 
-              onClick={() => {
-                playClickSound();
-                handleOrderTypeCardClick('PARCEL');
-              }}
-              className="p-6 rounded-2xl border-2 border-border/80 bg-card flex flex-col justify-between items-start cursor-pointer hover:border-emerald-500/60 hover:bg-emerald-500/5 hover:shadow-lg hover:shadow-emerald-500/5 transition-all text-left group min-h-[140px]"
-            >
-              <div className="flex justify-between items-center w-full">
-                <div className="p-3 bg-emerald-500/10 text-emerald-500 rounded-xl group-hover:scale-110 transition-transform">
-                  <Package className="w-6 h-6" />
-                </div>
-                <span className="font-black text-3xl text-foreground group-hover:text-emerald-500 transition-colors">{parcelOrders}</span>
-              </div>
-              <p className="font-black text-lg text-foreground mt-4">Parcel</p>
             </button>
 
             {/* Delivery Card */}

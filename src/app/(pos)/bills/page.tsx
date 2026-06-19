@@ -16,9 +16,9 @@ export default function BillsPage() {
   const router = useRouter();
   
   // Helper function to calculate final total including GST
-  const calculateFinalTotal = (bill: any, discountPct: number = 0, pointsAmt: number = 0) => {
-    // P0 FIX: Include tax (GST) in all calculations
-    const baseAmount = bill.subtotal + (bill.tax || 0);
+  const calculateFinalTotal = (bill: any, discountPct: number = 0, pointsAmt: number = 0, includeGst: boolean = true) => {
+    // Base amount with optional GST
+    const baseAmount = bill.subtotal + (includeGst ? (bill.tax || 0) : 0);
     const discountAmt = (bill.subtotal * discountPct) / 100;
     return Math.max(0, baseAmount - discountAmt - pointsAmt);
   };
@@ -54,6 +54,7 @@ export default function BillsPage() {
   
   // Customer and loyalty state
   const [customerPhone, setCustomerPhone] = useState('');
+  const [customerName, setCustomerName] = useState('');
   const [customerData, setCustomerData] = useState<any>(null);
   const [isCheckingCustomer, setIsCheckingCustomer] = useState(false);
   
@@ -61,6 +62,9 @@ export default function BillsPage() {
   const [discountPercent, setDiscountPercent] = useState<string>('');
   const [pointsToRedeem, setPointsToRedeem] = useState<string>('');
   const [discountError, setDiscountError] = useState<string>('');
+  
+  // GST toggle state
+  const [gstApplied, setGstApplied] = useState(true);
 
   useEffect(() => {
     fetchBills();
@@ -196,7 +200,7 @@ export default function BillsPage() {
     }
 
     // P0 FIX: Calculate final total including GST - Use helper function
-    const finalTotal = calculateFinalTotal(selectedBill, discountPct, pointsRedeem);
+    const finalTotal = calculateFinalTotal(selectedBill, discountPct, pointsRedeem, gstApplied);
 
     // Validate split payment amounts
     let cash = 0;
@@ -230,8 +234,10 @@ export default function BillsPage() {
           cashAmount: cash,
           onlineAmount: online,
           customerPhone: customerPhone || null,
+          customerName: customerName || null,
           discountPercent: discountPct,
-          pointsToRedeem: pointsRedeem
+          pointsToRedeem: pointsRedeem,
+          gstApplied: gstApplied
         })
       });
 
@@ -244,6 +250,7 @@ export default function BillsPage() {
       setShowBillModal(false);
       setSelectedBill(null);
       setCustomerPhone('');
+      setCustomerName('');
       setCustomerData(null);
       setDiscountPercent('');
       setPointsToRedeem('');
@@ -251,6 +258,7 @@ export default function BillsPage() {
       setIsSplitPayment(false);
       setCashAmount('');
       setOnlineAmount('');
+      setGstApplied(true);
       await fetchBills();
     } catch (err) {
       setError('Failed to update bill status. Please try again.');
@@ -284,7 +292,7 @@ export default function BillsPage() {
     }
 
     // P0 FIX: Calculate final total including GST - Use helper function
-    const finalTotal = calculateFinalTotal(selectedBill, discountPct, pointsRedeem);
+    const finalTotal = calculateFinalTotal(selectedBill, discountPct, pointsRedeem, gstApplied);
 
     // Validate split payment amounts
     let cash = 0;
@@ -339,6 +347,7 @@ export default function BillsPage() {
       setShowBillModal(false);
       setSelectedBill(null);
       setCustomerPhone('');
+      setCustomerName('');
       setCustomerData(null);
       setDiscountPercent('');
       setPointsToRedeem('');
@@ -346,6 +355,7 @@ export default function BillsPage() {
       setIsSplitPayment(false);
       setCashAmount('');
       setOnlineAmount('');
+      setGstApplied(true);
 
       // 2. Trigger Printing
       if (printContents) {
@@ -422,6 +432,12 @@ export default function BillsPage() {
     setSelectedBill(bill);
     setShowPaymentModal(true);
     setPaymentConfirmed(null);
+    setCustomerPhone('');
+    setCustomerName('');
+    setCustomerData(null);
+    setDiscountPercent('');
+    setPointsToRedeem('');
+    setGstApplied(true); // Default to GST applied
   };
 
   // UPI QR Code payload format: upi://pay?pa=ADDRESS&pn=NAME&am=AMOUNT&cu=INR
@@ -549,10 +565,12 @@ export default function BillsPage() {
                   <span className="text-sm text-muted-foreground">Subtotal</span>
                   <span className="font-bold text-foreground">₹{selectedBill.subtotal.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-muted-foreground">GST (18%)</span>
-                  <span className="font-bold text-foreground">₹{(selectedBill.tax || 0).toFixed(2)}</span>
-                </div>
+                {gstApplied && (
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm text-muted-foreground">GST (18%)</span>
+                    <span className="font-bold text-foreground">₹{(selectedBill.tax || 0).toFixed(2)}</span>
+                  </div>
+                )}
                 {discountPercent && parseFloat(discountPercent) > 0 && (
                   <div className="flex justify-between items-center mb-2 text-green-600">
                     <span className="text-sm">Discount ({discountPercent}%)</span>
@@ -571,7 +589,7 @@ export default function BillsPage() {
                     ₹{(() => {
                       const discountPct = discountPercent ? parseFloat(discountPercent) : 0;
                       const pointsAmt = pointsToRedeem ? parseInt(pointsToRedeem) : 0;
-                      return calculateFinalTotal(selectedBill, discountPct, pointsAmt).toFixed(2);
+                      return calculateFinalTotal(selectedBill, discountPct, pointsAmt, gstApplied).toFixed(2);
                     })()}
                   </span>
                 </div>
@@ -579,6 +597,21 @@ export default function BillsPage() {
                   <span>Table {selectedBill.order.table?.number}</span>
                   <span>{selectedBill.order.customerName || 'Walk-in'}</span>
                 </div>
+              </div>
+
+              {/* Customer Name Field */}
+              <div className="mb-4">
+                <label htmlFor="customerName" className="block text-sm font-semibold text-foreground mb-2">
+                  Customer Name (Optional)
+                </label>
+                <Input
+                  id="customerName"
+                  type="text"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="Enter customer name"
+                  className="w-full"
+                />
               </div>
 
               {/* Customer Phone Field */}
@@ -644,6 +677,25 @@ export default function BillsPage() {
                     Maximum discount: {isStaff ? '15%' : '30%'}
                   </p>
                 )}
+              </div>
+
+              {/* GST Toggle */}
+              <div className="mb-4">
+                <label className="flex items-center justify-between cursor-pointer p-3 bg-muted/30 rounded-xl border border-border hover:bg-muted/50 transition-colors">
+                  <span className="text-sm font-semibold text-foreground">Apply GST (18%)</span>
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={gstApplied}
+                      onChange={(e) => setGstApplied(e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-zinc-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  </div>
+                </label>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {gstApplied ? 'GST will be applied to this bill' : 'Bill will be generated without GST'}
+                </p>
               </div>
 
               {/* Points Redemption - ADMIN ONLY */}
@@ -847,12 +899,12 @@ export default function BillsPage() {
 
               {/* Actions */}
               <Button
-                onClick={() => handleMarkPaid(selectedBill.id, paymentConfirmed!)}
+                onClick={() => handlePayAndPrint(selectedBill.id, paymentConfirmed!)}
                 variant="gradient"
-                className="w-full h-12 text-lg font-bold"
+                className="w-full h-14 text-lg font-bold"
                 disabled={!paymentConfirmed}
               >
-                Confirm {paymentConfirmed ? String(paymentConfirmed) : ''} Payment
+                💳 Pay & Print Receipt
               </Button>
             </div>
           </div>

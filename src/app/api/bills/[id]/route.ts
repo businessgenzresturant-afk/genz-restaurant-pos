@@ -57,7 +57,7 @@ export async function PATCH(
 
   try {
     const body = await request.json();
-    const { status, paymentMethod, customerPhone, discountPercent, pointsToRedeem } = body;
+    const { status, paymentMethod, customerPhone, customerName, discountPercent, pointsToRedeem, gstApplied } = body;
 
     if (!status) {
       return NextResponse.json({ error: 'Status is required' }, { status: 400 });
@@ -127,8 +127,9 @@ export async function PATCH(
       let pointsRedeemed = 0;
       let discountAmount = 0;
       
-      // P0 FIX: Start with subtotal + tax (the actual bill total before discounts)
-      const baseAmount = existingBill.subtotal + existingBill.tax;
+      // Apply GST based on toggle (default true for backward compatibility)
+      const includeGst = gstApplied !== false; // Default to true if not specified
+      const baseAmount = existingBill.subtotal + (includeGst ? existingBill.tax : 0);
       let finalTotal = baseAmount;
 
       // Apply discount if provided (discount on subtotal only, tax remains)
@@ -148,8 +149,14 @@ export async function PATCH(
           customer = await tx.customer.create({
             data: {
               phone: customerPhone,
-              name: existingBill.order.customerName || null
+              name: customerName || existingBill.order.customerName || null
             }
+          });
+        } else if (customerName && !customer.name) {
+          // Update customer name if provided and not already set
+          customer = await tx.customer.update({
+            where: { id: customer.id },
+            data: { name: customerName }
           });
         }
 
@@ -225,7 +232,8 @@ export async function PATCH(
           discount: discountAmount,
           total: finalTotal,
           pointsEarned,
-          pointsRedeemed
+          pointsRedeemed,
+          gstApplied: includeGst
         },
         include: {
           order: {
