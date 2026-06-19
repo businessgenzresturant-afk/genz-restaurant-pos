@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { Prisma } from '@prisma/client';
 import { NextResponse } from 'next/server';
 import { checkAuth } from '@/lib/api-auth';
 import { updateBillSchema } from '@/lib/validations';
@@ -120,7 +121,7 @@ export async function PATCH(
     const POINTS_REDEMPTION_VALUE = 1; // 1 point = ₹1
 
     // Update bill and handle customer loyalty in a transaction if payment is confirmed
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       let customerId = null;
       let pointsEarned = 0;
       let pointsRedeemed = 0;
