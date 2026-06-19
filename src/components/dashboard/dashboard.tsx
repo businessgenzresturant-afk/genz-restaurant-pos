@@ -17,7 +17,7 @@ import {
 import { TableDrawer } from './TableDrawer';
 import { MenuDrawer } from './MenuDrawer';
 import { TableSelectModal } from './TableSelectModal';
-import { GuestCountModal } from './GuestCountModal';
+// import { GuestCountModal } from './GuestCountModal'; // No longer needed
 import { CustomerDetailsModal } from './CustomerDetailsModal';
 import { TablesOccupiedModal } from './TablesOccupiedModal';
 import { KitchenQueueModal } from './KitchenQueueModal';
@@ -214,7 +214,8 @@ export function Dashboard() {
       setTableDrawerOpen(true);
     } else {
       setSelectedActiveOrder(null);
-      setGuestCountModalOpen(true);
+      setSelectedOrderType('DINE_IN');
+      setMenuDrawerOpen(true);
     }
   };
 
@@ -245,12 +246,13 @@ export function Dashboard() {
     setTableDrawerOpen(true);
   };
 
-  const handleGuestCountContinue = (details: any) => {
-    setCustomerDetails(details);
-    setGuestCountModalOpen(false);
-    setSelectedOrderType('DINE_IN');
-    setMenuDrawerOpen(true);
-  };
+  // Guest count modal removed - no longer needed
+  // const handleGuestCountContinue = (details: any) => {
+  //   setCustomerDetails(details);
+  //   setGuestCountModalOpen(false);
+  //   setSelectedOrderType('DINE_IN');
+  //   setMenuDrawerOpen(true);
+  // };
 
   const handleOrderTypeCardClick = (type: 'TAKEAWAY' | 'DELIVERY') => {
     setSelectedOrderType(type);
@@ -275,7 +277,7 @@ export function Dashboard() {
           tableId: selectedTable?.id || null,
           orderType: selectedOrderType || 'DINE_IN',
           items,
-          guests: customerDetails?.guests || null,
+          guests: null, // No guest count needed upfront
           customerName: customerDetails?.customerName || 'Walk-in Customer',
           customerPhone: customerDetails?.customerPhone || null,
         })
@@ -540,7 +542,8 @@ export function Dashboard() {
           onSelectTable={handleSelectTable}
         />
 
-        <GuestCountModal
+        {/* Guest Count Modal removed - direct to menu */}
+        {/* <GuestCountModal
           isOpen={isGuestCountModalOpen}
           onClose={() => setGuestCountModalOpen(false)}
           onBack={() => {
@@ -549,7 +552,7 @@ export function Dashboard() {
           }}
           tableNumber={selectedTable?.number || null}
           onContinue={handleGuestCountContinue}
-        />
+        /> */}
 
         <CustomerDetailsModal
           isOpen={isCustomerDetailsModalOpen}
