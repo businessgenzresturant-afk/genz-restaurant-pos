@@ -6,6 +6,7 @@ import { checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib
 // Force dynamic route to prevent caching
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 export async function GET(request: Request) {
   const rateLimit = checkRateLimit(request, RateLimitPresets.API);
@@ -53,7 +54,14 @@ export async function GET(request: Request) {
       },
       orderBy: { createdAt: 'desc' }
     });
-    return NextResponse.json(orders);
+    
+    return NextResponse.json(orders, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      }
+    });
   } catch (error) {
     console.error('Error fetching orders:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

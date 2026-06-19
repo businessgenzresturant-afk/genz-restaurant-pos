@@ -6,6 +6,7 @@ import { createMenuItemSchema } from '@/lib/validations';
 // Force dynamic route to prevent caching
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 export async function GET(request: Request) {
   const auth = await checkAuth(request);
@@ -21,7 +22,14 @@ export async function GET(request: Request) {
       where: whereClause,
       orderBy: [{ category: 'asc' }, { name: 'asc' }]
     });
-    return NextResponse.json(menuItems);
+    
+    return NextResponse.json(menuItems, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      }
+    });
   } catch (error) {
     console.error('Error fetching menu:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

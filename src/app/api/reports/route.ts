@@ -5,6 +5,7 @@ import { checkAuth } from '@/lib/api-auth';
 // Force dynamic route to prevent caching
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+export const fetchCache = 'force-no-store';
 
 // GET reports data
 export async function GET(request: Request) {
@@ -95,6 +96,12 @@ export async function GET(request: Request) {
       dateRange: {
         start: startDate.toISOString().split('T')[0],
         end: endDate.toISOString().split('T')[0]
+      }
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
       }
     });
   } catch (error) {
