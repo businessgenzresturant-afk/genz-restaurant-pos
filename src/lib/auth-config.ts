@@ -20,47 +20,26 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
         try {
-          let user = await prisma.user.findUnique({ where: { email: credentials.email } });
+          const user = await prisma.user.findUnique({ where: { email: credentials.email } });
 
-          // Resilient auto-seed for Demo Accounts (DEVELOPMENT ONLY)
-          // This creates demo admin/staff accounts for local development and demos
-          // SECURITY: This is disabled in production to prevent known credentials from being auto-created
-          if (!user && (credentials.email === 'admin@genz.com' || credentials.email === 'staff@genz.com')) {
-            // Only allow auto-seeding in non-production environments OR if explicitly enabled
-            const isAutoSeedAllowed = process.env.NODE_ENV !== 'production' || process.env.ALLOW_DEMO_SEED === 'true';
-            
-            if (!isAutoSeedAllowed) {
-              // In production without explicit flag, reject the login attempt - but allow if users already exist
-              console.warn(`SECURITY: User ${credentials.email} not found in production database`);
-              return null;
-            }
-
-            const { hash } = await import('bcryptjs');
-            const roleToUse = credentials.email === 'admin@genz.com' ? 'ADMIN' : 'STAFF';
-            const passwordToUse = credentials.email === 'admin@genz.com' ? 'admin123' : 'staff123';
-            
-            let restaurant = await prisma.restaurant.findFirst();
-            if (!restaurant) {
-              restaurant = await prisma.restaurant.create({
-                data: { id: '00000000-0000-0000-0000-000000000001', name: 'GenZ Restaurant', address: '123 Main Street' }
-              });
-            }
-
-            user = await prisma.user.create({
-              data: {
-                name: roleToUse === 'ADMIN' ? 'Admin User' : 'Staff User',
-                email: credentials.email,
-                password: await hash(passwordToUse, 10),
-                role: roleToUse,
-                restaurantId: restaurant.id
-              }
-            });
+          if (!user) {
+            console.warn(`Login attempt for non-existent user: ${credentials.email}`);
+            return null;
           }
 
-          if (!user) return null;
           const isValid = await compare(credentials.password, user.password);
-          if (!isValid) return null;
-          return { id: user.id, email: user.email, name: user.name, role: user.role, restaurantId: user.restaurantId } as ExtendedUser;
+          if (!isValid) {
+            console.warn(`Invalid password for user: ${credentials.email}`);
+            return null;
+          }
+
+          return { 
+            id: user.id, 
+            email: user.email, 
+            name: user.name, 
+            role: user.role, 
+            restaurantId: user.restaurantId 
+          } as ExtendedUser;
         } catch (error: any) { 
           console.error("Auth error:", error?.message || error);
           console.error("Auth error stack:", error?.stack);

@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { signIn } from "next-auth/react"
+import { toast } from "sonner"
 
 const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -64,11 +65,12 @@ export function RegisterForm() {
         })
 
         if (signInResult?.error) {
-          setError("Account created but failed to sign in. Please log in manually.")
+          toast.error("Account created but failed to sign in. Please log in manually.")
+          router.push("/login")
         } else {
-          router.push("/pos/tables")
-          // Note: In Next.js 14, router.push doesn't immediately navigate
-          // The navigation will happen after this function completes
+          toast.success("Account created successfully! Welcome! 🎉")
+          router.push("/dashboard")
+          router.refresh()
         }
       }
     } catch (error) {

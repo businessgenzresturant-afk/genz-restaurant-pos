@@ -56,12 +56,6 @@ export default function LoginPage() {
     }
   };
 
-  const quickLogin = (email: string, password: string) => {
-    setValue('email', email);
-    setValue('password', password);
-    onSubmit({ email, password });
-  };
-
   return (
     <div className="min-h-screen flex">
       {/* LEFT — Restaurant Image Panel */}
@@ -149,7 +143,7 @@ export default function LoginPage() {
                 id="email"
                 type="email"
                 {...register('email')}
-                placeholder="admin@genzcafe.com"
+                placeholder="you@restaurant.com"
                 className="w-full px-4 py-3.5 rounded-xl bg-zinc-900 border border-zinc-800 text-white placeholder-zinc-600 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all text-sm"
               />
               {errors.email && (
@@ -180,7 +174,7 @@ export default function LoginPage() {
             >
               {isLoading ? (
                 <>
-                  <svg className=" h-5 w-5 text-white" viewBox="0 0 24 24" fill="none">
+                  <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24" fill="none">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
@@ -197,44 +191,17 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Divider */}
-          <div className="flex items-center gap-4">
-            <div className="flex-1 h-px bg-zinc-800" />
-            <span className="text-zinc-600 text-xs font-semibold uppercase tracking-wider">Quick Access</span>
-            <div className="flex-1 h-px bg-zinc-800" />
-          </div>
-
-          {/* Quick Login Cards */}
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              disabled={isLoading}
-              onClick={() => quickLogin('admin@genz.com', 'admin123')}
-              className="p-4 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-orange-500/50 hover:bg-orange-500/5 transition-all group text-left disabled:opacity-50"
-            >
-              <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center mb-3 group-hover:bg-orange-500/30 transition-colors">
-                <svg className="w-4 h-4 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <p className="text-white font-bold text-sm">Admin</p>
-              <p className="text-zinc-500 text-xs mt-0.5">Full access</p>
-            </button>
-
-            <button
-              type="button"
-              disabled={isLoading}
-              onClick={() => quickLogin('staff@genz.com', 'staff123')}
-              className="p-4 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-blue-500/50 hover:bg-blue-500/5 transition-all group text-left disabled:opacity-50"
-            >
-              <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center mb-3 group-hover:bg-blue-500/30 transition-colors">
-                <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </div>
-              <p className="text-white font-bold text-sm">Staff</p>
-              <p className="text-zinc-500 text-xs mt-0.5">POS access</p>
-            </button>
+          {/* Create Account Link */}
+          <div className="text-center">
+            <p className="text-zinc-500 text-sm">
+              Don't have an account?{' '}
+              <a
+                href="/register"
+                className="text-orange-500 font-bold hover:text-orange-400 transition-colors"
+              >
+                Create one now
+              </a>
+            </p>
           </div>
 
           {/* Footer */}
