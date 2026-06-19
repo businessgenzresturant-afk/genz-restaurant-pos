@@ -126,9 +126,12 @@ export async function PATCH(
       let pointsEarned = 0;
       let pointsRedeemed = 0;
       let discountAmount = 0;
-      let finalTotal = existingBill.subtotal;
+      
+      // P0 FIX: Start with subtotal + tax (the actual bill total before discounts)
+      const baseAmount = existingBill.subtotal + existingBill.tax;
+      let finalTotal = baseAmount;
 
-      // Apply discount if provided (already verified ADMIN above)
+      // Apply discount if provided (discount on subtotal only, tax remains)
       if (discountPercent && discountPercent > 0) {
         discountAmount = (existingBill.subtotal * discountPercent) / 100;
         finalTotal -= discountAmount;

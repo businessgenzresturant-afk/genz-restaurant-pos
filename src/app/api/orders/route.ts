@@ -111,30 +111,37 @@ export async function POST(request: Request) {
       }
     }
 
-    // Check table availability and lock it
+    // P1 FIX: Validate table and menu items belong to user's restaurant for multi-tenant isolation
+    const restaurantId = (auth.session.user as any).restaurantId;
+    
+    // Check table availability and lock it - WITH RESTAURANT VALIDATION
     let table = null;
     if (tableId) {
-      table = await prisma.table.findUnique({
-        where: { id: tableId },
+      table = await prisma.table.findFirst({
+        where: { 
+          id: tableId,
+          restaurantId: restaurantId // Ensure table belongs to user's restaurant
+        },
       });
 
       if (!table) {
-        return NextResponse.json({ error: 'Table not found' }, { status: 404 });
+        return NextResponse.json({ error: 'Table not found or does not belong to your restaurant' }, { status: 404 });
       }
     }
 
-    // Fetch all menu items to get prices and validate
+    // Fetch all menu items to get prices and validate - WITH RESTAURANT VALIDATION
     const menuItems = await prisma.menuItem.findMany({
       where: {
         id: {
           in: items.map((i: any) => i.menuItemId)
-        }
+        },
+        restaurantId: restaurantId // Ensure menu items belong to user's restaurant
       }
     });
 
     if (menuItems.length !== items.length) {
       return NextResponse.json(
-        { error: 'One or more menu items not found' },
+        { error: 'One or more menu items not found or do not belong to your restaurant' },
         { status: 404 }
       );
     }

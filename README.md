@@ -96,15 +96,20 @@ npm run dev
 
 Visit [http://localhost:3000](http://localhost:3000)
 
-## 🔑 Default Credentials
+## 🔑 Default Credentials (Development Only)
 
-After seeding, login with:
-- **Email:** `admin@genz.com`
-- **Password:** `admin123`
+> ⚠️ **SECURITY WARNING**: These credentials are for local development only. Never use these in production!
 
-Or:
-- **Email:** `staff@genz.com`
-- **Password:** `staff123`
+After running `npm run db:seed`, you can login with:
+- **Admin Account:**
+  - Email: `admin@genz.com`  
+  - Password: `admin123`
+
+- **Staff Account:**
+  - Email: `staff@genz.com`  
+  - Password: `staff123`
+
+**For Production:** Create new accounts with strong passwords after deployment and delete/disable these demo accounts.
 
 ## 📦 Project Structure
 

@@ -14,6 +14,15 @@ import { useAuth } from '@/lib/useAuth';
 export default function BillsPage() {
   const { user, isAdmin, isStaff } = useAuth();
   const router = useRouter();
+  
+  // Helper function to calculate final total including GST
+  const calculateFinalTotal = (bill: any, discountPct: number = 0, pointsAmt: number = 0) => {
+    // P0 FIX: Include tax (GST) in all calculations
+    const baseAmount = bill.subtotal + (bill.tax || 0);
+    const discountAmt = (bill.subtotal * discountPct) / 100;
+    return Math.max(0, baseAmount - discountAmt - pointsAmt);
+  };
+
   const [bills, setBills] = useState<any[]>(() => {
     if (typeof window !== 'undefined' && (window as any).__pos_bills_cache?.bills) {
       return (window as any).__pos_bills_cache.bills;
@@ -186,10 +195,8 @@ export default function BillsPage() {
       return;
     }
 
-    // Calculate final total
-    const discountAmt = (selectedBill.subtotal * discountPct) / 100;
-    const pointsAmt = pointsRedeem;
-    const finalTotal = Math.max(0, selectedBill.subtotal - discountAmt - pointsAmt);
+    // P0 FIX: Calculate final total including GST - Use helper function
+    const finalTotal = calculateFinalTotal(selectedBill, discountPct, pointsRedeem);
 
     // Validate split payment amounts
     let cash = 0;
@@ -276,10 +283,8 @@ export default function BillsPage() {
       return;
     }
 
-    // Calculate final total
-    const discountAmt = (selectedBill.subtotal * discountPct) / 100;
-    const pointsAmt = pointsRedeem;
-    const finalTotal = Math.max(0, selectedBill.subtotal - discountAmt - pointsAmt);
+    // P0 FIX: Calculate final total including GST - Use helper function
+    const finalTotal = calculateFinalTotal(selectedBill, discountPct, pointsRedeem);
 
     // Validate split payment amounts
     let cash = 0;
@@ -538,11 +543,15 @@ export default function BillsPage() {
                 <Button onClick={() => setShowPaymentModal(false)} variant="outline" size="sm">✕</Button>
               </div>
 
-              {/* Payment Details Summary */}
+              {/* Payment Details Summary - P0 FIX: Show GST separately */}
               <div className="bg-muted/50 rounded-xl p-4 mb-6 border border-border">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-muted-foreground">Subtotal</span>
                   <span className="font-bold text-foreground">₹{selectedBill.subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-muted-foreground">GST (18%)</span>
+                  <span className="font-bold text-foreground">₹{(selectedBill.tax || 0).toFixed(2)}</span>
                 </div>
                 {discountPercent && parseFloat(discountPercent) > 0 && (
                   <div className="flex justify-between items-center mb-2 text-green-600">
@@ -560,9 +569,9 @@ export default function BillsPage() {
                   <span className="text-sm font-bold text-foreground">Total Amount Due</span>
                   <span className="font-black text-2xl text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-600">
                     ₹{(() => {
-                      const discountAmt = discountPercent ? (selectedBill.subtotal * parseFloat(discountPercent)) / 100 : 0;
+                      const discountPct = discountPercent ? parseFloat(discountPercent) : 0;
                       const pointsAmt = pointsToRedeem ? parseInt(pointsToRedeem) : 0;
-                      return Math.max(0, selectedBill.subtotal - discountAmt - pointsAmt).toFixed(2);
+                      return calculateFinalTotal(selectedBill, discountPct, pointsAmt).toFixed(2);
                     })()}
                   </span>
                 </div>

@@ -4,6 +4,13 @@ import * as bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
+  // P0 FIX: Only allow demo seed in development, never in production
+  if (process.env.NODE_ENV === 'production') {
+    console.log('⚠️  Skipping demo seed in production environment');
+    console.log('✅ Please create admin account manually via /api/auth/register');
+    return;
+  }
+
   console.log('🌱 Starting database seed...');
 
   // Create Restaurant

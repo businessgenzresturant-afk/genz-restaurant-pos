@@ -32,6 +32,18 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // P1 FIX: Role-based page protection - ADMIN-only routes
+  const userRole = (token as any).role;
+  const adminOnlyRoutes = ['/reports', '/settings'];
+  
+  if (adminOnlyRoutes.some(route => pathname.startsWith(route)) && userRole !== 'ADMIN') {
+    const url = req.nextUrl.clone();
+    url.pathname = '/dashboard';
+    // Add a query param to show error message
+    url.searchParams.set('error', 'admin_required');
+    return NextResponse.redirect(url);
+  }
+
   return NextResponse.next();
 }
 

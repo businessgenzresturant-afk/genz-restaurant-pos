@@ -30,38 +30,44 @@ export async function GET(request: Request) {
     
     // Get completed orders within date range
     const restaurantId = (auth.session.user as any).restaurantId;
-    const orders = await prisma.order.findMany({
+    
+    // P0 FIX: Use bills (actual collected amounts) instead of orders for revenue calculation
+    const bills = await prisma.bill.findMany({
       where: {
-        status: 'COMPLETED',
-        createdAt: {
+        status: 'PAID',
+        paidAt: {
           gte: startDate,
           lte: endDate,
         },
         OR: [
           { table: { restaurantId } },
-          { items: { some: { menuItem: { restaurantId } } } }
+          { order: { items: { some: { menuItem: { restaurantId } } } } }
         ]
       },
       include: {
-        items: {
+        order: {
           include: {
-            menuItem: true
+            items: {
+              include: {
+                menuItem: true
+              }
+            }
           }
         }
       }
     });
 
-    // Calculate daily sales total
-    const dailySalesTotal = orders.reduce((sum: number, order: any) => sum + order.totalAmount, 0);
+    // Calculate daily sales total from actual collected amounts (bill.total includes GST, discounts, points)
+    const dailySalesTotal = bills.reduce((sum: number, bill: any) => sum + bill.total, 0);
     
     // Calculate orders count
-    const ordersCount = orders.length;
+    const ordersCount = bills.length;
     
-    // Calculate top 3 selling items
+    // Calculate top 3 selling items from paid bills
     const itemSales: Record<string, { name: string; quantity: number; revenue: number }> = {};
     
-    orders.forEach((order: any) => {
-      order.items.forEach((item: any) => {
+    bills.forEach((bill: any) => {
+      bill.order.items.forEach((item: any) => {
         if (!itemSales[item.menuItemId]) {
           itemSales[item.menuItemId] = {
             name: item.menuItem.name,

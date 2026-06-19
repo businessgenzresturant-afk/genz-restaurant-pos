@@ -116,9 +116,9 @@ export async function POST(request: Request) {
       );
     }
 
-    // Calculate bill amounts
+    // Calculate bill amounts using TAX_RATE from environment or default to 18%
     const subtotal = order.totalAmount;
-    const taxRate = 0.18; // 18% GST
+    const taxRate = process.env.TAX_RATE ? parseFloat(process.env.TAX_RATE) : 0.18;
     const tax = subtotal * taxRate;
     const discount = 0; // Can be added later
     const total = subtotal + tax - discount;
