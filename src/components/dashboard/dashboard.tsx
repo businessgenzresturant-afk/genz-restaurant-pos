@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { 
   Users, 
@@ -26,6 +27,8 @@ import { Portal } from '@/components/ui/portal';
 import { toast } from 'sonner';
 
 export function Dashboard() {
+  const router = useRouter();
+  
   const [tables, setTables] = useState<any[]>(() => {
     if (typeof window !== 'undefined' && (window as any).__pos_cache?.tables) {
       return (window as any).__pos_cache.tables;
@@ -300,11 +303,16 @@ export function Dashboard() {
       });
 
       if (!response.ok) throw new Error('Failed to generate bill');
+      
+      const newBill = await response.json();
       toast.success('Bill generated successfully! 🧾');
       setTableDrawerOpen(false);
-      fetchData();
+      
+      // Redirect to Bills page after generating bill
+      router.push('/bills');
     } catch (err) {
       toast.error('Failed to generate bill');
+      console.error('Bill generation error:', err);
     }
   };
 
