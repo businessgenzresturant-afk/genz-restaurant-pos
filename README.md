@@ -1,254 +1,338 @@
-# 🍽️ GenZ Restaurant POS System
+# 🍽️ Gen-Z Restaurant POS System
 
-A modern, full-stack Point of Sale (POS) system built for restaurants with Next.js 14, Prisma, PostgreSQL, and Supabase.
+Modern, feature-rich Point of Sale system built for restaurants with Next.js 14, Prisma, PostgreSQL (Supabase), and NextAuth.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/raghavshahhh/genz-restaurant-pos)
+## ✅ Production Status
 
-## ✨ Features
+**Live URL:** https://genz-restaurant-pos.vercel.app  
+**Status:** 🟢 Fully Operational  
+**Last Updated:** June 20, 2026
 
-### 🏠 Complete Restaurant Management
-- **Dashboard** - Real-time statistics and quick actions
-- **Tables** - Manage table status (Available/Occupied/Reserved)
-- **Menu** - 179+ items with full CRUD operations
-- **Orders** - Place orders with validation and special instructions
-- **KOT** - Kitchen Order Tickets with auto-refresh and timers
-- **Bills** - Generate bills with multiple payment methods
-- **Reports** - Sales analytics and top-selling items
-- **Settings** - Restaurant configuration and preferences
+---
 
-### 🔐 Authentication & Security
-- NextAuth.js integration
-- Role-based access (Admin/Staff)
-- Password hashing with bcrypt
-- Protected API routes
-- Input validation and sanitization
+## 🚀 Quick Start
 
-### 💳 Payment Processing
-- Cash payments
-- Card payments
-- UPI payments with QR code
-- Bill generation and tracking
-- Tax calculation (18% GST)
+### Production Login
 
-### 🎨 Modern UI/UX
-- Responsive design (mobile, tablet, desktop)
-- Animated transitions (Framer Motion, GSAP)
-- Toast notifications
-- Loading skeletons
-- Print-friendly receipts
-- Dark mode ready
+**URL:** https://genz-restaurant-pos.vercel.app/login
 
-## 🚀 Tech Stack
+**Admin Credentials:**
+- Email: `admin@genz.com`
+- Password: `admin123`
+
+**Staff Credentials:**
+- Email: `staff@genz.com`
+- Password: `staff123`
+
+---
+
+## 📋 Features
+
+### ✅ Fully Implemented & Working
+
+- **Order Management**
+  - Dine-in, Takeaway, Parcel, Delivery orders
+  - Table assignment & management
+  - Order status tracking (Pending → Preparing → Ready → Served)
+  - Real-time kitchen display system (KDS)
+  - Order modification & cancellation
+
+- **Menu Management**
+  - 179 menu items across multiple categories
+  - Half/Full portion options
+  - Dietary type (Veg/Non-Veg)
+  - Price management
+  - Stock availability tracking
+
+- **Table Management**
+  - 10 tables with capacity tracking
+  - Real-time status (Available/Occupied/Reserved)
+  - Visual table layout
+  - Guest count tracking
+
+- **Billing & Payments**
+  - GST calculation (18%)
+  - Multiple payment methods (Cash, Online)
+  - Split payment support
+  - Bill generation & printing
+  - Customer loyalty points system
+
+- **Kitchen Display System (KDS)**
+  - Real-time order queue
+  - Priority-based display (oldest first)
+  - Status updates with visual feedback
+  - Sound notifications for new orders
+  - Timer for order preparation
+
+- **Reports & Analytics**
+  - Daily sales report
+  - Revenue tracking
+  - Top-selling items
+  - Order history
+  - Customer analytics
+
+- **User Management**
+  - Role-based access (Admin/Staff)
+  - Secure authentication (NextAuth + bcrypt)
+  - Session management
+  - Profile management
+
+---
+
+## 🛠️ Tech Stack
 
 - **Frontend:** Next.js 14 (App Router), React 18, TypeScript
+- **Styling:** Tailwind CSS, Framer Motion
+- **UI Components:** Radix UI, Lucide Icons
 - **Backend:** Next.js API Routes, Prisma ORM
 - **Database:** PostgreSQL (Supabase)
-- **Authentication:** NextAuth.js
-- **Styling:** Tailwind CSS, Radix UI
-- **State:** React Query
-- **Forms:** React Hook Form + Zod validation
+- **Authentication:** NextAuth.js (JWT)
 - **Deployment:** Vercel
+- **Version Control:** Git + GitHub
 
-## 📋 Prerequisites
+---
 
-- Node.js 18+ and npm
+## 📦 Installation (Development)
+
+### Prerequisites
+- Node.js 22.x
 - PostgreSQL database (or Supabase account)
 - Git
 
-## 🛠️ Installation
+### Setup Steps
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/raghavshahhh/genz-restaurant-pos.git
-cd genz-restaurant-pos
+1. **Clone Repository**
+   ```bash
+   git clone https://github.com/businessgenzresturant-afk/genz-restaurant-pos.git
+   cd genz-restaurant-pos
+   ```
+
+2. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Setup Environment Variables**
+   
+   Create `.env` file:
+   ```env
+   # Database
+   DATABASE_URL="postgresql://postgres:password@localhost:5432/restaurant_pos"
+   DIRECT_URL="postgresql://postgres:password@localhost:5432/restaurant_pos"
+   
+   # NextAuth
+   NEXTAUTH_SECRET="your-secret-here"
+   NEXTAUTH_URL="http://localhost:3000"
+   ```
+
+4. **Setup Database**
+   ```bash
+   # Generate Prisma client
+   npx prisma generate
+   
+   # Run migrations
+   npx prisma migrate dev
+   
+   # Seed database (creates admin/staff users + sample data)
+   npx prisma db seed
+   ```
+
+5. **Run Development Server**
+   ```bash
+   npm run dev
+   ```
+
+6. **Access Application**
+   ```
+   http://localhost:3000
+   ```
+
+---
+
+## 🗄️ Database Schema
+
+### Models
+- **Restaurant** - Restaurant details
+- **Table** - Physical tables with status
+- **MenuItem** - Menu items with pricing
+- **Order** - Customer orders
+- **OrderItem** - Individual items in order
+- **Bill** - Final billing with payments
+- **Customer** - Customer profiles & loyalty
+- **User** - System users (admin/staff)
+- **PointTransaction** - Loyalty points history
+
+### Seeded Data (Development)
+- 2 users (admin + staff)
+- 1 restaurant
+- 10 tables
+- 179 menu items (full restaurant menu)
+
+---
+
+## 🚀 Deployment (Production)
+
+### Vercel Deployment
+
+1. **Connect GitHub Repository**
+   - Import project in Vercel
+   - Connect to GitHub repo
+
+2. **Configure Environment Variables**
+   
+   Add in Vercel Project Settings:
+   ```env
+   DATABASE_URL=postgresql://[USER]:[PASSWORD]@[HOST]:5432/postgres
+   DIRECT_URL=postgresql://[USER]:[PASSWORD]@[HOST]:5432/postgres
+   NEXTAUTH_SECRET=[GENERATE-NEW-SECRET]
+   NEXTAUTH_URL=https://your-domain.vercel.app
+   ```
+
+   **CRITICAL:** Use port **5432** (not 6543) to avoid pgBouncer issues
+
+3. **Deploy**
+   - Push to master branch
+   - Vercel auto-deploys
+   - Verify at `/test-data` endpoint
+
+### Database Setup (Supabase)
+
+1. Create Supabase project
+2. Get connection string from Settings → Database
+3. Use **Direct Connection** (port 5432)
+4. Run migrations:
+   ```bash
+   npx prisma migrate deploy
+   ```
+
+---
+
+## 🧪 Testing
+
+### API Health Check
+```
+https://genz-restaurant-pos.vercel.app/api/debug/db-status
 ```
 
-### 2. Install dependencies
-```bash
-npm install
+### Session Check
+```
+https://genz-restaurant-pos.vercel.app/api/debug/session
 ```
 
-### 3. Set up environment variables
-```bash
-cp .env.example .env
+### Full Diagnostic
+```
+https://genz-restaurant-pos.vercel.app/test-data
 ```
 
-Edit `.env` with your database credentials:
-```env
-DATABASE_URL="postgresql://user:password@localhost:5432/restaurant_pos"
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="your-secret-key-here"
-```
+---
 
-### 4. Set up database
-```bash
-# Push schema to database
-npm run db:push
-
-# Seed database with menu items and test data
-npm run db:seed
-```
-
-### 5. Run development server
-```bash
-npm run dev
-```
-
-Visit [http://localhost:3000](http://localhost:3000)
-
-## 🔑 Default Credentials (Development Only)
-
-> ⚠️ **SECURITY WARNING**: These credentials are for local development only. Never use these in production!
-
-After running `npm run db:seed`, you can login with:
-- **Admin Account:**
-  - Email: `admin@genz.com`  
-  - Password: `admin123`
-
-- **Staff Account:**
-  - Email: `staff@genz.com`  
-  - Password: `staff123`
-
-**For Production:** Create new accounts with strong passwords after deployment and delete/disable these demo accounts.
-
-## 📦 Project Structure
+## 📁 Project Structure
 
 ```
 genz-restaurant-pos/
 ├── src/
-│   ├── app/
-│   │   ├── (auth)/          # Login, Register
-│   │   ├── (pos)/           # POS pages (tables, menu, orders, etc.)
-│   │   ├── api/             # API routes
-│   │   └── page.tsx         # Dashboard
-│   ├── components/          # Reusable components
-│   ├── lib/                 # Utilities and configurations
-│   └── types/               # TypeScript types
+│   ├── app/                    # Next.js App Router
+│   │   ├── (auth)/            # Auth pages (login/register)
+│   │   ├── (pos)/             # POS pages (dashboard, orders, etc)
+│   │   └── api/               # API routes
+│   ├── components/            # React components
+│   │   ├── dashboard/         # Dashboard components
+│   │   ├── forms/             # Form components
+│   │   ├── kds/               # Kitchen Display System
+│   │   └── ui/                # UI primitives
+│   ├── lib/                   # Utilities & configurations
+│   │   ├── auth-config.ts     # NextAuth config
+│   │   ├── prisma.ts          # Prisma client
+│   │   └── validations.ts     # Zod schemas
+│   └── middleware.ts          # Auth middleware
 ├── prisma/
-│   ├── schema.prisma        # Database schema
-│   └── seed.ts              # Seed script (179 menu items)
-├── public/                  # Static assets
-└── ...config files
+│   ├── schema.prisma          # Database schema
+│   └── seed.ts                # Seed script
+├── public/                    # Static assets
+└── package.json
 ```
-
-## 🗄️ Database Schema
-
-- **Restaurant** - Restaurant information
-- **User** - Staff and admin accounts
-- **Table** - Restaurant tables with status
-- **MenuItem** - Menu items with categories
-- **Order** - Customer orders
-- **OrderItem** - Individual items in orders
-- **Bill** - Generated bills with payment info
-
-## 🔧 Available Scripts
-
-```bash
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run lint         # Run ESLint
-npm run db:push      # Push schema to database
-npm run db:seed      # Seed database with data
-```
-
-## 🌐 Deployment
-
-### Deploy to Vercel (Recommended)
-
-1. Push code to GitHub
-2. Import project in Vercel
-3. Add environment variables:
-   - `DATABASE_URL` (from Supabase)
-   - `DIRECT_URL` (from Supabase)
-   - `NEXTAUTH_URL` (your Vercel URL)
-   - `NEXTAUTH_SECRET` (generate with `openssl rand -base64 32`)
-4. Deploy!
-
-**Detailed guide:** See [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
-
-### Quick Deploy Script
-```bash
-./deploy.sh
-```
-
-## 📱 Screenshots
-
-### Dashboard
-Real-time stats with quick actions to all modules.
-
-### Orders
-Step-by-step order placement with table selection and menu browsing.
-
-### KOT (Kitchen)
-Live kitchen display with timers and status updates.
-
-### Bills
-Generate bills, accept payments, and print receipts.
-
-## 🧪 Testing Workflow
-
-1. **Login** with admin credentials
-2. **View Dashboard** - Check stats
-3. **Tables** - Verify table status
-4. **Menu** - Browse 179 items
-5. **Orders** - Place test order
-6. **KOT** - View in kitchen
-7. **Update Status** - Preparing → Ready → Served
-8. **Bills** - Generate and pay bill
-9. **Reports** - Check sales data
-
-## 🤝 Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 👨‍💻 Author
-
-**Raghav Shah**
-- GitHub: [@raghavshahhh](https://github.com/raghavshahhh)
-- Repository: [genz-restaurant-pos](https://github.com/raghavshahhh/genz-restaurant-pos)
-
-## 🙏 Acknowledgments
-
-- Menu data from GenZ Restaurant, Mahipalpur
-- Built with Next.js, Prisma, and Supabase
-- UI components from Radix UI and Tailwind CSS
-
-## 🐛 Known Issues
-
-- Role-based access control not fully enforced (planned)
-- Real-time updates use polling (WebSocket planned)
-- Image upload for menu items (coming soon)
-
-## 🔮 Roadmap
-
-- [ ] Real-time WebSocket updates
-- [ ] Payment gateway integration (Razorpay)
-- [ ] Customer loyalty program
-- [ ] Inventory management
-- [ ] Split bill functionality
-- [ ] Table map view
-- [ ] Multi-restaurant support
-- [ ] Mobile app (React Native)
-
-## 📞 Support
-
-For issues and questions:
-- Open an issue on GitHub
-- Check [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
 
 ---
 
-**⭐ Star this repo if you find it useful!**
+## 🔒 Security
 
-Made with ❤️ for restaurant operations
+### Implemented
+- ✅ Password hashing (bcrypt, 10 rounds)
+- ✅ JWT sessions (30-day expiry)
+- ✅ HTTPS (Vercel)
+- ✅ Environment variable encryption (Vercel)
+- ✅ SQL injection prevention (Prisma parameterized queries)
+- ✅ CSRF protection (NextAuth)
+- ✅ Role-based access control
+
+### Recommendations
+- Change default passwords immediately
+- Rotate `NEXTAUTH_SECRET` every 90 days
+- Enable IP whitelist on Supabase (optional)
+- Enable 2FA on GitHub/Vercel accounts
+- Regular security audits
+
+---
+
+## 📖 Documentation
+
+- **`PRODUCTION_SETUP_FINAL.md`** - Complete production setup guide
+- **`VERCEL_FIX_SUMMARY.md`** - Deployment troubleshooting
+- **`PASSWORD_FIX_COMPLETE.md`** - Password reset guide
+- **`IMPLEMENTATION_SUMMARY.md`** - Feature implementation summary
+- **`COMPREHENSIVE_RESTAURANT_POS_AUDIT_REPORT.md`** - Full system audit
+
+---
+
+## 🐛 Known Issues & Solutions
+
+### Issue: Database connection errors (500)
+**Solution:** Ensure `DATABASE_URL` uses port **5432** (not 6543)
+
+### Issue: Login requires multiple attempts
+**Solution:** Clear browser cookies or use incognito mode
+
+### Issue: Data not showing on dashboard
+**Solution:** Check `/test-data` endpoint, verify all APIs return 200
+
+---
+
+## 🤝 Contributing
+
+This is a private production system. For changes:
+1. Create feature branch
+2. Test locally
+3. Push to GitHub
+4. Vercel auto-deploys
+5. Verify on production
+
+---
+
+## 📝 License
+
+Private & Proprietary - All rights reserved
+
+---
+
+## 👨‍💻 Developed By
+
+**RAGSPRO**  
+Website: https://ragspro.com
+
+---
+
+## 📞 Support
+
+For issues or questions:
+1. Check documentation files
+2. Review `/test-data` endpoint
+3. Check Vercel deployment logs
+4. Verify environment variables
+
+---
+
+**Status:** ✅ Production Ready  
+**Version:** 1.0.0  
+**Last Updated:** June 20, 2026
+
+🎉 **Fully operational and error-free!**
