@@ -120,7 +120,7 @@ export async function PATCH(
     const POINTS_REDEMPTION_VALUE = 1; // 1 point = ₹1
 
     // Update bill and handle customer loyalty in a transaction if payment is confirmed
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: any) => {
       let customerId = null;
       let pointsEarned = 0;
       let pointsRedeemed = 0;
