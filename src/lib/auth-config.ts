@@ -30,8 +30,8 @@ export const authOptions: NextAuthOptions = {
             const isAutoSeedAllowed = process.env.NODE_ENV !== 'production' || process.env.ALLOW_DEMO_SEED === 'true';
             
             if (!isAutoSeedAllowed) {
-              // In production without explicit flag, reject the login attempt
-              console.warn(`SECURITY: Blocked auto-seed attempt for ${credentials.email} in production mode`);
+              // In production without explicit flag, reject the login attempt - but allow if users already exist
+              console.warn(`SECURITY: User ${credentials.email} not found in production database`);
               return null;
             }
 

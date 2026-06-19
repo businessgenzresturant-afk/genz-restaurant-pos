@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { Card } from '@/components/ui/card';
 import { 
@@ -76,6 +76,9 @@ export function Dashboard() {
   const [selectedOrderType, setSelectedOrderType] = useState<string>('DINE_IN');
   const [customerDetails, setCustomerDetails] = useState<any>(null);
 
+  // Audio ref for dashboard click sound
+  const clickSoundRef = useRef<HTMLAudioElement | null>(null);
+
   const fetchData = useCallback(async () => {
     try {
       const [tablesRes, ordersRes, reportsRes, menuRes] = await Promise.all([
@@ -128,6 +131,33 @@ export function Dashboard() {
     const interval = setInterval(fetchData, 3000);
     return () => clearInterval(interval);
   }, [fetchData]);
+
+  // Preload dashboard click sound (reuse the same sound loading pattern as KDS)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Reuse the urgent.mp3 sound at lower volume for dashboard clicks
+      clickSoundRef.current = new Audio('/sounds/urgent.mp3');
+      clickSoundRef.current.volume = 0.3; // Lower volume for subtle feedback
+      clickSoundRef.current.load();
+    }
+  }, []);
+
+  // Play click sound utility (follows KDS pattern)
+  const playClickSound = useCallback(() => {
+    try {
+      if (!clickSoundRef.current) return;
+      
+      // Clone the audio to allow rapid successive clicks
+      const soundClone = clickSoundRef.current.cloneNode() as HTMLAudioElement;
+      soundClone.volume = 0.3;
+      soundClone.play().catch(() => {
+        // Silently fail if browser blocks autoplay - never break functionality
+      });
+    } catch (e) {
+      // Silently fail - sound is nice-to-have, not critical
+      console.debug('Dashboard click sound failed:', e);
+    }
+  }, []);
 
   const physicalTables = tables.filter(t => t.number < 1000).sort((a, b) => a.number - b.number);
   
@@ -342,7 +372,10 @@ export function Dashboard() {
             
             {/* Dine In Card */}
             <button 
-              onClick={() => setTableSelectModalOpen(true)}
+              onClick={() => {
+                playClickSound();
+                setTableSelectModalOpen(true);
+              }}
               className="p-6 rounded-2xl border-2 border-border/80 bg-card flex flex-col justify-between items-start cursor-pointer hover:border-blue-500/60 hover:bg-blue-500/5 hover:shadow-lg hover:shadow-blue-500/5 transition-all text-left group min-h-[140px]"
             >
               <div className="flex justify-between items-center w-full">
@@ -356,7 +389,10 @@ export function Dashboard() {
 
             {/* Takeaway Card */}
             <button 
-              onClick={() => handleOrderTypeCardClick('TAKEAWAY')}
+              onClick={() => {
+                playClickSound();
+                handleOrderTypeCardClick('TAKEAWAY');
+              }}
               className="p-6 rounded-2xl border-2 border-border/80 bg-card flex flex-col justify-between items-start cursor-pointer hover:border-amber-500/60 hover:bg-amber-500/5 hover:shadow-lg hover:shadow-amber-500/5 transition-all text-left group min-h-[140px]"
             >
               <div className="flex justify-between items-center w-full">
@@ -370,7 +406,10 @@ export function Dashboard() {
 
             {/* Parcel Card */}
             <button 
-              onClick={() => handleOrderTypeCardClick('PARCEL')}
+              onClick={() => {
+                playClickSound();
+                handleOrderTypeCardClick('PARCEL');
+              }}
               className="p-6 rounded-2xl border-2 border-border/80 bg-card flex flex-col justify-between items-start cursor-pointer hover:border-emerald-500/60 hover:bg-emerald-500/5 hover:shadow-lg hover:shadow-emerald-500/5 transition-all text-left group min-h-[140px]"
             >
               <div className="flex justify-between items-center w-full">
@@ -384,7 +423,10 @@ export function Dashboard() {
 
             {/* Delivery Card */}
             <button 
-              onClick={() => handleOrderTypeCardClick('DELIVERY')}
+              onClick={() => {
+                playClickSound();
+                handleOrderTypeCardClick('DELIVERY');
+              }}
               className="p-6 rounded-2xl border-2 border-border/80 bg-card flex flex-col justify-between items-start cursor-pointer hover:border-rose-500/60 hover:bg-rose-500/5 hover:shadow-lg hover:shadow-rose-500/5 transition-all text-left group min-h-[140px]"
             >
               <div className="flex justify-between items-center w-full">

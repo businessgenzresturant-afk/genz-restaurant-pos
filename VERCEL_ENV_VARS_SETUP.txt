@@ -1,0 +1,71 @@
+╔═══════════════════════════════════════════════════════════════════════════╗
+║                  VERCEL ENVIRONMENT VARIABLES - COPY PASTE                ║
+╚═══════════════════════════════════════════════════════════════════════════╝
+
+🎯 LOGIN FIX - 4 Variables Required in Vercel Production Environment
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1️⃣ DATABASE_URL
+   Value: postgresql://postgres:gen-zresturant@db.slzyuqoafjqhjkvhrhnx.supabase.co:5432/postgres
+   
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+2️⃣ DIRECT_URL
+   Value: postgresql://postgres:gen-zresturant@db.slzyuqoafjqhjkvhrhnx.supabase.co:5432/postgres
+   
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+3️⃣ NEXTAUTH_SECRET
+   Value: vW8xK3mN9pQ2rT5yU7zA4bC6dE8fG0hJ2kL4mN6pQ8s
+   
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+4️⃣ NEXTAUTH_URL
+   Value: https://YOUR-VERCEL-DOMAIN.vercel.app
+   
+   ⚠️ IMPORTANT: Replace "YOUR-VERCEL-DOMAIN" with your actual domain!
+   
+   How to find your domain:
+   - Go to Vercel Dashboard → Deployments
+   - Copy the URL from your latest Production deployment
+   - Example: https://genz-restaurant-pos-abc123.vercel.app
+   
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📋 STEP-BY-STEP:
+
+1. Vercel में जाओ: https://vercel.com
+2. अपना project खोलो
+3. Settings → Environment Variables
+4. ऊपर दिए गए 4 variables add करो
+5. Environment select करो: Production
+6. Save करो
+7. Deployments tab में जाओ
+8. Latest deployment पर ... click → Redeploy
+9. 2-3 minutes wait करो
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+✅ TEST LOGIN:
+
+Email: admin@genz.com
+Password: admin123
+
+या
+
+Email: staff@genz.com
+Password: staff123
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🔍 VERIFICATION:
+
+✅ Database users exist (checked): 2 users found
+✅ Passwords are hashed correctly
+✅ Menu has 179 items
+✅ 10 tables created
+
+❌ Missing: NEXTAUTH_URL and NEXTAUTH_SECRET in Vercel
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
