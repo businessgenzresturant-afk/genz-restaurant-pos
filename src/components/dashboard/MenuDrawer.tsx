@@ -16,7 +16,7 @@ interface MenuDrawerProps {
 export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlaceOrder }: MenuDrawerProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [cart, setCart] = useState<{menuItemId: string, quantity: number, specialInstructions: string}[]>([]);
+  const [cart, setCart] = useState<{menuItemId: string, quantity: number, specialInstructions: string, portionType?: 'HALF' | 'FULL'}[]>([]);
   const [activeTab, setActiveTab] = useState<'menu' | 'cart'>('menu');
 
   React.useEffect(() => {
@@ -49,31 +49,34 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
     return filtered;
   }, [menuItems, selectedCategory, searchQuery]);
 
-  const handleAddItem = (menuItem: any) => {
-    const existing = cart.find(item => item.menuItemId === menuItem.id);
+  const handleAddItem = (menuItem: any, portionType?: 'HALF' | 'FULL') => {
+    const existing = cart.find(item => item.menuItemId === menuItem.id && item.portionType === portionType);
     if (existing) {
       setCart(cart.map(item => 
-        item.menuItemId === menuItem.id ? { ...item, quantity: item.quantity + 1 } : item
+        (item.menuItemId === menuItem.id && item.portionType === portionType) ? { ...item, quantity: item.quantity + 1 } : item
       ));
     } else {
-      setCart([...cart, { menuItemId: menuItem.id, quantity: 1, specialInstructions: '' }]);
+      setCart([...cart, { menuItemId: menuItem.id, quantity: 1, specialInstructions: '', portionType }]);
     }
+    setSearchQuery('');
   };
 
-  const handleRemoveItem = (menuItemId: string) => {
-    const existing = cart.find(item => item.menuItemId === menuItemId);
+  const handleRemoveItem = (menuItemId: string, portionType?: 'HALF' | 'FULL') => {
+    const existing = cart.find(item => item.menuItemId === menuItemId && item.portionType === portionType);
     if (existing && existing.quantity > 1) {
       setCart(cart.map(item => 
-        item.menuItemId === menuItemId ? { ...item, quantity: item.quantity - 1 } : item
+        (item.menuItemId === menuItemId && item.portionType === portionType) ? { ...item, quantity: item.quantity - 1 } : item
       ));
     } else {
-      setCart(cart.filter(item => item.menuItemId !== menuItemId));
+      setCart(cart.filter(item => !(item.menuItemId === menuItemId && item.portionType === portionType)));
     }
   };
 
-  const getMenuItemPrice = (id: string) => {
+  const getMenuItemPrice = (id: string, portionType?: 'HALF' | 'FULL') => {
     const item = menuItems.find(m => m.id === id);
-    return item ? item.price : 0;
+    if (!item) return 0;
+    if (portionType === 'HALF' && item.priceHalf) return item.priceHalf;
+    return item.price;
   };
 
   const getMenuItemName = (id: string) => {
@@ -86,7 +89,7 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
     return item?.dietType || 'VEG';
   };
 
-  const totalAmount = cart.reduce((sum, item) => sum + (getMenuItemPrice(item.menuItemId) * item.quantity), 0);
+  const totalAmount = cart.reduce((sum, item) => sum + (getMenuItemPrice(item.menuItemId, item.portionType) * item.quantity), 0);
 
   const handleSubmit = () => {
     if (cart.length > 0) {
@@ -99,10 +102,10 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
   if (!isOpen) return null;
 
   return (
-    <>
-      <div className="fixed inset-0 bg-black/60 z-[150] backdrop-blur-sm animate-fade-in" onClick={onClose} />
+    <div className="fixed inset-0 z-[150] flex items-center justify-center md:p-4">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in" onClick={onClose} />
       <div 
-        className="fixed inset-x-0 bottom-0 top-0 md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 bg-background border-t md:border border-border shadow-2xl md:rounded-3xl z-[160] overflow-hidden animate-fade-in flex flex-col md:flex-row w-full h-full md:w-[95vw] md:max-w-[1152px] md:h-[85vh]"
+        className="relative bg-background border-t md:border border-border shadow-2xl md:rounded-3xl z-[160] overflow-hidden animate-fade-in flex flex-col md:flex-row w-full h-full md:w-[95vw] md:max-w-[1152px] md:h-[85vh]"
       >
         
         {/* Left Side: Menu Selection */}
@@ -166,44 +169,93 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
                           ? 'border-primary bg-primary/[0.02] shadow-md shadow-primary/5' 
                           : 'border-border hover:border-primary/40'
                       }`}
+                      onClick={() => {
+                        if (!item.hasHalfFullOption) {
+                          handleAddItem(item);
+                        }
+                      }}
                     >
-                      {/* Clickable Area to Add Item */}
-                      <div 
-                        className="cursor-pointer flex-1"
-                        onClick={() => handleAddItem(item)}
-                      >
-                        <div className="flex items-center gap-2 mb-2">
-                          <DietIndicator dietType={item.dietType} />
-                          <span className="block font-bold text-foreground group-hover:text-primary leading-tight transition-colors">{item.name}</span>
-                          {/* Debug: show dietType value */}
-                          {process.env.NODE_ENV === 'development' && (
-                            <span className="text-[8px] text-muted-foreground">({item.dietType})</span>
-                          )}
+                      {/* Item Details */}
+                      <div className="cursor-pointer">
+                        <div className="flex items-start gap-2 mb-1">
+                          <div className="mt-1">
+                            <DietIndicator dietType={item.dietType} />
+                          </div>
+                          <span className="block font-bold text-base text-foreground group-hover:text-primary leading-tight transition-colors pr-2">
+                            {item.name}
+                          </span>
                         </div>
-                        <span className="text-xs text-muted-foreground mt-1 block">{item.category}</span>
-                        <span className="block font-black text-primary mt-3">
-                          ₹{item.price.toFixed(2)}
-                        </span>
+                        <span className="text-xs font-medium text-muted-foreground block">{item.category}</span>
                       </div>
 
-                      {/* Direct Quantity Adjuster on the Card */}
-                      {quantity > 0 && (
-                        <div className="absolute top-2 right-2 flex items-center gap-1 bg-background border border-border p-0.5 rounded-lg shadow-sm" onClick={(e) => e.stopPropagation()}>
-                          <button 
-                            onClick={() => handleRemoveItem(item.id)} 
-                            className="w-5 h-5 flex items-center justify-center rounded bg-muted hover:bg-muted/80 text-foreground font-black text-xs transition-colors active:scale-[0.90]"
-                          >
-                            -
-                          </button>
-                          <span className="w-4 text-center font-black text-xs text-foreground">{quantity}</span>
-                          <button 
-                            onClick={() => handleAddItem(item)} 
-                            className="w-5 h-5 flex items-center justify-center rounded bg-primary/10 hover:bg-primary/20 text-primary font-black text-xs transition-colors active:scale-[0.90]"
-                          >
-                            +
-                          </button>
-                        </div>
-                      )}
+                      <div className="mt-auto pt-4 flex flex-col">
+                        {item.hasHalfFullOption ? (
+                          <div className="flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
+                            {/* Half */}
+                            <div className="flex items-center justify-between bg-muted/20 rounded-xl p-2 border border-border">
+                              <span className="text-xs font-bold text-muted-foreground ml-1">Half (₹{item.priceHalf?.toFixed(2)})</span>
+                              {(() => {
+                                const halfItem = cart.find(i => i.menuItemId === item.id && i.portionType === 'HALF');
+                                const halfQty = halfItem ? halfItem.quantity : 0;
+                                return halfQty > 0 ? (
+                                  <div className="flex items-center gap-2">
+                                    <button onClick={() => handleRemoveItem(item.id, 'HALF')} className="w-8 h-8 flex items-center justify-center rounded-lg bg-muted hover:bg-muted/80 text-foreground font-black text-sm active:scale-95 transition-all">-</button>
+                                    <span className="w-4 text-center font-black text-xs">{halfQty}</span>
+                                    <button onClick={() => handleAddItem(item, 'HALF')} className="w-8 h-8 flex items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 font-black text-sm active:scale-95 transition-all">+</button>
+                                  </div>
+                                ) : (
+                                  <Button size="sm" variant="secondary" className="h-8 px-4 text-xs font-bold rounded-lg active:scale-95 transition-all" onClick={() => handleAddItem(item, 'HALF')}>Add</Button>
+                                );
+                              })()}
+                            </div>
+                            {/* Full */}
+                            <div className="flex items-center justify-between bg-muted/20 rounded-xl p-2 border border-border">
+                              <span className="text-xs font-bold text-muted-foreground ml-1">Full (₹{item.price.toFixed(2)})</span>
+                              {(() => {
+                                const fullItem = cart.find(i => i.menuItemId === item.id && i.portionType === 'FULL');
+                                const fullQty = fullItem ? fullItem.quantity : 0;
+                                return fullQty > 0 ? (
+                                  <div className="flex items-center gap-2">
+                                    <button onClick={() => handleRemoveItem(item.id, 'FULL')} className="w-8 h-8 flex items-center justify-center rounded-lg bg-muted hover:bg-muted/80 text-foreground font-black text-sm active:scale-95 transition-all">-</button>
+                                    <span className="w-4 text-center font-black text-xs">{fullQty}</span>
+                                    <button onClick={() => handleAddItem(item, 'FULL')} className="w-8 h-8 flex items-center justify-center rounded-lg bg-primary/10 text-primary hover:bg-primary/20 font-black text-sm active:scale-95 transition-all">+</button>
+                                  </div>
+                                ) : (
+                                  <Button size="sm" variant="secondary" className="h-8 px-4 text-xs font-bold rounded-lg active:scale-95 transition-all" onClick={() => handleAddItem(item, 'FULL')}>Add</Button>
+                                );
+                              })()}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-between" onClick={(e) => e.stopPropagation()}>
+                            <span className="block font-black text-primary text-lg">
+                              ₹{item.price.toFixed(2)}
+                            </span>
+                            
+                            {quantity > 0 ? (
+                              <div className="flex items-center gap-2">
+                                <button 
+                                  onClick={() => handleRemoveItem(item.id)} 
+                                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-muted hover:bg-muted/80 text-foreground font-black text-sm active:scale-95 transition-all"
+                                >
+                                  -
+                                </button>
+                                <span className="w-4 text-center font-black text-xs text-foreground">{quantity}</span>
+                                <button 
+                                  onClick={() => handleAddItem(item)} 
+                                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-primary/10 hover:bg-primary/20 text-primary font-black text-sm active:scale-95 transition-all"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            ) : (
+                              <Button size="sm" variant="secondary" className="h-8 px-4 text-xs font-bold rounded-lg active:scale-95 transition-all" onClick={() => handleAddItem(item)}>
+                                Add
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
@@ -260,9 +312,12 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center gap-2 flex-1 min-w-0 pr-2">
                       <DietIndicator dietType={getMenuItemDietType(item.menuItemId)} />
-                      <p className="font-bold text-foreground truncate">{getMenuItemName(item.menuItemId)}</p>
+                      <p className="font-bold text-foreground truncate">
+                        {getMenuItemName(item.menuItemId)}
+                        {item.portionType && <span className="ml-2 text-[9px] uppercase bg-primary/20 text-primary px-1.5 py-0.5 rounded font-black">{item.portionType}</span>}
+                      </p>
                     </div>
-                    <p className="font-semibold whitespace-nowrap">₹{(getMenuItemPrice(item.menuItemId) * item.quantity).toFixed(2)}</p>
+                    <p className="font-semibold whitespace-nowrap">₹{(getMenuItemPrice(item.menuItemId, item.portionType) * item.quantity).toFixed(2)}</p>
                   </div>
                   <div className="flex justify-between items-center">
                     <Input
@@ -276,9 +331,9 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
                       className="h-8 text-xs bg-background border-border w-[140px]"
                     />
                     <div className="flex items-center space-x-2 bg-background rounded-lg border border-border p-1 shadow-sm">
-                      <button onClick={() => handleRemoveItem(item.menuItemId)} className="w-6 h-6 flex items-center justify-center rounded bg-muted hover:bg-muted/80 font-bold transition-all active:scale-[0.90]">-</button>
+                      <button onClick={() => handleRemoveItem(item.menuItemId, item.portionType)} className="w-6 h-6 flex items-center justify-center rounded bg-muted hover:bg-muted/80 font-bold transition-all active:scale-[0.90]">-</button>
                       <span className="w-4 text-center font-bold text-sm">{item.quantity}</span>
-                      <button onClick={() => handleAddItem({id: item.menuItemId})} className="w-6 h-6 flex items-center justify-center rounded bg-primary/10 text-primary hover:bg-primary/20 font-bold transition-all active:scale-[0.90]">+</button>
+                      <button onClick={() => handleAddItem({id: item.menuItemId}, item.portionType)} className="w-6 h-6 flex items-center justify-center rounded bg-primary/10 text-primary hover:bg-primary/20 font-bold transition-all active:scale-[0.90]">+</button>
                     </div>
                   </div>
                 </div>
@@ -300,8 +355,7 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
             </Button>
           </div>
         </div>
-
       </div>
-    </>
+    </div>
   );
 }

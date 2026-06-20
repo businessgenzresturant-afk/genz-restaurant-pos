@@ -1,9 +1,9 @@
 # Gen-Z Restaurant POS - Complete Documentation
 
 **Project:** GenZ Restaurant POS System  
-**Production URL:** https://genz-restaurant-pos.vercel.app  
+**Production URL:** https://pos.gen-z.online  
 **Status:** 🟢 Fully Operational  
-**Last Updated:** June 20, 2026
+**Last Updated:** June 21, 2026
 
 ---
 
@@ -24,7 +24,7 @@
 
 ### Production Access
 
-**Live URL:** https://genz-restaurant-pos.vercel.app
+**Live URL:** https://pos.gen-z.online
 
 **Admin Login:**
 - Email: `admin@genz.com`
@@ -49,7 +49,7 @@ npm install
 # Setup environment (create .env file)
 DATABASE_URL="postgresql://user:pass@localhost:5432/restaurant_pos"
 NEXTAUTH_SECRET="generate-a-secure-secret-here"
-NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_URL="http://localhost:3000"  # For local dev, use https://pos.gen-z.online in production
 
 # Setup database
 npx prisma generate
@@ -512,7 +512,7 @@ Same as takeaway, just select "Delivery" or "Parcel" instead.
 DATABASE_URL="postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres"
 DIRECT_URL="postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:5432/postgres"
 NEXTAUTH_SECRET="generate-32-character-random-string-here"
-NEXTAUTH_URL="https://your-domain.vercel.app"
+NEXTAUTH_URL="https://pos.gen-z.online"
 ```
 
 **Generate NEXTAUTH_SECRET:**
@@ -546,7 +546,7 @@ openssl rand -base64 32
    ```
 
 5. **Verify:**
-   - Visit `https://your-domain.vercel.app/test-data`
+   - Visit `https://pos.gen-z.online/test-data`
    - Check all counts are non-zero
    - Login with admin credentials
 
@@ -745,9 +745,9 @@ openssl rand -base64 32
 ### Project Information
 
 - **Repository:** https://github.com/businessgenzresturant-afk/genz-restaurant-pos
-- **Production:** https://genz-restaurant-pos.vercel.app
+- **Production:** https://pos.gen-z.online
 - **Version:** 1.0.0
-- **Last Updated:** June 20, 2026
+- **Last Updated:** June 21, 2026
 
 ---
 

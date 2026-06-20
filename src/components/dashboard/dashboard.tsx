@@ -19,10 +19,12 @@ import { TableDrawer } from './TableDrawer';
 import { MenuDrawer } from './MenuDrawer';
 import { TableSelectModal } from './TableSelectModal';
 // import { GuestCountModal } from './GuestCountModal'; // No longer needed
-import { CustomerDetailsModal } from './CustomerDetailsModal';
+// import { CustomerDetailsModal } from './CustomerDetailsModal'; // No longer needed
 import { TablesOccupiedModal } from './TablesOccupiedModal';
 import { KitchenQueueModal } from './KitchenQueueModal';
 import { TodayRevenueModal } from './TodayRevenueModal';
+import { TakeawayDeliveryModal } from './TakeawayDeliveryModal';
+import { TransferTableModal } from './TransferTableModal';
 import { PaymentModal } from '@/components/billing/PaymentModal';
 import { Portal } from '@/components/ui/portal';
 import { toast } from 'sonner';
@@ -64,7 +66,8 @@ export function Dashboard() {
   // Modal / Drawer States
   const [isTableSelectModalOpen, setTableSelectModalOpen] = useState(false);
   const [isGuestCountModalOpen, setGuestCountModalOpen] = useState(false);
-  const [isCustomerDetailsModalOpen, setCustomerDetailsModalOpen] = useState(false);
+  // const [isCustomerDetailsModalOpen, setCustomerDetailsModalOpen] = useState(false); // Removed
+  const [isTakeawayDeliveryModalOpen, setTakeawayDeliveryModalOpen] = useState(false);
   
   const [isTableDrawerOpen, setTableDrawerOpen] = useState(false);
   const [isMenuDrawerOpen, setMenuDrawerOpen] = useState(false);
@@ -73,6 +76,7 @@ export function Dashboard() {
   const [isKitchenQueueModalOpen, setKitchenQueueModalOpen] = useState(false);
   const [isTodayRevenueModalOpen, setTodayRevenueModalOpen] = useState(false);
   const [isPaymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [isTransferTableModalOpen, setTransferTableModalOpen] = useState(false);
 
   // Selected state
   const [selectedTable, setSelectedTable] = useState<any | null>(null);
@@ -242,12 +246,18 @@ export function Dashboard() {
     setSelectedTable(null);
     setSelectedActiveOrder(null);
     setCustomerDetails(null);
-    setCustomerDetailsModalOpen(true);
+    setTakeawayDeliveryModalOpen(true);
+  };
+
+  const handleNewOrderFromModal = () => {
+    setTakeawayDeliveryModalOpen(false);
+    setCustomerDetails(null);
+    setMenuDrawerOpen(true);
   };
 
   const handleCustomerDetailsContinue = (details: any) => {
     setCustomerDetails(details);
-    setCustomerDetailsModalOpen(false);
+    // setCustomerDetailsModalOpen(false); // Removed
     setMenuDrawerOpen(true);
   };
 
@@ -276,23 +286,41 @@ export function Dashboard() {
 
   const handleGenerateBill = async (orderId: string) => {
     try {
+      // First, mark the order as SERVED so the bills API accepts it
+      // (bills API requires status COMPLETED or SERVED)
+      const markResponse = await fetch(`/api/orders/${orderId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'SERVED' })
+      });
+      
+      if (!markResponse.ok) {
+        // If it's already SERVED/COMPLETED, that's fine — continue
+        const markData = await markResponse.json().catch(() => ({}));
+        console.log('Mark as served response:', markData);
+      }
+
       const response = await fetch('/api/bills', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId })
       });
 
-      if (!response.ok) throw new Error('Failed to generate bill');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to generate bill');
+      }
       
       const newBill = await response.json();
       toast.success('Bill generated! 🧾');
       setTableDrawerOpen(false);
+      setTakeawayDeliveryModalOpen(false);
       
       // Open payment modal in-place instead of navigating away
       setGeneratedBill(newBill);
       setPaymentModalOpen(true);
-    } catch (err) {
-      toast.error('Failed to generate bill');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to generate bill');
       console.error('Bill generation error:', err);
     }
   };
@@ -327,6 +355,24 @@ export function Dashboard() {
     }
   };
 
+  const handleTransferTable = async (newTableId: string) => {
+    try {
+      if (!activeOrderForSelectedTable) return;
+      const response = await fetch(`/api/orders/${activeOrderForSelectedTable.id}/transfer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newTableId })
+      });
+      if (!response.ok) throw new Error('Failed to transfer table');
+      toast.success('Table transferred successfully! 🔄');
+      setTransferTableModalOpen(false);
+      setTableDrawerOpen(false);
+      fetchData();
+    } catch (error) {
+      toast.error('Failed to transfer table');
+    }
+  };
+
   const handleMarkAsServed = async (orderId: string) => {
     try {
       const response = await fetch(`/api/orders/${orderId}`, {
@@ -354,7 +400,7 @@ export function Dashboard() {
 
   const activeOrderForSelectedTable = selectedActiveOrder 
     ? selectedActiveOrder 
-    : (selectedTable ? activeOrders.find(o => o.tableId === selectedTable.id) : null);
+    : (selectedTable ? activeOrders.find(o => o.tableId === selectedTable.id && ['PENDING', 'PREPARING', 'READY', 'SERVED'].includes(o.status)) : null);
 
   return (
     <div className="space-y-8 animate-fade-in pb-12 min-h-[75vh] flex flex-col justify-between">
@@ -554,13 +600,6 @@ export function Dashboard() {
           onContinue={handleGuestCountContinue}
         /> */}
 
-        <CustomerDetailsModal
-          isOpen={isCustomerDetailsModalOpen}
-          onClose={() => setCustomerDetailsModalOpen(false)}
-          orderType={selectedOrderType as any}
-          onContinue={handleCustomerDetailsContinue}
-        />
-
         <TableDrawer 
           isOpen={isTableDrawerOpen} 
           onClose={() => setTableDrawerOpen(false)} 
@@ -573,25 +612,31 @@ export function Dashboard() {
           onGenerateBill={handleGenerateBill}
           onQuickReorder={handleQuickReorder}
           onMarkAsServed={handleMarkAsServed}
+          onTransferClick={() => setTransferTableModalOpen(true)}
+        />
+
+        <TransferTableModal
+          isOpen={isTransferTableModalOpen}
+          onClose={() => setTransferTableModalOpen(false)}
+          tables={tables}
+          activeOrders={activeOrders}
+          currentTableId={selectedTable?.id}
+          onConfirmTransfer={handleTransferTable}
         />
 
         <MenuDrawer
           isOpen={isMenuDrawerOpen}
           onClose={() => {
             setMenuDrawerOpen(false);
-            setSelectedTable(null);
-          }}
-          onBack={() => {
-            setMenuDrawerOpen(false);
-            if (selectedOrderType === 'DINE_IN') {
-              const hasActiveOrder = activeOrders.some(o => o.tableId === selectedTable?.id);
-              if (hasActiveOrder) {
-                setTableDrawerOpen(true);
+            if (!selectedActiveOrder) {
+              if (selectedOrderType === 'TAKEAWAY' || selectedOrderType === 'DELIVERY') {
+                setTakeawayDeliveryModalOpen(true);
               } else {
-                setTableSelectModalOpen(true); // Go back to table selection, not guest count
+                setTableSelectModalOpen(true);
               }
             } else {
-              setCustomerDetailsModalOpen(true);
+              // Open TableDrawer if they were managing an active order
+              setTableDrawerOpen(true);
             }
           }}
           menuItems={menuItems}
@@ -618,6 +663,15 @@ export function Dashboard() {
           isOpen={isTodayRevenueModalOpen}
           onClose={closeTodayRevenueModal}
           todayRevenue={revenue}
+        />
+
+        <TakeawayDeliveryModal
+          isOpen={isTakeawayDeliveryModalOpen}
+          onClose={() => setTakeawayDeliveryModalOpen(false)}
+          type={selectedOrderType === 'DELIVERY' ? 'DELIVERY' : 'TAKEAWAY'}
+          activeOrders={activeOrders.filter(o => o.orderType === selectedOrderType)}
+          onNewOrder={handleNewOrderFromModal}
+          onGenerateBill={handleGenerateBill}
         />
 
         {/* Payment Modal - Opens after Generate Bill */}

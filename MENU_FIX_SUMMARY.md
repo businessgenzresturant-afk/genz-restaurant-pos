@@ -269,6 +269,6 @@ NON_VEG items: 🔴 Red border + Red dot
 
 ---
 
-**Verification Date:** June 20, 2026  
+**Verification Date:** June 21, 2026  
 **Status:** ✅ PRODUCTION READY  
-**Next Steps:** Test in production at genz-restaurant-pos.vercel.app
+**Next Steps:** Test in production at pos.gen-z.online

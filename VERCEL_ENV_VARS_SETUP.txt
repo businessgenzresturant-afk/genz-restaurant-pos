@@ -22,14 +22,14 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 4️⃣ NEXTAUTH_URL
-   Value: https://YOUR-VERCEL-DOMAIN.vercel.app
+   Value: https://pos.gen-z.online
    
-   ⚠️ IMPORTANT: Replace "YOUR-VERCEL-DOMAIN" with your actual domain!
+   ⚠️ IMPORTANT: This is your production domain!
    
    How to find your domain:
    - Go to Vercel Dashboard → Deployments
    - Copy the URL from your latest Production deployment
-   - Example: https://genz-restaurant-pos-abc123.vercel.app
+   - Example: https://pos.gen-z.online
    
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

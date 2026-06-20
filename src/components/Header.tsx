@@ -16,6 +16,7 @@ import {
   LayoutGrid
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { Portal } from '@/components/ui/portal';
 import ManageTablesModal from '@/components/modals/ManageTablesModal';
 import ManageMenuModal from '@/components/modals/ManageMenuModal';
 import RestaurantSettingsModal from '@/components/modals/RestaurantSettingsModal';
@@ -199,27 +200,29 @@ export default function Header() {
         )}
       </div>
 
-      {/* Modals */}
-      <ManageTablesModal 
-        isOpen={showTablesModal} 
-        onClose={() => setShowTablesModal(false)} 
-      />
-      <ManageMenuModal 
-        isOpen={showMenuModal} 
-        onClose={() => setShowMenuModal(false)} 
-      />
-      <RestaurantSettingsModal 
-        isOpen={showRestaurantSettingsModal} 
-        onClose={() => setShowRestaurantSettingsModal(false)} 
-      />
-      <ManageStaffModal 
-        isOpen={showStaffModal} 
-        onClose={() => setShowStaffModal(false)} 
-      />
-      <TaxPricingModal 
-        isOpen={showTaxPricingModal} 
-        onClose={() => setShowTaxPricingModal(false)} 
-      />
+      {/* Modals — rendered via Portal to escape header stacking context */}
+      <Portal>
+        <ManageTablesModal 
+          isOpen={showTablesModal} 
+          onClose={() => setShowTablesModal(false)} 
+        />
+        <ManageMenuModal 
+          isOpen={showMenuModal} 
+          onClose={() => setShowMenuModal(false)} 
+        />
+        <RestaurantSettingsModal 
+          isOpen={showRestaurantSettingsModal} 
+          onClose={() => setShowRestaurantSettingsModal(false)} 
+        />
+        <ManageStaffModal 
+          isOpen={showStaffModal} 
+          onClose={() => setShowStaffModal(false)} 
+        />
+        <TaxPricingModal 
+          isOpen={showTaxPricingModal} 
+          onClose={() => setShowTaxPricingModal(false)} 
+        />
+      </Portal>
 
     </header>
   );

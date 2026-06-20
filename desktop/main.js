@@ -14,7 +14,7 @@ function createWindow() {
   // Load the Next.js app
   const startUrl = process.env.NODE_ENV === 'development'
     ? 'http://localhost:3000'
-    : `file://${path.join(__dirname, '../out/index.html')}`
+    : 'https://pos.gen-z.online'
 
   mainWindow.loadURL(startUrl)
 

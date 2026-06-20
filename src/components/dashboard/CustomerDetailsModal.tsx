@@ -66,15 +66,15 @@ export function CustomerDetailsModal({ isOpen, onClose, orderType, onContinue }:
   const Icon = info.icon;
 
   return (
-    <>
+    <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
       <div 
-        className="fixed inset-0 bg-black/60 z-[150] backdrop-blur-sm animate-fade-in" 
+        className="absolute inset-0 bg-black/60 backdrop-blur-md animate-fade-in" 
         onClick={onClose} 
       />
-      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:w-full sm:max-w-lg bg-background border border-border shadow-2xl rounded-3xl z-[160] overflow-hidden animate-fade-in">
+      <div className="relative w-full sm:max-w-lg bg-background border-2 border-border shadow-2xl rounded-3xl z-[160] overflow-hidden animate-scale-in">
         
         {/* Header */}
-        <div className="p-6 border-b border-border flex justify-between items-center bg-muted/10">
+        <div className="p-6 border-b-2 border-border flex justify-between items-center bg-gradient-to-r from-primary/5 to-primary/10">
           <div className="flex items-center gap-3">
             <button 
               onClick={onClose}
@@ -143,8 +143,7 @@ export function CustomerDetailsModal({ isOpen, onClose, orderType, onContinue }:
             Continue to Menu
           </Button>
         </div>
-
       </div>
-    </>
+    </div>
   );
 }

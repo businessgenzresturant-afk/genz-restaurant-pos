@@ -10,6 +10,8 @@ interface MenuItem {
   price: number;
   dietType: 'VEG' | 'NON_VEG';
   available: boolean;
+  hasHalfFullOption?: boolean;
+  priceHalf?: number;
 }
 
 interface ManageMenuModalProps {
@@ -28,6 +30,8 @@ export default function ManageMenuModal({ isOpen, onClose }: ManageMenuModalProp
     category: '',
     price: '',
     dietType: 'VEG' as 'VEG' | 'NON_VEG',
+    hasHalfFullOption: false,
+    priceHalf: '',
   });
 
   useEffect(() => {
@@ -70,14 +74,20 @@ export default function ManageMenuModal({ isOpen, onClose }: ManageMenuModalProp
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...newItem,
+          name: newItem.name,
+          category: newItem.category,
           price: parseFloat(newItem.price),
+          dietType: newItem.dietType,
           available: true,
+          hasHalfFullOption: newItem.hasHalfFullOption,
+          ...(newItem.hasHalfFullOption && newItem.priceHalf
+            ? { priceHalf: parseFloat(newItem.priceHalf) }
+            : {}),
         }),
       });
 
       if (response.ok) {
-        setNewItem({ name: '', category: '', price: '', dietType: 'VEG' });
+        setNewItem({ name: '', category: '', price: '', dietType: 'VEG', hasHalfFullOption: false, priceHalf: '' });
         setShowAddForm(false);
         fetchMenuItems();
       }
@@ -205,6 +215,33 @@ export default function ManageMenuModal({ isOpen, onClose }: ManageMenuModalProp
                   <option value="NON_VEG">🔴 Non-Vegetarian</option>
                 </select>
               </div>
+
+              {/* Half/Full Portion Toggle */}
+              <div className="flex items-center gap-3 mb-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={newItem.hasHalfFullOption}
+                    onChange={(e) =>
+                      setNewItem({ ...newItem, hasHalfFullOption: e.target.checked, priceHalf: e.target.checked ? newItem.priceHalf : '' })
+                    }
+                    className="w-4 h-4 rounded border-border text-primary focus:ring-primary accent-primary"
+                  />
+                  <span className="text-sm font-bold text-foreground">Enable Half Plate option</span>
+                </label>
+              </div>
+
+              {newItem.hasHalfFullOption && (
+                <div className="mb-3">
+                  <input
+                    type="number"
+                    placeholder="Half Plate Price"
+                    value={newItem.priceHalf}
+                    onChange={(e) => setNewItem({ ...newItem, priceHalf: e.target.value })}
+                    className="px-3 py-2 bg-background border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary w-full sm:w-1/2"
+                  />
+                </div>
+              )}
               <div className="flex gap-2">
                 <button
                   onClick={handleAddItem}
@@ -249,7 +286,20 @@ export default function ManageMenuModal({ isOpen, onClose }: ManageMenuModalProp
                       )}
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">{item.category}</p>
-                    <p className="text-sm font-bold text-primary mt-1">₹{item.price}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      {item.hasHalfFullOption ? (
+                        <>
+                          <p className="text-sm font-bold text-primary">
+                            Half: ₹{item.priceHalf} / Full: ₹{item.price}
+                          </p>
+                          <span className="px-2 py-0.5 bg-primary/15 text-primary text-[10px] font-bold rounded">
+                            Half/Full
+                          </span>
+                        </>
+                      ) : (
+                        <p className="text-sm font-bold text-primary">₹{item.price}</p>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <button

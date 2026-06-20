@@ -4,9 +4,9 @@ Modern, feature-rich Point of Sale system built for restaurants with Next.js 14,
 
 ## ✅ Production Status
 
-**Live URL:** https://genz-restaurant-pos.vercel.app  
+**Live URL:** https://pos.gen-z.online  
 **Status:** 🟢 Fully Operational  
-**Last Updated:** June 20, 2026
+**Last Updated:** June 21, 2026
 
 ---
 
@@ -14,7 +14,7 @@ Modern, feature-rich Point of Sale system built for restaurants with Next.js 14,
 
 ### Production Login
 
-**URL:** https://genz-restaurant-pos.vercel.app/login
+**URL:** https://pos.gen-z.online/login
 
 **Admin Credentials:**
 - Email: `admin@genz.com`
@@ -122,7 +122,7 @@ Modern, feature-rich Point of Sale system built for restaurants with Next.js 14,
    
    # NextAuth
    NEXTAUTH_SECRET="your-secret-here"
-   NEXTAUTH_URL="http://localhost:3000"
+   NEXTAUTH_URL="http://localhost:3000"  # For local dev, use https://pos.gen-z.online in production
    ```
 
 4. **Setup Database**
@@ -185,7 +185,7 @@ Modern, feature-rich Point of Sale system built for restaurants with Next.js 14,
    DATABASE_URL=postgresql://[USER]:[PASSWORD]@[HOST]:5432/postgres
    DIRECT_URL=postgresql://[USER]:[PASSWORD]@[HOST]:5432/postgres
    NEXTAUTH_SECRET=[GENERATE-NEW-SECRET]
-   NEXTAUTH_URL=https://your-domain.vercel.app
+   NEXTAUTH_URL=https://pos.gen-z.online
    ```
 
    **CRITICAL:** Use port **5432** (not 6543) to avoid pgBouncer issues
@@ -211,17 +211,17 @@ Modern, feature-rich Point of Sale system built for restaurants with Next.js 14,
 
 ### API Health Check
 ```
-https://genz-restaurant-pos.vercel.app/api/debug/db-status
+https://pos.gen-z.online/api/debug/db-status
 ```
 
 ### Session Check
 ```
-https://genz-restaurant-pos.vercel.app/api/debug/session
+https://pos.gen-z.online/api/debug/session
 ```
 
 ### Full Diagnostic
 ```
-https://genz-restaurant-pos.vercel.app/test-data
+https://pos.gen-z.online/test-data
 ```
 
 ---

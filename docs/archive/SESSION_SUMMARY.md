@@ -253,7 +253,7 @@ f7ea39c - fix: Remove duplicate bill modal (previous session)
 
 ### Manual Testing (Production)
 1. **Test new customer**: 
-   - Login at genz-restaurant-pos.vercel.app
+   - Login at pos.gen-z.online
    - Create a bill
    - Enter a new 10-digit phone number
    - Verify customer created in database

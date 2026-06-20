@@ -7,7 +7,7 @@ import { Portal } from '@/components/ui/portal';
 import { QRCodeSVG } from 'qrcode.react';
 import { useAuth } from '@/lib/useAuth';
 import { toast } from 'sonner';
-import { Plus } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 
 interface PaymentModalProps {
   bill: any;
@@ -326,11 +326,15 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
 
   return (
     <Portal>
-      <div className="fixed inset-0 z-[200] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
-        <div className="bg-card text-card-foreground rounded-2xl shadow-2xl border border-border w-full max-w-6xl max-h-[90vh] overflow-hidden animate-slide-up flex flex-col">
+      <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+        <div 
+          className="absolute inset-0 bg-black/60 backdrop-blur-md animate-fade-in" 
+          onClick={onClose} 
+        />
+        <div className="relative bg-background text-foreground rounded-3xl shadow-2xl border-2 border-border w-full max-w-6xl max-h-[90vh] overflow-hidden animate-scale-in flex flex-col z-[210]">
           
           {/* Header - spans both columns */}
-          <div className="flex justify-between items-start p-6 border-b border-border">
+          <div className="flex justify-between items-start p-6 border-b-2 border-border bg-gradient-to-r from-primary/5 to-primary/10">
             <div>
               <h2 className="text-2xl font-black text-foreground">Payment Collection</h2>
               <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
@@ -339,7 +343,12 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
                 <span>{bill.order?.customerName || 'Walk-in'}</span>
               </div>
             </div>
-            <Button onClick={onClose} variant="outline" size="sm">✕</Button>
+            <button 
+              onClick={onClose} 
+              className="p-2.5 hover:bg-muted/80 rounded-xl transition-all duration-200 hover:rotate-90"
+            >
+              <X className="w-6 h-6 text-muted-foreground" />
+            </button>
           </div>
 
           {/* Two-column layout */}

@@ -108,16 +108,16 @@ export function TodayRevenueModal({ isOpen, onClose, todayRevenue }: TodayRevenu
   if (!isOpen) return null;
 
   return (
-    <>
+    <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
       <div 
-        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-fade-in" 
+        className="absolute inset-0 bg-black/60 backdrop-blur-md animate-fade-in" 
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
           onClose();
         }} 
       />
-      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:w-full sm:max-w-4xl bg-background border-2 border-border shadow-2xl rounded-3xl z-[160] overflow-hidden animate-scale-in max-h-[90vh] flex flex-col">
+      <div className="relative w-full sm:max-w-4xl bg-background border-2 border-border shadow-2xl rounded-3xl z-[160] overflow-hidden animate-scale-in max-h-[90vh] flex flex-col">
         
         {/* Header */}
         <div className="p-6 border-b-2 border-border flex justify-between items-center bg-gradient-to-r from-primary/5 to-primary/10">
@@ -364,8 +364,7 @@ export function TodayRevenueModal({ isOpen, onClose, todayRevenue }: TodayRevenu
             Close
           </Button>
         </div>
-
       </div>
-    </>
+    </div>
   );
 }

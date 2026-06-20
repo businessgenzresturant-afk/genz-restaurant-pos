@@ -205,7 +205,7 @@ Notes:
 ### VERIFICATION:
 ```bash
 # 1. Open browser DevTools console (F12)
-# 2. Go to: https://genz-restaurant-pos.vercel.app
+# 2. Go to: https://pos.gen-z.online
 # 3. Click any table
 # 4. Click "Add Item" / menu button
 # 5. Look for console log:

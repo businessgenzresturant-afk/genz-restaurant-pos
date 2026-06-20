@@ -20,15 +20,15 @@ export function TableSelectModal({ isOpen, onClose, tables, activeOrders, onSele
     .sort((a, b) => a.number - b.number);
 
   return (
-    <>
+    <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
       <div 
-        className="fixed inset-0 bg-black/60 z-[150] backdrop-blur-sm animate-fade-in" 
+        className="absolute inset-0 bg-black/60 backdrop-blur-md animate-fade-in" 
         onClick={onClose} 
       />
-      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:w-full sm:max-w-3xl bg-background border border-border shadow-2xl rounded-3xl z-[160] overflow-hidden animate-fade-in max-h-[90vh] flex flex-col">
+      <div className="relative w-full sm:max-w-3xl bg-background border-2 border-border shadow-2xl rounded-3xl z-[160] overflow-hidden animate-scale-in max-h-[90vh] flex flex-col">
         
         {/* Header */}
-        <div className="p-6 border-b border-border flex justify-between items-center bg-muted/10">
+        <div className="p-6 border-b-2 border-border flex justify-between items-center bg-gradient-to-r from-primary/5 to-primary/10">
           <div className="flex items-center gap-3">
             <button 
               onClick={onClose}
@@ -36,15 +36,15 @@ export function TableSelectModal({ isOpen, onClose, tables, activeOrders, onSele
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <div className="p-2 bg-blue-500/10 text-blue-500 rounded-lg">
-              <Utensils className="w-6 h-6" />
+            <div className="p-3 bg-primary/20 rounded-xl">
+              <Utensils className="w-6 h-6 text-primary" />
             </div>
             <div>
               <h2 className="text-2xl font-black text-foreground">Select Table</h2>
               <p className="text-sm text-muted-foreground mt-0.5">Choose an occupied table to view order or available table to start new order</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-muted transition-colors">
+          <button onClick={onClose} className="p-2.5 hover:bg-muted/80 rounded-xl transition-all duration-200 hover:rotate-90">
             <X className="w-6 h-6 text-muted-foreground" />
           </button>
         </div>
@@ -95,8 +95,7 @@ export function TableSelectModal({ isOpen, onClose, tables, activeOrders, onSele
             Cancel
           </button>
         </div>
-
       </div>
-    </>
+    </div>
   );
 }
