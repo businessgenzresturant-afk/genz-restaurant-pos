@@ -162,8 +162,12 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
                         onClick={() => handleAddItem(item)}
                       >
                         <div className="flex items-center gap-2 mb-2">
-                          <DietIndicator dietType={item.dietType || 'VEG'} />
+                          <DietIndicator dietType={item.dietType} />
                           <span className="block font-bold text-foreground group-hover:text-primary leading-tight transition-colors">{item.name}</span>
+                          {/* Debug: show dietType value */}
+                          {process.env.NODE_ENV === 'development' && (
+                            <span className="text-[8px] text-muted-foreground">({item.dietType})</span>
+                          )}
                         </div>
                         <span className="text-xs text-muted-foreground mt-1 block">{item.category}</span>
                         <span className="block font-black text-primary mt-3">
