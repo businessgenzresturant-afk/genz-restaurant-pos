@@ -30,12 +30,23 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
   }, [menuItems]);
 
   const filteredItems = useMemo(() => {
-    return menuItems.filter(item => {
+    const filtered = menuItems.filter(item => {
       if (!item.available) return false;
       const matchesCategory = selectedCategory === 'All' || item.category === selectedCategory;
       const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesCategory && matchesSearch;
     });
+    
+    // DEBUG: Log first 3 items to verify dietType
+    if (filtered.length > 0) {
+      console.log('[MenuDrawer] First 3 filtered items:', filtered.slice(0, 3).map(item => ({
+        name: item.name,
+        dietType: item.dietType,
+        hasProperty: 'dietType' in item
+      })));
+    }
+    
+    return filtered;
   }, [menuItems, selectedCategory, searchQuery]);
 
   const handleAddItem = (menuItem: any) => {
