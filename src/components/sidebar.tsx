@@ -50,7 +50,7 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm font-bold transition-all duration-300 group relative overflow-hidden ${
+              className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm font-bold transition-all duration-200 group relative overflow-hidden will-change-transform ${
                 isActive
                   ? 'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25 scale-[1.02]'
                   : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground hover:scale-[1.01]'
@@ -64,7 +64,7 @@ export default function Sidebar() {
               </span>
               <span className="relative z-10">{item.label}</span>
               {isActive && (
-                <span className="ml-auto w-1.5 h-1.5 bg-primary-foreground rounded-full  shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+                <span className="ml-auto w-2 h-2 bg-primary-foreground rounded-full animate-pulse-glow shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
               )}
             </Link>
           );

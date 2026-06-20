@@ -10,7 +10,7 @@ export const Button: ForwardRefExoticComponent<
   ButtonProps & RefAttributes<HTMLButtonElement>
 > = React.forwardRef(({ className = '', variant = 'default', size = 'default', ...props }, ref) => {
   // Base classes for smooth micro-animations and structural consistency
-  const baseClasses = 'relative inline-flex items-center justify-center rounded-xl text-sm font-semibold transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.97] select-none';
+  const baseClasses = 'relative inline-flex items-center justify-center rounded-xl text-sm font-semibold transition-all duration-200 ease-out will-change-transform cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed active:scale-[0.97] select-none';
 
   // 3D & Modern Variants
   const variantClasses = {

@@ -8,19 +8,19 @@ import type { OrderWithItems } from '@/types/prisma';
 
 const SkeletonCard = () => (
   <Card className="overflow-hidden border border-border shadow-lg shadow-border/50 rounded-2xl ">
-    <div className="bg-zinc-800 p-4 flex justify-between items-center h-16">
-      <div className="h-6 w-24 bg-zinc-700 rounded-lg" />
-      <div className="h-6 w-12 bg-zinc-700 rounded-full" />
+    <div className="bg-muted p-4 flex justify-between items-center h-16">
+      <div className="h-6 w-24 bg-muted-foreground/20 rounded-lg" />
+      <div className="h-6 w-12 bg-muted-foreground/20 rounded-full" />
     </div>
     <div className="p-4 space-y-4">
       <div className="space-y-2">
-        <div className="h-5 w-2/3 bg-zinc-800 rounded-lg" />
-        <div className="h-4 w-1/3 bg-zinc-800 rounded-lg" />
+        <div className="h-5 w-2/3 bg-muted rounded-lg" />
+        <div className="h-4 w-1/3 bg-muted rounded-lg" />
       </div>
-      <div className="h-[100px] bg-zinc-900 rounded-xl" />
+      <div className="h-[100px] bg-muted/50 rounded-xl" />
       <div className="flex gap-2">
-        <div className="h-9 flex-1 bg-zinc-800 rounded-xl" />
-        <div className="h-9 w-20 bg-zinc-800 rounded-xl" />
+        <div className="h-9 flex-1 bg-muted rounded-xl" />
+        <div className="h-9 w-20 bg-muted rounded-xl" />
       </div>
     </div>
   </Card>
@@ -233,7 +233,7 @@ export default function KOTPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 items-start">
           {orderGroups.map(([tableNumber, tableOrders]) => (
-            <Card key={tableNumber} className="overflow-hidden border border-border shadow-lg shadow-border/50 rounded-2xl hover:border-primary/50 transition-colors">
+            <Card key={tableNumber} className="overflow-hidden border border-border shadow-lg shadow-border/50 rounded-2xl hover:border-primary/50 transition-colors animate-slide-up">
               <div className="bg-primary p-4 text-primary-foreground flex justify-between items-center">
                 <h2 className="text-2xl font-black tracking-tight">Table {tableNumber}</h2>
                 <div className="bg-background/20 px-3 py-1 rounded-full text-sm font-bold backdrop-blur-md">

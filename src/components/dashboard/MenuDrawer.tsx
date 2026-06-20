@@ -191,14 +191,14 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
                         <div className="absolute top-2 right-2 flex items-center gap-1 bg-background border border-border p-0.5 rounded-lg shadow-sm" onClick={(e) => e.stopPropagation()}>
                           <button 
                             onClick={() => handleRemoveItem(item.id)} 
-                            className="w-5 h-5 flex items-center justify-center rounded bg-muted hover:bg-muted/80 text-foreground font-black text-xs transition-colors"
+                            className="w-5 h-5 flex items-center justify-center rounded bg-muted hover:bg-muted/80 text-foreground font-black text-xs transition-colors active:scale-[0.90]"
                           >
                             -
                           </button>
                           <span className="w-4 text-center font-black text-xs text-foreground">{quantity}</span>
                           <button 
                             onClick={() => handleAddItem(item)} 
-                            className="w-5 h-5 flex items-center justify-center rounded bg-primary/10 hover:bg-primary/20 text-primary font-black text-xs transition-colors"
+                            className="w-5 h-5 flex items-center justify-center rounded bg-primary/10 hover:bg-primary/20 text-primary font-black text-xs transition-colors active:scale-[0.90]"
                           >
                             +
                           </button>
@@ -276,9 +276,9 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
                       className="h-8 text-xs bg-background border-border w-[140px]"
                     />
                     <div className="flex items-center space-x-2 bg-background rounded-lg border border-border p-1 shadow-sm">
-                      <button onClick={() => handleRemoveItem(item.menuItemId)} className="w-6 h-6 flex items-center justify-center rounded bg-muted hover:bg-muted/80 font-bold">-</button>
+                      <button onClick={() => handleRemoveItem(item.menuItemId)} className="w-6 h-6 flex items-center justify-center rounded bg-muted hover:bg-muted/80 font-bold transition-all active:scale-[0.90]">-</button>
                       <span className="w-4 text-center font-bold text-sm">{item.quantity}</span>
-                      <button onClick={() => handleAddItem({id: item.menuItemId})} className="w-6 h-6 flex items-center justify-center rounded bg-primary/10 text-primary hover:bg-primary/20 font-bold">+</button>
+                      <button onClick={() => handleAddItem({id: item.menuItemId})} className="w-6 h-6 flex items-center justify-center rounded bg-primary/10 text-primary hover:bg-primary/20 font-bold transition-all active:scale-[0.90]">+</button>
                     </div>
                   </div>
                 </div>
@@ -292,7 +292,7 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
               <span className="font-black text-3xl text-primary">₹{totalAmount.toFixed(2)}</span>
             </div>
             <Button 
-              className="w-full h-14 text-lg font-bold shadow-md shadow-orange-500/20 bg-orange-500 hover:bg-orange-600"
+              className="w-full h-14 text-lg font-bold shadow-md shadow-orange-500/20 bg-orange-500 hover:bg-orange-600 active:scale-[0.97] transition-transform"
               disabled={cart.length === 0}
               onClick={handleSubmit}
             >

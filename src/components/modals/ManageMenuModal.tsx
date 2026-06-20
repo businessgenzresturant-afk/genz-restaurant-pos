@@ -109,7 +109,7 @@ export default function ManageMenuModal({ isOpen, onClose }: ManageMenuModalProp
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-background border border-border rounded-2xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden flex flex-col">
+      <div className="bg-background border border-border rounded-2xl shadow-2xl w-full max-w-4xl max-h-[85vh] overflow-hidden flex flex-col animate-slide-up">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">
           <div>
@@ -139,7 +139,7 @@ export default function ManageMenuModal({ isOpen, onClose }: ManageMenuModalProp
             </div>
             <button
               onClick={() => setShowAddForm(!showAddForm)}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-bold text-sm hover:opacity-90 transition-opacity flex items-center gap-2"
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-bold text-sm hover:opacity-90 transition-opacity flex items-center gap-2 active:scale-[0.97]"
             >
               <Plus className="w-4 h-4" />
               Add Item
@@ -167,7 +167,7 @@ export default function ManageMenuModal({ isOpen, onClose }: ManageMenuModalProp
         <div className="flex-1 overflow-y-auto p-6">
           {/* Add Form */}
           {showAddForm && (
-            <div className="bg-muted/50 rounded-xl p-4 mb-6">
+            <div className="bg-muted/50 rounded-xl p-4 mb-6 animate-fade-in">
               <h3 className="text-sm font-bold text-foreground mb-3">Add New Menu Item</h3>
               <div className="grid grid-cols-2 gap-3 mb-3">
                 <input
@@ -203,7 +203,7 @@ export default function ManageMenuModal({ isOpen, onClose }: ManageMenuModalProp
               <div className="flex gap-2">
                 <button
                   onClick={handleAddItem}
-                  className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-bold text-sm hover:opacity-90 transition-opacity"
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-bold text-sm hover:opacity-90 transition-opacity active:scale-[0.97]"
                 >
                   Add Item
                 </button>

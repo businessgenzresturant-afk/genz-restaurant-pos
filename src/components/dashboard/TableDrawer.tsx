@@ -18,7 +18,7 @@ export function TableDrawer({ isOpen, onClose, table, activeOrder, onAddItem, on
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/50 z-[150] backdrop-blur-sm" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/60 z-[150] backdrop-blur-sm animate-fade-in" onClick={onClose} />
       <div className={`fixed right-0 top-0 h-full w-full max-w-md bg-background border-l border-border shadow-2xl z-[160] transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col`}>
         
         {/* Header */}
@@ -33,7 +33,7 @@ export function TableDrawer({ isOpen, onClose, table, activeOrder, onAddItem, on
               {table ? (table.status === 'AVAILABLE' ? 'Available' : 'Occupied') : 'Active Order'}
             </p>
           </div>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-muted transition-colors">
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-muted transition-all active:scale-[0.90]">
             <X className="w-6 h-6 text-muted-foreground" />
           </button>
         </div>
@@ -119,7 +119,7 @@ export function TableDrawer({ isOpen, onClose, table, activeOrder, onAddItem, on
           <div className="flex flex-col gap-3">
             <div className="flex gap-3">
               <Button 
-                className="flex-1 h-14 text-lg font-bold shadow-lg"
+                className="flex-1 h-14 text-lg font-bold shadow-lg active:scale-[0.97] transition-transform"
                 variant="outline"
                 onClick={() => onAddItem(table?.id || null)}
               >
@@ -129,7 +129,7 @@ export function TableDrawer({ isOpen, onClose, table, activeOrder, onAddItem, on
               
               {activeOrder && activeOrder.status !== 'SERVED' && (
                 <Button 
-                  className="flex-1 h-14 text-lg font-bold shadow-lg shadow-emerald-500/20 bg-emerald-600 hover:bg-emerald-700"
+                  className="flex-1 h-14 text-lg font-bold shadow-lg shadow-emerald-500/20 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.97] transition-transform"
                   onClick={() => onMarkAsServed(activeOrder.id)}
                 >
                   <Receipt className="w-5 h-5 mr-2" /> {/* Reusing icon for space, ideally Check */}
@@ -140,7 +140,7 @@ export function TableDrawer({ isOpen, onClose, table, activeOrder, onAddItem, on
             
             {activeOrder && (
               <Button 
-                className="w-full h-14 text-lg font-bold shadow-lg shadow-indigo-500/20 bg-indigo-600 hover:bg-indigo-700"
+                className="w-full h-14 text-lg font-bold shadow-lg shadow-indigo-500/20 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.97] transition-transform"
                 onClick={() => onGenerateBill(activeOrder.id)}
               >
                 <Receipt className="w-5 h-5 mr-2" />

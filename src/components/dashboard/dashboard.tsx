@@ -347,7 +347,7 @@ export function Dashboard() {
   if (loading && tables.length === 0) {
     return (
       <div className="min-h-[600px] flex items-center justify-center">
-        <Loader2 className="h-10 w-10  text-primary" />
+        <Loader2 className="h-10 w-10 text-primary animate-spin" />
       </div>
     );
   }
@@ -360,8 +360,10 @@ export function Dashboard() {
     <div className="space-y-8 animate-fade-in pb-12 min-h-[75vh] flex flex-col justify-between">
       <div className="space-y-8">
         {/* Live Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-children">
           <Card 
+            role="button"
+            tabIndex={0}
             onClick={() => setTablesOccupiedModalOpen(true)}
             className="p-6 bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20 shadow-md shadow-blue-500/5 cursor-pointer hover:scale-[1.02] hover:border-blue-500/40 transition-all select-none group active:scale-[0.99]"
           >
@@ -373,6 +375,8 @@ export function Dashboard() {
           </Card>
           
           <Card 
+            role="button"
+            tabIndex={0}
             onClick={() => setKitchenQueueModalOpen(true)}
             className="p-6 bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-orange-500/20 shadow-md shadow-orange-500/5 cursor-pointer hover:scale-[1.02] hover:border-orange-500/40 transition-all select-none group active:scale-[0.99]"
           >
@@ -384,6 +388,8 @@ export function Dashboard() {
           </Card>
           
           <Card 
+            role="button"
+            tabIndex={0}
             onClick={() => setTodayRevenueModalOpen(true)}
             className="p-6 bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/20 shadow-md shadow-emerald-500/5 cursor-pointer hover:scale-[1.02] hover:border-emerald-500/40 transition-all select-none group active:scale-[0.99]"
           >
@@ -398,7 +404,7 @@ export function Dashboard() {
         {/* Order Type Cards */}
         <div className="space-y-4">
           <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Select Order Type</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 stagger-children">
             
             {/* Dine In Card */}
             <button 

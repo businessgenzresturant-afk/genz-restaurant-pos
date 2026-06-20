@@ -88,13 +88,15 @@ export default function Header() {
         {/* Profile Dropdown Toggle */}
         <button 
           onClick={() => setDropdownOpen(!isDropdownOpen)}
+          aria-expanded={isDropdownOpen}
+          aria-label="User menu"
           className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-border/60 bg-card hover:bg-muted/80 text-foreground transition-all duration-200 shadow-sm"
         >
           <div className="w-6 h-6 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold text-xs">
             A
           </div>
           <span className="text-xs font-bold text-foreground">Admin</span>
-          <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+          <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
         </button>
 
         {/* Dropdown Popover */}
@@ -107,7 +109,7 @@ export default function Header() {
             />
             
             {/* Dropdown Menu */}
-            <div className="absolute right-0 top-11 w-60 bg-background/95 backdrop-blur-md border border-border shadow-2xl rounded-2xl p-2 z-50 flex flex-col gap-1 animate-scale-in">
+            <div className="absolute right-0 top-full mt-2 w-56 bg-background/95 backdrop-blur-md border border-border shadow-2xl rounded-2xl p-2 z-50 flex flex-col gap-1 animate-scale-in origin-top-right">
               <div className="px-3 py-2.5 border-b border-border/50 mb-1">
                 <p className="text-xs font-black text-foreground">Admin User</p>
                 <p className="text-[10px] text-muted-foreground truncate">admin@genz.com</p>

@@ -494,19 +494,8 @@ export default function BillsPage() {
 
   if (loading && bills.length === 0) {
     return (
-      <div className="min-h-[600px] flex items-center justify-center animate-fade-in">
-        <div className="text-center space-y-6">
-          <div className="relative w-24 h-24 mx-auto">
-            <div className="absolute inset-0 rounded-full border-t-4 border-primary "></div>
-            <div className="absolute inset-2 rounded-full border-r-4 border-green-500 " style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
-            <div className="absolute inset-4 rounded-full border-b-4 border-blue-500 " style={{ animationDuration: '2s' }}></div>
-            <div className="absolute inset-0 flex items-center justify-center text-3xl ">🧾</div>
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-xl font-bold text-foreground tracking-tight">Loading Billing System</h3>
-            <p className="text-muted-foreground font-medium">Fetching recent bills and completed orders...</p>
-          </div>
-        </div>
+      <div className="min-h-[200px] flex items-center justify-center">
+        <p className="text-muted-foreground">Loading...</p>
       </div>
     );
   }
@@ -609,11 +598,11 @@ export default function BillsPage() {
               <div id="print-receipt" className="mb-6 p-6 bg-card text-card-foreground rounded-2xl border border-border print:bg-white print:text-black print:border-none print:w-full print:max-w-full print:p-4 max-h-[50vh] overflow-y-auto custom-scrollbar">
                 <div className="text-center mb-4">
                   <div className="flex justify-center mb-3">
-                    <div className="w-24 h-24 rounded-full overflow-hidden bg-white p-1">
-                      <Image src="/images/Gen-z-logo.jpg" alt="Gen-Z POS" width={96} height={96} className="w-full h-full object-cover rounded-full" />
+                    <div className="w-24 h-24 rounded-full overflow-hidden bg-white p-1 mx-auto">
+                      <Image src="/images/Gen-z-logo.jpg" alt="Gen-Z POS" width={96} height={96} className="w-full h-full object-cover rounded-full mx-auto" />
                     </div>
                   </div>
-                  <h2 className="text-lg font-black uppercase tracking-wider mb-1">Gen-Z POS</h2>
+                  <h2 className="text-lg font-black uppercase tracking-wider mb-1 text-center">GEN-Z RESTAURANT</h2>
                   <p className="text-xs text-muted-foreground print:text-gray-600">123 Main Street, New Delhi, India</p>
                   <p className="text-xs text-muted-foreground print:text-gray-600">GST No: 07AABCG1234A1Z5</p>
                   <p className="text-xs text-muted-foreground print:text-gray-600">Tel: +91 98765 43210</p>
@@ -826,7 +815,7 @@ export default function BillsPage() {
         ) : (
           <div className="space-y-4">
             {bills.map((bill) => (
-              <div key={bill.id} className="border border-border bg-card rounded-lg p-4">
+              <div key={bill.id} className="border border-border bg-card rounded-lg p-4 transition-all duration-200 hover:border-primary/40 hover:shadow-md">
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1">
                     <h3 className="text-lg font-medium text-foreground">Bill #{bill.id}</h3>

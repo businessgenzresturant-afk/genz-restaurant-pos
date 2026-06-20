@@ -352,7 +352,7 @@ export default function KitchenDisplaySystem() {
     const BadgeIcon = badge.icon;
 
     return (
-      <Card className={`p-4 border-2 ${isUrgent ? 'bg-red-950 border-red-500 shadow-lg shadow-red-500/20' : 'bg-card border-border'} flex flex-col justify-between h-full`}>
+      <Card className={`p-4 border-2 ${isUrgent ? 'bg-red-950 border-red-500 shadow-lg shadow-red-500/20' : 'bg-card border-border'} flex flex-col justify-between h-full hover:shadow-xl hover:shadow-border/10 transition-all active:scale-[0.98] animate-slide-up`}>
         <div>
           {/* Order Type Badge */}
           <div className="mb-3">
@@ -474,7 +474,7 @@ export default function KitchenDisplaySystem() {
           {/* Sound Toggle */}
           <button
             onClick={() => setSoundEnabled(!soundEnabled)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all active:scale-[0.95] ${
               soundEnabled 
                 ? 'bg-muted border-border text-muted-foreground hover:bg-muted/80' 
                 : 'bg-red-900/20 border-red-500/50 text-red-400'
@@ -491,7 +491,7 @@ export default function KitchenDisplaySystem() {
           {soundQueue.length > 0 && (
             <button
               onClick={acknowledgeAllSounds}
-              className="flex items-center gap-2 px-6 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-full border-2 border-amber-400 font-black text-sm tracking-wider uppercase shadow-lg shadow-amber-500/30 animate-pulse"
+              className="flex items-center gap-2 px-6 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-full border-2 border-amber-400 font-black text-sm tracking-wider uppercase shadow-lg shadow-amber-500/30 animate-pulse active:scale-[0.95] transition-transform"
             >
               🔔 Acknowledge ({soundQueue.length})
             </button>

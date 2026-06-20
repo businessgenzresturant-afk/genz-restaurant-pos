@@ -66,7 +66,7 @@ export default function LoginPage() {
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
         {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/40 to-orange-900/50" />
+        <div className="absolute inset-0 bg-gradient-to-br from-black/80 via-black/40 to-orange-900/60 bg-[length:200%_200%] animate-pulse-glow" />
 
         {/* Branding on image */}
         <div className="absolute inset-0 flex flex-col justify-between p-12">
@@ -110,7 +110,7 @@ export default function LoginPage() {
 
       {/* RIGHT — Login Form Panel */}
       <div className="w-full lg:w-1/2 flex items-center justify-center bg-zinc-950 px-6 py-12">
-        <div className="w-full max-w-md space-y-8">
+        <div className="w-full max-w-md space-y-8 animate-fade-in">
 
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center gap-3 mb-8">

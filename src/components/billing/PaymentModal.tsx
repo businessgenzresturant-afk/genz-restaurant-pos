@@ -335,7 +335,7 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
   return (
     <Portal>
       <div className="fixed inset-0 z-[200] flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
-        <div className="bg-card text-card-foreground rounded-2xl shadow-2xl border border-border w-full max-w-6xl max-h-[90vh] overflow-hidden animate-fade-in flex flex-col">
+        <div className="bg-card text-card-foreground rounded-2xl shadow-2xl border border-border w-full max-w-6xl max-h-[90vh] overflow-hidden animate-slide-up flex flex-col">
           
           {/* Header - spans both columns */}
           <div className="flex justify-between items-start p-6 border-b border-border">
@@ -477,7 +477,7 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
                     maxLength={10}
                   />
                   {isCheckingCustomer && (
-                    <p className="text-xs text-muted-foreground mt-1">Checking customer...</p>
+                    <p className="text-xs text-muted-foreground mt-1 animate-pulse">Checking customer...</p>
                   )}
                   {customerData && (
                     <div className="mt-2 p-3 bg-green-500/10 border border-green-500/30 rounded-lg">
@@ -583,7 +583,7 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
                 <div className="space-y-3">
                   <h3 className="text-sm font-bold text-foreground/80">Select Payment Method</h3>
                   
-                  <div className="grid grid-cols-4 gap-3">
+                  <div className="grid grid-cols-3 gap-3">
                     <button
                       onClick={() => {
                         setPaymentConfirmed('CASH');
@@ -611,20 +611,6 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
                     >
                       <span className="text-2xl">💳</span>
                       <span className="text-xs font-bold">Card</span>
-                    </button>
-                    <button
-                      onClick={() => {
-                        setPaymentConfirmed('UPI');
-                        setIsSplitPayment(false);
-                        setCashAmount('');
-                        setOnlineAmount('');
-                      }}
-                      className={`p-3 rounded-xl border-2 flex flex-col items-center justify-center gap-2 transition-all ${
-                        paymentConfirmed === 'UPI' && !isSplitPayment ? 'border-orange-500/50 bg-orange-500/10 text-orange-500' : 'border-border hover:border-orange-500/30 hover:bg-muted text-muted-foreground'
-                      }`}
-                    >
-                      <span className="text-2xl">📱</span>
-                      <span className="text-xs font-bold">UPI</span>
                     </button>
                     <button
                       onClick={() => {
@@ -728,21 +714,6 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
                     })()}
                   </div>
                 )}
-
-                {/* UPI QR Code */}
-                {paymentConfirmed === 'UPI' && !isSplitPayment && (
-                  <div className="bg-primary/10 rounded-xl p-4 flex flex-col items-center border border-primary/20">
-                    <div className="bg-white p-2 rounded-lg shadow-sm mb-2">
-                      <QRCodeSVG
-                        value={generateUPIPayload(bill)}
-                        size={160}
-                        level="H"
-                        includeMargin={true}
-                      />
-                    </div>
-                    <p className="text-xs text-center text-primary font-medium">Scan to pay with any UPI app</p>
-                  </div>
-                )}
               </div>
 
               {/* Fixed Pay Button at bottom */}
@@ -753,7 +724,7 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
                   className="w-full h-14 text-lg font-bold"
                   disabled={!paymentConfirmed || isProcessing}
                 >
-                  {isProcessing ? 'Processing...' : '💳 Pay & Print Receipt'}
+                  {isProcessing ? (<><svg className="animate-spin h-5 w-5 mr-2 inline" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Processing...</>) : '💳 Pay & Print Receipt'}
                 </Button>
               </div>
             </div>

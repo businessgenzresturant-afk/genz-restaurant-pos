@@ -116,7 +116,7 @@ export default function ManageStaffModal({ isOpen, onClose }: ManageStaffModalPr
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-background border border-border rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-hidden flex flex-col">
+      <div className="bg-background border border-border rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-hidden flex flex-col animate-slide-up">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">
           <div>
@@ -146,7 +146,7 @@ export default function ManageStaffModal({ isOpen, onClose }: ManageStaffModalPr
 
           {/* Add Form */}
           {showAddForm && (
-            <div className="bg-muted/50 rounded-xl p-4 mb-6">
+            <div className="bg-muted/50 rounded-xl p-4 mb-6 animate-fade-in">
               <h3 className="text-sm font-bold text-foreground mb-3">Add New Staff Member</h3>
               <div className="grid grid-cols-2 gap-3 mb-3">
                 <input
@@ -184,7 +184,7 @@ export default function ManageStaffModal({ isOpen, onClose }: ManageStaffModalPr
               <div className="flex gap-2">
                 <button
                   onClick={handleAddStaff}
-                  className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-bold text-sm hover:opacity-90 transition-opacity"
+                  className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-bold text-sm hover:opacity-90 transition-opacity active:scale-[0.97]"
                 >
                   Add Staff
                 </button>

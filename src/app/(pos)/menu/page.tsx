@@ -282,7 +282,7 @@ export default function MenuPage() {
     return (
       <div className="min-h-[600px] flex items-center justify-center">
         <div className="text-center">
-          <div className=" rounded-full border-4 border-primary border-t-transparent h-12 w-12 mx-auto"></div>
+          <div className=" rounded-full border-4 border-primary border-t-transparent h-12 w-12 mx-auto animate-spin"></div>
           <p className="mt-4 text-muted-foreground">Loading delicious menu...</p>
         </div>
       </div>
@@ -778,7 +778,7 @@ export default function MenuPage() {
                 }
                 // STAFF can't edit via card click (only use toggle availability button)
               }}
-              className={`border rounded-xl p-4 transition-all group card-enhanced ${
+              className={`border rounded-xl p-4 transition-all group card-enhanced hover:shadow-lg hover:-translate-y-1 ${
                 item.available ? 'border-border' : 'border-border/50 opacity-60'
               } ${isAdmin === true ? 'cursor-pointer hover:border-primary/50' : ''}`}
             >

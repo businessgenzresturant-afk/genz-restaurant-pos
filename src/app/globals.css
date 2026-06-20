@@ -2,6 +2,48 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   KEYFRAMES — referenced throughout the app
+   ============================================ */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  50%      { box-shadow: 0 0 12px 4px rgba(16, 185, 129, 0.15); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   DESIGN TOKENS
+   ============================================ */
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -62,7 +104,65 @@
   }
 }
 
-/* Mobile touch target optimization */
+/* ============================================
+   ANIMATION UTILITY CLASSES
+   ============================================ */
+
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Staggered children — add to parent, children auto-stagger */
+.stagger-children > * {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 60ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 120ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 180ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 240ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 300ms; }
+
+/* ============================================
+   SKELETON SHIMMER (loading placeholder)
+   ============================================ */
+
+.skeleton {
+  @apply rounded-lg;
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 25%,
+    hsl(var(--muted-foreground) / 0.08) 50%,
+    hsl(var(--muted)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+}
+
+/* ============================================
+   MOBILE TOUCH TARGETS
+   ============================================ */
+
 @media (hover: none) {
   .touch-enhanced {
     @apply min-h-[48px] min-w-[48px];
@@ -79,6 +179,10 @@
   }
 }
 
+/* ============================================
+   FOCUS & INPUT RESETS
+   ============================================ */
+
 :focus-visible {
   @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background transition-shadow duration-200;
 }
@@ -91,22 +195,28 @@ textarea,
   user-select: none;
 }
 
-/* Smooth transitions for specific UI elements instead of universal selector to prevent lag */
+/* ============================================
+   GLOBAL TRANSITION TUNING (snappy 200ms)
+   ============================================ */
+
 button, a, .card-enhanced, .transition-colors, .transition-all {
   transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-  transition-duration: 300ms;
+  transition-duration: 200ms;
 }
 
-/* Base overrides for speed */
 input, textarea {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
   transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   transition-duration: 200ms;
 }
 
+/* ============================================
+   COMPONENT UTILITIES
+   ============================================ */
+
 /* Modern Card depth */
 .card-enhanced {
-  @apply bg-card text-card-foreground border border-border/60 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 ease-out;
+  @apply bg-card text-card-foreground border border-border/60 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 ease-out;
 }
 
 /* Enhanced form fields */
@@ -116,20 +226,50 @@ input, textarea {
 
 /* Sleek button base */
 .button-enhanced {
-  @apply rounded-xl transition-all duration-300 ease-out active:scale-[0.97];
+  @apply rounded-xl transition-all duration-200 ease-out active:scale-[0.97] cursor-pointer;
 }
 
-/* Custom scrollbar for modern feel */
+/* Modal backdrop — reusable across all modals */
+.modal-backdrop {
+  @apply fixed inset-0 bg-black/60 backdrop-blur-sm;
+  animation: fadeIn 0.2s ease-out both;
+}
+
+/* Status badge — used on KOT, KDS, orders, bills */
+.status-badge {
+  @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border;
+}
+
+/* ============================================
+   SCROLLBAR
+   ============================================ */
+
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-muted-foreground/30 rounded-full hover:bg-muted-foreground/50 transition-colors;
+  @apply bg-muted-foreground/20 rounded-full;
 }
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/40;
+}
+
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ============================================
+   MOBILE UTILITIES
+   ============================================ */
 
 @media (max-width: 640px) {
   .p-mobile { @apply p-4; }
