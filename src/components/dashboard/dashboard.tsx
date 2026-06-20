@@ -23,6 +23,7 @@ import { CustomerDetailsModal } from './CustomerDetailsModal';
 import { TablesOccupiedModal } from './TablesOccupiedModal';
 import { KitchenQueueModal } from './KitchenQueueModal';
 import { TodayRevenueModal } from './TodayRevenueModal';
+import { PaymentModal } from '@/components/billing/PaymentModal';
 import { Portal } from '@/components/ui/portal';
 import { toast } from 'sonner';
 
@@ -71,12 +72,14 @@ export function Dashboard() {
   const [isTablesOccupiedModalOpen, setTablesOccupiedModalOpen] = useState(false);
   const [isKitchenQueueModalOpen, setKitchenQueueModalOpen] = useState(false);
   const [isTodayRevenueModalOpen, setTodayRevenueModalOpen] = useState(false);
+  const [isPaymentModalOpen, setPaymentModalOpen] = useState(false);
 
   // Selected state
   const [selectedTable, setSelectedTable] = useState<any | null>(null);
   const [selectedActiveOrder, setSelectedActiveOrder] = useState<any | null>(null);
   const [selectedOrderType, setSelectedOrderType] = useState<string>('DINE_IN');
   const [customerDetails, setCustomerDetails] = useState<any>(null);
+  const [generatedBill, setGeneratedBill] = useState<any | null>(null);
 
   // Removed dashboard click sound - sounds should ONLY play on KDS page
   // when actual new orders arrive, not on dashboard button clicks
@@ -282,15 +285,24 @@ export function Dashboard() {
       if (!response.ok) throw new Error('Failed to generate bill');
       
       const newBill = await response.json();
-      toast.success('Bill generated successfully! 🧾');
+      toast.success('Bill generated! 🧾');
       setTableDrawerOpen(false);
       
-      // Redirect to Bills page after generating bill
-      router.push('/bills');
+      // Open payment modal in-place instead of navigating away
+      setGeneratedBill(newBill);
+      setPaymentModalOpen(true);
     } catch (err) {
       toast.error('Failed to generate bill');
       console.error('Bill generation error:', err);
     }
+  };
+
+  const handlePaymentSuccess = async () => {
+    setPaymentModalOpen(false);
+    setGeneratedBill(null);
+    toast.success('Payment completed successfully! 🎉');
+    // Refresh dashboard data
+    await fetchData();
   };
 
   const handleQuickReorder = async (menuItemId: string, specialInstructions: string) => {
@@ -601,6 +613,19 @@ export function Dashboard() {
           onClose={closeTodayRevenueModal}
           todayRevenue={revenue}
         />
+
+        {/* Payment Modal - Opens after Generate Bill */}
+        {generatedBill && (
+          <PaymentModal
+            bill={generatedBill}
+            isOpen={isPaymentModalOpen}
+            onClose={() => {
+              setPaymentModalOpen(false);
+              setGeneratedBill(null);
+            }}
+            onPaymentSuccess={handlePaymentSuccess}
+          />
+        )}
       </Portal>
     </div>
   );
