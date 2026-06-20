@@ -67,17 +67,17 @@ export function KitchenQueueModal({ isOpen, onClose, activeOrders, onManageOrder
   return (
     <>
       <div 
-        className="fixed inset-0 bg-black/60 z-[150] backdrop-blur-sm animate-fade-in" 
+        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-fade-in" 
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
           onClose();
         }} 
       />
-      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:w-full sm:max-w-3xl bg-background border border-border shadow-2xl rounded-3xl z-[160] overflow-hidden animate-fade-in max-h-[85vh] flex flex-col">
+      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[calc(100%-2rem)] sm:w-full sm:max-w-3xl bg-background border-2 border-border shadow-2xl rounded-3xl z-[160] overflow-hidden animate-scale-in max-h-[90vh] flex flex-col">
         
         {/* Header */}
-        <div className="p-6 border-b border-border flex justify-between items-center bg-muted/10">
+        <div className="p-6 border-b-2 border-border flex justify-between items-center bg-gradient-to-r from-primary/5 to-primary/10">
           <div className="flex items-center gap-3">
             <button 
               onClick={(e) => {
@@ -89,8 +89,8 @@ export function KitchenQueueModal({ isOpen, onClose, activeOrders, onManageOrder
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <div className="p-2 bg-orange-500/10 text-orange-500 rounded-lg">
-              <ChefHat className="w-6 h-6" />
+            <div className="p-3 bg-primary/20 rounded-xl">
+              <ChefHat className="w-6 h-6 text-primary" />
             </div>
             <div>
               <h2 className="text-2xl font-black text-foreground">Kitchen Queue ({queueOrders.length})</h2>
@@ -103,14 +103,14 @@ export function KitchenQueueModal({ isOpen, onClose, activeOrders, onManageOrder
               e.stopPropagation();
               onClose();
             }} 
-            className="p-2 rounded-full hover:bg-muted transition-colors"
+            className="p-2.5 hover:bg-muted/80 rounded-xl transition-all duration-200 hover:rotate-90"
           >
             <X className="w-6 h-6 text-muted-foreground" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto flex-1 custom-scrollbar space-y-4">
+        <div className="p-6 overflow-y-auto flex-1 custom-scrollbar space-y-4 bg-gradient-to-b from-background to-muted/20">
           {queueOrders.length === 0 ? (
             <div className="text-center py-16 text-muted-foreground">
               <span className="text-4xl block mb-2">👨‍🍳</span>
