@@ -74,29 +74,29 @@ export default function RestaurantSettingsModal({ isOpen, onClose }: RestaurantS
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="bg-background border border-border rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 animate-fade-in">
+      <div className="bg-background border-2 border-border rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col animate-scale-in">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-border">
+        <div className="flex items-center justify-between p-6 border-b-2 border-border bg-gradient-to-r from-primary/5 to-primary/10">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary/10 rounded-xl">
-              <Store className="w-5 h-5 text-primary" />
+            <div className="p-3 bg-primary/20 rounded-xl">
+              <Store className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-foreground">Restaurant Settings</h2>
-              <p className="text-xs text-muted-foreground mt-1">Update restaurant information</p>
+              <h2 className="text-2xl font-black text-foreground">Restaurant Settings</h2>
+              <p className="text-sm text-muted-foreground mt-0.5">Update restaurant information</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-muted rounded-xl transition-colors"
+            className="p-2.5 hover:bg-muted/80 rounded-xl transition-all duration-200 hover:rotate-90"
           >
-            <X className="w-5 h-5" />
+            <X className="w-6 h-6 text-muted-foreground" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-background to-muted/20">
           {loading ? (
             <div className="text-center py-8 text-muted-foreground">Loading...</div>
           ) : (
@@ -199,7 +199,7 @@ export default function RestaurantSettingsModal({ isOpen, onClose }: RestaurantS
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 p-6 border-t border-border">
+        <div className="flex items-center justify-end gap-3 p-6 border-t-2 border-border bg-muted/30">
           <button
             onClick={onClose}
             className="px-4 py-2 bg-muted text-foreground rounded-lg font-bold text-sm hover:bg-muted/80 transition-colors"
