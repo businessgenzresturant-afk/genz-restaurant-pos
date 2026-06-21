@@ -18,10 +18,12 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [cart, setCart] = useState<{menuItemId: string, quantity: number, specialInstructions: string, portionType?: 'HALF' | 'FULL'}[]>([]);
   const [activeTab, setActiveTab] = useState<'menu' | 'cart'>('menu');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   React.useEffect(() => {
     if (isOpen) {
       setActiveTab('menu');
+      setIsSubmitting(false); // Reset on open
     }
   }, [isOpen]);
 
@@ -91,11 +93,18 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
 
   const totalAmount = cart.reduce((sum, item) => sum + (getMenuItemPrice(item.menuItemId, item.portionType) * item.quantity), 0);
 
-  const handleSubmit = () => {
-    if (cart.length > 0) {
-      onPlaceOrder(cart);
-      setCart([]);
-      onClose();
+  const handleSubmit = async () => {
+    if (cart.length > 0 && !isSubmitting) {
+      setIsSubmitting(true);
+      try {
+        await onPlaceOrder(cart);
+        setCart([]);
+        // Success - parent will close drawer after toast
+      } catch (error) {
+        console.error('Failed to place order:', error);
+        // Re-enable button on error so user can retry
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -347,11 +356,20 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
               <span className="font-black text-3xl text-primary">₹{totalAmount.toFixed(2)}</span>
             </div>
             <Button 
-              className="w-full h-14 text-lg font-bold shadow-md shadow-orange-500/20 bg-orange-500 hover:bg-orange-600 active:scale-[0.97] transition-transform"
-              disabled={cart.length === 0}
+              className="w-full h-14 text-lg font-bold shadow-md shadow-orange-500/20 bg-orange-500 hover:bg-orange-600 active:scale-[0.97] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={cart.length === 0 || isSubmitting}
               onClick={handleSubmit}
             >
-              <Send className="w-5 h-5 mr-2" /> Send to Kitchen
+              {isSubmitting ? (
+                <>
+                  <div className="w-5 h-5 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <Send className="w-5 h-5 mr-2" /> Send to Kitchen
+                </>
+              )}
             </Button>
           </div>
         </div>

@@ -15,6 +15,10 @@ interface TableDrawerProps {
 }
 
 export function TableDrawer({ isOpen, onClose, table, activeOrder, onAddItem, onGenerateBill, onQuickReorder, onMarkAsServed, onTransferClick }: TableDrawerProps) {
+  const [isGeneratingBill, setIsGeneratingBill] = React.useState(false);
+  const [isMarkingServed, setIsMarkingServed] = React.useState(false);
+  const [isReordering, setIsReordering] = React.useState<string | null>(null);
+
   if (!isOpen) return null;
 
   return (
@@ -105,9 +109,17 @@ export function TableDrawer({ isOpen, onClose, table, activeOrder, onAddItem, on
                         variant="ghost" 
                         size="sm" 
                         className="h-6 mt-2 px-2 text-xs font-bold text-primary hover:bg-primary/10"
-                        onClick={() => onQuickReorder(item.menuItem.id, item.cleanInstr)}
+                        disabled={isReordering === item.menuItem.id}
+                        onClick={async () => {
+                          setIsReordering(item.menuItem.id);
+                          try {
+                            await onQuickReorder(item.menuItem.id, item.cleanInstr);
+                          } finally {
+                            setIsReordering(null);
+                          }
+                        }}
                       >
-                        [+ Same Again]
+                        {isReordering === item.menuItem.id ? '...' : '[+ Same Again]'}
                       </Button>
                     </div>
                     <p className="font-semibold whitespace-nowrap">₹{(item.price * item.quantity).toFixed(2)}</p>
@@ -140,22 +152,58 @@ export function TableDrawer({ isOpen, onClose, table, activeOrder, onAddItem, on
               
               {activeOrder && activeOrder.status !== 'SERVED' && (
                 <Button 
-                  className="flex-1 h-14 text-lg font-bold shadow-lg shadow-emerald-500/20 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.97] transition-transform"
-                  onClick={() => onMarkAsServed(activeOrder.id)}
+                  className="flex-1 h-14 text-lg font-bold shadow-lg shadow-emerald-500/20 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.97] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={isMarkingServed}
+                  onClick={async () => {
+                    setIsMarkingServed(true);
+                    try {
+                      await onMarkAsServed(activeOrder.id);
+                    } finally {
+                      setIsMarkingServed(false);
+                    }
+                  }}
                 >
-                  <Receipt className="w-5 h-5 mr-2" /> {/* Reusing icon for space, ideally Check */}
-                  Mark Served
+                  {isMarkingServed ? (
+                    <>
+                      <div className="w-5 h-5 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Receipt className="w-5 h-5 mr-2" />
+                      Mark Served
+                    </>
+                  )}
                 </Button>
               )}
             </div>
             
             {activeOrder && (
               <Button 
-                className="w-full h-14 text-lg font-bold shadow-lg shadow-indigo-500/20 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.97] transition-transform"
-                onClick={() => onGenerateBill(activeOrder.id)}
+                className="w-full h-14 text-lg font-bold shadow-lg shadow-indigo-500/20 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.97] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isGeneratingBill}
+                onClick={async () => {
+                  setIsGeneratingBill(true);
+                  try {
+                    await onGenerateBill(activeOrder.id);
+                  } finally {
+                    // Don't reset here - drawer will close on success
+                    // Reset only runs if there's an error and drawer stays open
+                    setTimeout(() => setIsGeneratingBill(false), 500);
+                  }
+                }}
               >
-                <Receipt className="w-5 h-5 mr-2" />
-                Generate Bill
+                {isGeneratingBill ? (
+                  <>
+                    <div className="w-5 h-5 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Receipt className="w-5 h-5 mr-2" />
+                    Generate Bill
+                  </>
+                )}
               </Button>
             )}
           </div>

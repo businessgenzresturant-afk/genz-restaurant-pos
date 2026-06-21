@@ -262,6 +262,9 @@ export function Dashboard() {
   };
 
   const handlePlaceOrder = async (items: any[]) => {
+    // Show instant feedback
+    const toastId = toast.loading('Sending order to kitchen...', { duration: Infinity });
+    
     try {
       const response = await fetch('/api/orders', {
         method: 'POST',
@@ -270,21 +273,36 @@ export function Dashboard() {
           tableId: selectedTable?.id || null,
           orderType: selectedOrderType || 'DINE_IN',
           items,
-          guests: null, // No guest count needed upfront
+          guests: null,
           customerName: customerDetails?.customerName || 'Walk-in Customer',
           customerPhone: customerDetails?.customerPhone || null,
         })
       });
 
-      if (!response.ok) throw new Error('Failed to place order');
-      toast.success('Order sent to kitchen! 🔔');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to place order');
+      }
+      
+      // Success feedback
+      toast.success('Order sent to kitchen! 🔔', { id: toastId });
+      
+      // Close menu drawer after short delay so user sees success
+      setTimeout(() => {
+        setMenuDrawerOpen(false);
+      }, 300);
+      
+      // Refresh data to show new order
       fetchData();
-    } catch (err) {
-      toast.error('Failed to place order');
+    } catch (err: any) {
+      toast.error(err.message || 'Failed to place order', { id: toastId });
+      throw err; // Re-throw so MenuDrawer can handle
     }
   };
 
   const handleGenerateBill = async (orderId: string) => {
+    const toastId = toast.loading('Generating bill...', { duration: Infinity });
+    
     try {
       // First, mark the order as SERVED so the bills API accepts it
       // (bills API requires status COMPLETED or SERVED)
@@ -312,7 +330,7 @@ export function Dashboard() {
       }
       
       const newBill = await response.json();
-      toast.success('Bill generated! 🧾');
+      toast.success('Bill generated! 🧾', { id: toastId });
       setTableDrawerOpen(false);
       setTakeawayDeliveryModalOpen(false);
       
@@ -320,8 +338,9 @@ export function Dashboard() {
       setGeneratedBill(newBill);
       setPaymentModalOpen(true);
     } catch (err: any) {
-      toast.error(err.message || 'Failed to generate bill');
+      toast.error(err.message || 'Failed to generate bill', { id: toastId });
       console.error('Bill generation error:', err);
+      throw err; // Re-throw so TableDrawer can reset loading state
     }
   };
 
@@ -336,6 +355,8 @@ export function Dashboard() {
   const handleQuickReorder = async (menuItemId: string, specialInstructions: string) => {
     if (!selectedActiveOrder && !selectedTable) return;
     
+    const toastId = toast.loading('Adding item...', { duration: Infinity });
+    
     try {
       const response = await fetch('/api/orders', {
         method: 'POST',
@@ -348,10 +369,11 @@ export function Dashboard() {
       });
 
       if (!response.ok) throw new Error('Failed to quick reorder');
-      toast.success('Reordered successfully! 🔔');
+      toast.success('Item added successfully! 🔔', { id: toastId });
       fetchData();
     } catch (err) {
-      toast.error('Failed to quick reorder');
+      toast.error('Failed to add item', { id: toastId });
+      throw err; // Re-throw so TableDrawer can reset loading state
     }
   };
 
@@ -374,6 +396,8 @@ export function Dashboard() {
   };
 
   const handleMarkAsServed = async (orderId: string) => {
+    const toastId = toast.loading('Marking as served...', { duration: Infinity });
+    
     try {
       const response = await fetch(`/api/orders/${orderId}`, {
         method: 'PATCH',
@@ -382,11 +406,12 @@ export function Dashboard() {
       });
 
       if (!response.ok) throw new Error('Failed to mark as served');
-      toast.success('Order marked as served! ✅');
+      toast.success('Order marked as served! ✅', { id: toastId });
       setTableDrawerOpen(false);
       fetchData();
     } catch (err) {
-      toast.error('Failed to mark as served');
+      toast.error('Failed to mark as served', { id: toastId });
+      throw err; // Re-throw so TableDrawer can reset loading state
     }
   };
 
