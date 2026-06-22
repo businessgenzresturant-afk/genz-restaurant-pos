@@ -97,10 +97,11 @@ export async function DELETE(
   if (auth.error) return auth.error;
 
   try {
+    const { id } = await params;
     const restaurantId = (auth.session.user as any).restaurantId;
     const order = await prisma.order.findFirst({
       where: {
-        id: id,
+        id,
         OR: [
           { table: { restaurantId } },
           { items: { some: { menuItem: { restaurantId } } } }
@@ -119,7 +120,7 @@ export async function DELETE(
     const deletedOrder = await prisma.$transaction(async (tx) => {
       // Delete the order (cascades to order items)
       const deleted = await tx.order.delete({
-        where: { id: id }
+        where: { id }
       });
 
       let activeOrders = 0;
