@@ -46,12 +46,14 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/images/Gen-z-logo.png', type: 'image/png' },
-      { url: '/icon.svg', type: 'image/svg+xml', sizes: '256x256' },
+      { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
+      { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
+      { url: '/favicon.ico', sizes: 'any' },
     ],
     apple: [
-      { url: '/images/Gen-z-logo.png', type: 'image/png', sizes: '180x180' },
+      { url: '/apple-touch-icon.png', type: 'image/png', sizes: '180x180' },
     ],
+    shortcut: '/favicon.ico',
   },
   manifest: '/manifest.json',
 };

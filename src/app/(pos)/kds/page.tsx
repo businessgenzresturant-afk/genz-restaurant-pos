@@ -46,6 +46,7 @@ export default function KitchenDisplaySystem() {
   const [now, setNow] = useState(new Date());
   const [soundQueue, setSoundQueue] = useState<SoundNotification[]>([]);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [hasInteracted, setHasInteracted] = useState(false);
   const previousOrdersRef = useRef<any[]>([]);
   const soundTimersRef = useRef<Map<string, NodeJS.Timeout>>(new Map());
   const audioContextRef = useRef<{ new: HTMLAudioElement | null; urgent: HTMLAudioElement | null }>({
@@ -196,13 +197,23 @@ export default function KitchenDisplaySystem() {
         const newOrderIds: string[] = [];
 
         finalOrders.forEach((order: any) => {
-          const oldOrder = prev.find(o => o.id === order.id);
+          const oldOrder = prev.find((o: any) => o.id === order.id);
           
+          const hasUrgentInstruction = order.items.some((item: any) => 
+            item.specialInstructions && item.specialInstructions.includes('[URGENT ADDITION]')
+          );
+
           // Case 1: Completely new order
           if (!oldOrder) {
-            hasNew = true;
-            newOrderIds.push(order.id);
-            console.log('🆕 New order detected:', order.id, order.table?.number || 'No table');
+            if (hasUrgentInstruction) {
+              hasUrgent = true;
+              urgentOrderIds.push(order.id);
+              console.log('🔥 URGENT NEW order detected:', order.id);
+            } else {
+              hasNew = true;
+              newOrderIds.push(order.id);
+              console.log('🆕 New order detected:', order.id, order.table?.number || 'No table');
+            }
           } 
           // Case 2: Existing order with more items (Running Table)
           else if (order.items.length > oldOrder.items.length) {
@@ -316,7 +327,7 @@ export default function KitchenDisplaySystem() {
     order.items.forEach((item: any) => {
       const itemTime = new Date(item.createdAt).getTime();
       // Item is "urgent" if it was added more than 2 minutes after the earliest item
-      const isUrgent = itemTime - earliestItemTime > 120000; // 2 minutes
+      const isUrgent = (itemTime - earliestItemTime > 120000) || (item.specialInstructions && item.specialInstructions.includes('[URGENT ADDITION]'));
       
       if (isUrgent) {
         urgentItems.push(item);
@@ -483,7 +494,7 @@ export default function KitchenDisplaySystem() {
           {isUrgent && (
             <div className="flex-1 flex justify-end">
               <span className="bg-gradient-to-r from-red-600 to-red-500 text-white text-xs font-black px-4 py-2 rounded-xl tracking-widest uppercase shadow-lg shadow-red-500/50 animate-pulse border-2 border-red-400">
-                🔥 RUNNING TABLE
+                🔥 URGENT
               </span>
             </div>
           )}
@@ -493,6 +504,33 @@ export default function KitchenDisplaySystem() {
   };
 
   const showSkeletons = loading && orders.length === 0;
+
+  const handleStartKDS = () => {
+    setHasInteracted(true);
+    // Silent play to unlock audio context
+    if (audioContextRef.current.new) {
+      audioContextRef.current.new.play().catch(() => {});
+      audioContextRef.current.new.pause();
+    }
+    if (audioContextRef.current.urgent) {
+      audioContextRef.current.urgent.play().catch(() => {});
+      audioContextRef.current.urgent.pause();
+    }
+  };
+
+  if (!hasInteracted) {
+    return (
+      <div className="fixed inset-0 bg-background z-50 flex items-center justify-center cursor-pointer" onClick={handleStartKDS}>
+        <div className="bg-card p-12 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.2)] text-center border-4 border-primary hover:scale-105 transition-transform duration-300">
+          <div className="bg-primary/20 p-6 rounded-full inline-block mb-6 animate-pulse">
+            <Volume2 className="w-20 h-20 text-primary" />
+          </div>
+          <h2 className="text-4xl font-black mb-4">Click anywhere to start KDS</h2>
+          <p className="text-xl text-muted-foreground font-bold">This enables order notification sounds</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background p-6 overflow-x-hidden font-sans">
@@ -540,7 +578,7 @@ export default function KitchenDisplaySystem() {
           <div className="space-y-4">
             <h2 className="text-2xl font-black text-red-500 flex items-center gap-2">
               <Flame className="w-8 h-8" /> 
-              URGENT ADDITIONS (RUNNING TABLES)
+              URGENT ORDERS & ADDITIONS
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
               {urgentAdditions.map(order => (

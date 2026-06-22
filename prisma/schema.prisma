@@ -75,6 +75,9 @@ model Order {
   @@index([tableId])
   @@index([status])
   @@index([paymentStatus])
+  @@index([createdAt])
+  @@index([status, createdAt])
+  @@index([customerPhone])
 }
 
 model OrderItem {
@@ -95,6 +98,8 @@ model OrderItem {
 
   @@index([orderId])
   @@index([menuItemId])
+  @@index([status])
+  @@index([orderId, status])
 }
 
 model Bill {
@@ -123,6 +128,8 @@ model Bill {
   @@index([status])
   @@index([createdAt])
   @@index([customerId])
+  @@index([status, createdAt])
+  @@index([paidAt])
 }
 
 model Customer {

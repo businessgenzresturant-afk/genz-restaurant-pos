@@ -9,15 +9,21 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/icon.svg",
-      "sizes": "256x256",
-      "type": "image/svg+xml",
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/apple-icon.svg",
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
       "sizes": "180x180",
-      "type": "image/svg+xml"
+      "type": "image/png"
     }
   ],
   "categories": ["business", "productivity", "food"],
@@ -27,21 +33,21 @@
       "short_name": "Dashboard",
       "description": "View restaurant dashboard",
       "url": "/dashboard",
-      "icons": [{ "src": "/icon.svg", "sizes": "256x256" }]
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Kitchen Display",
       "short_name": "KDS",
       "description": "View kitchen display system",
       "url": "/kds",
-      "icons": [{ "src": "/icon.svg", "sizes": "256x256" }]
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "Orders",
       "short_name": "Orders",
       "description": "Manage orders",
       "url": "/orders",
-      "icons": [{ "src": "/icon.svg", "sizes": "256x256" }]
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

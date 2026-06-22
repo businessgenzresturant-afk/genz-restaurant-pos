@@ -410,19 +410,28 @@ export default function BillsPage() {
   };
 
   const handleClearTable = async (tableId: string) => {
+    const toastId = toast.loading('🧹 Clearing table...', { duration: Infinity });
     setLoading(true);
     try {
       const response = await fetch(`/api/tables/${tableId}/clear`, {
         method: 'POST'
       });
       if (!response.ok) {
-        throw new Error('Failed to clear table');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to clear table');
       }
-      toast.success('Table cleared successfully!');
-    } catch (err) {
-      setError('Failed to clear table. Please try again.');
+      toast.success('✅ Table cleared!', { 
+        id: toastId,
+        description: 'Table is now available for new guests'
+      });
+      // Refresh data
+      fetchBills();
+    } catch (err: any) {
+      toast.error('❌ Clear failed', { 
+        id: toastId,
+        description: err.message || 'Please try again'
+      });
       console.error('Error clearing table:', err);
-      toast.error('Failed to clear table');
     } finally {
       setLoading(false);
     }
