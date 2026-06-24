@@ -240,10 +240,26 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
           // Case 2: Existing order with more items (Running Table)
           else if (order.items.length > oldOrder.items.length) {
             const newItemsCount = order.items.length - oldOrder.items.length;
-            console.log(`🔥 Running table: Order ${order.id} has ${newItemsCount} new items`);
+            console.log(`🔥 Running table: Order ${order.id} (Table ${order.table?.number || 'N/A'}) has ${newItemsCount} new items`);
+            console.log(`   Old items: ${oldOrder.items.length}, New items: ${order.items.length}`);
+            console.log(`   Order status: ${order.status}`);
             
             hasUrgent = true;
             urgentOrderIds.push(order.id);
+          }
+          // Case 3: New order on same table as a recently SERVED order (within 5 mins)
+          else if (!oldOrder && order.tableId) {
+            const recentlyServedOrder = prev.find((o: any) => 
+              o.tableId === order.tableId && 
+              o.status === 'SERVED' &&
+              (new Date().getTime() - new Date(o.updatedAt || o.createdAt).getTime() < 5 * 60 * 1000)
+            );
+            
+            if (recentlyServedOrder) {
+              console.log(`🔥 NEW order on recently served table ${order.table?.number}: This is a running table!`);
+              hasUrgent = true;
+              urgentOrderIds.push(order.id);
+            }
           }
         });
 

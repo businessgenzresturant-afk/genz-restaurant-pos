@@ -199,6 +199,7 @@ export async function POST(request: Request) {
         }) : null;
 
         // Find active order INSIDE transaction (CRITICAL FIX)
+        // BUGFIX: Exclude SERVED orders - once served, table should start fresh order
         const activeOrder = tableId ? await tx.order.findFirst({
           where: {
             tableId,
@@ -207,8 +208,13 @@ export async function POST(request: Request) {
           orderBy: { createdAt: 'desc' }
         }) : null;
 
-        // If table is OCCUPIED and has active order, append items
-        if (currentTable && currentTable.status === 'OCCUPIED' && activeOrder) {
+        console.log('[Order Creation] Table status:', currentTable?.status);
+        console.log('[Order Creation] Active order found:', !!activeOrder);
+        console.log('[Order Creation] Active order status:', activeOrder?.status);
+
+        // BUGFIX: If table is OCCUPIED but order is SERVED, treat as NEW order
+        // Only append to PENDING/PREPARING/READY orders
+        if (currentTable && currentTable.status === 'OCCUPIED' && activeOrder && ['PENDING', 'PREPARING', 'READY'].includes(activeOrder.status)) {
           // Create new order items
           await tx.orderItem.createMany({
             data: orderItemsData.map(item => ({ 
