@@ -47,9 +47,15 @@ export default function SettingsPage() {
         if (response.ok) {
           const data = await response.json();
           setKdsToken(data.token);
+          if (data.token) {
+            toast.success('✅ KDS Display Token loaded successfully!');
+          }
+        } else {
+          toast.error('Failed to load KDS token');
         }
       } catch (error) {
         console.error('Failed to fetch KDS token:', error);
+        toast.error('Failed to load KDS token');
       }
     }
 
@@ -354,57 +360,66 @@ export default function SettingsPage() {
           </div>
 
           <div className="space-y-4">
-            <div className="bg-muted/50 rounded-lg p-4 border border-border">
-              <label className="block text-sm font-semibold text-foreground mb-2">Display URL</label>
-              <div className="flex gap-2">
-                <Input
-                  value={showKdsToken ? kdsURL : `https://pos.gen-z.online/kds-display/${maskedToken}`}
-                  readOnly
-                  className="font-mono text-xs"
-                />
-                <Button
-                  onClick={() => setShowKdsToken(!showKdsToken)}
-                  variant="outline"
-                  size="sm"
-                  className="shrink-0"
-                  title={showKdsToken ? 'Hide token' : 'Show token'}
-                >
-                  {showKdsToken ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </Button>
-                <Button
-                  onClick={handleCopyKDSURL}
-                  variant="outline"
-                  size="sm"
-                  className="shrink-0"
-                  disabled={!kdsToken}
-                >
-                  <Copy className="w-4 h-4" />
-                </Button>
+            {!kdsToken ? (
+              <div className="bg-muted/50 rounded-lg p-6 border border-border text-center">
+                <p className="text-muted-foreground mb-4">🔐 Loading KDS Display Token...</p>
+                <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
               </div>
-              <p className="text-xs text-muted-foreground mt-2">
-                📱 Open this URL on your kitchen TV to display live orders without requiring login
-              </p>
-            </div>
+            ) : (
+              <>
+                <div className="bg-muted/50 rounded-lg p-4 border border-border">
+                  <label className="block text-sm font-semibold text-foreground mb-2">Display URL</label>
+                  <div className="flex gap-2">
+                    <Input
+                      value={showKdsToken ? kdsURL : `https://pos.gen-z.online/kds-display/${maskedToken}`}
+                      readOnly
+                      className="font-mono text-xs"
+                    />
+                    <Button
+                      onClick={() => setShowKdsToken(!showKdsToken)}
+                      variant="outline"
+                      size="sm"
+                      className="shrink-0"
+                      title={showKdsToken ? 'Hide token' : 'Show token'}
+                    >
+                      {showKdsToken ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </Button>
+                    <Button
+                      onClick={handleCopyKDSURL}
+                      variant="outline"
+                      size="sm"
+                      className="shrink-0"
+                      disabled={!kdsToken}
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    📱 Open this URL on your kitchen TV to display live orders without requiring login
+                  </p>
+                </div>
 
-            <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4">
-              <p className="text-sm font-semibold text-amber-400 mb-2">🔒 Security Notice</p>
-              <ul className="text-xs text-amber-300/90 space-y-1 list-disc list-inside">
-                <li>This URL provides READ-ONLY access to kitchen orders</li>
-                <li>Keep this URL secure - anyone with it can view your orders</li>
-                <li>Regenerate the token if you suspect unauthorized access</li>
-                <li>The TV display automatically reconnects if network drops</li>
-              </ul>
-            </div>
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4">
+                  <p className="text-sm font-semibold text-amber-400 mb-2">🔒 Security Notice</p>
+                  <ul className="text-xs text-amber-300/90 space-y-1 list-disc list-inside">
+                    <li>This URL provides READ-ONLY access to kitchen orders</li>
+                    <li>Keep this URL secure - anyone with it can view your orders</li>
+                    <li>Regenerate the token if you suspect unauthorized access</li>
+                    <li>The TV display automatically reconnects if network drops</li>
+                  </ul>
+                </div>
 
-            <Button
-              onClick={handleRegenerateToken}
-              variant="outline"
-              disabled={regeneratingToken || !kdsToken}
-              className="w-full"
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${regeneratingToken ? 'animate-spin' : ''}`} />
-              {regeneratingToken ? 'Regenerating...' : 'Regenerate Token'}
-            </Button>
+                <Button
+                  onClick={handleRegenerateToken}
+                  variant="outline"
+                  disabled={regeneratingToken || !kdsToken}
+                  className="w-full"
+                >
+                  <RefreshCw className={`w-4 h-4 mr-2 ${regeneratingToken ? 'animate-spin' : ''}`} />
+                  {regeneratingToken ? 'Regenerating...' : 'Regenerate Token'}
+                </Button>
+              </>
+            )}
           </div>
         </Card>
       )}

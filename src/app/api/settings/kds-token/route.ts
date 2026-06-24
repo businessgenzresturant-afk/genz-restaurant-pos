@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { checkAuth } from '@/lib/api-auth';
+import * as crypto from 'crypto';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,9 +21,9 @@ export async function GET(request: Request) {
   try {
     const restaurantId = (auth.session.user as any).restaurantId;
     
-    const restaurant = await prisma.restaurant.findUnique({
+    let restaurant = await prisma.restaurant.findUnique({
       where: { id: restaurantId },
-      select: { kdsDisplayToken: true }
+      select: { kdsDisplayToken: true, id: true }
     });
 
     if (!restaurant) {
@@ -30,6 +31,21 @@ export async function GET(request: Request) {
         { error: 'Restaurant not found' },
         { status: 404 }
       );
+    }
+
+    // AUTO-GENERATE token if it doesn't exist
+    if (!restaurant.kdsDisplayToken) {
+      console.log('🔐 No KDS token found, auto-generating...');
+      const newToken = crypto.randomBytes(32).toString('hex');
+      
+      restaurant = await prisma.restaurant.update({
+        where: { id: restaurantId },
+        data: { kdsDisplayToken: newToken },
+        select: { kdsDisplayToken: true, id: true }
+      });
+      
+      console.log('✅ KDS Display Token auto-generated for restaurant:', restaurantId);
+      console.log(`   URL: https://pos.gen-z.online/kds-display/${newToken}`);
     }
 
     return NextResponse.json({
