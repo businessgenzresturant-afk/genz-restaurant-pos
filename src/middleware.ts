@@ -6,8 +6,44 @@ import type { NextRequest } from 'next/server';
  * 
  * Validates that state-changing requests (POST, PATCH, DELETE, PUT) 
  * come from the same origin to prevent Cross-Site Request Forgery attacks.
+ * 
+ * Also handles KDS display token validation and redirect server-side
+ * for compatibility with old TV browsers that struggle with JavaScript.
  */
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  // Handle KDS display token validation SERVER-SIDE
+  const kdsDisplayMatch = request.nextUrl.pathname.match(/^\/kds-display\/([^\/]+)$/);
+  
+  if (kdsDisplayMatch && !request.nextUrl.searchParams.has('rid')) {
+    const token = kdsDisplayMatch[1];
+    console.log('🔍 Server-side KDS token validation for:', token.substring(0, 10));
+    
+    try {
+      // Validate token against database
+      const { PrismaClient } = await import('@prisma/client');
+      const prisma = new PrismaClient();
+      
+      const restaurant = await prisma.restaurant.findUnique({
+        where: { kdsDisplayToken: token },
+        select: { id: true, name: true }
+      });
+      
+      await prisma.$disconnect();
+      
+      if (restaurant) {
+        console.log('✅ Server-side validation success, redirecting with rid');
+        // Redirect to same URL with restaurant ID
+        const url = request.nextUrl.clone();
+        url.searchParams.set('rid', restaurant.id);
+        return NextResponse.redirect(url);
+      } else {
+        console.error('❌ Server-side validation failed: Invalid token');
+      }
+    } catch (error) {
+      console.error('❌ Server-side validation error:', error);
+    }
+  }
+  
   // Only check CSRF for state-changing methods
   if (['POST', 'PATCH', 'DELETE', 'PUT'].includes(request.method)) {
     const origin = request.headers.get('origin');
@@ -46,5 +82,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: '/api/:path*', // Apply to all API routes
+  matcher: ['/api/:path*', '/kds-display/:token'], // Apply to API routes and KDS display
 };
