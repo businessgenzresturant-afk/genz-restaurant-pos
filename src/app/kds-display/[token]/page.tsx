@@ -15,9 +15,18 @@ export default function PublicKDSDisplay() {
     async function validateToken() {
       try {
         const token = params.token as string;
-        const response = await fetch(`/api/kds-display/${token}/validate`);
+        console.log('🔍 Client: Validating KDS token:', token ? `${token.substring(0, 10)}...` : 'NONE');
+        
+        const url = `/api/kds-display/${token}/validate`;
+        console.log('📡 Client: Calling API:', url);
+        
+        const response = await fetch(url);
+        console.log('📥 Client: Response status:', response.status, response.statusText);
         
         if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          console.error('❌ Client: Validation failed:', errorData);
+          
           if (response.status === 404) {
             setError('Invalid KDS Display Token');
           } else {
@@ -28,10 +37,11 @@ export default function PublicKDSDisplay() {
         }
 
         const data = await response.json();
+        console.log('✅ Client: Validation successful:', data);
         setRestaurantId(data.restaurantId);
         setLoading(false);
       } catch (err) {
-        console.error('Token validation error:', err);
+        console.error('❌ Client: Token validation error:', err);
         setError('Failed to connect to server');
         setLoading(false);
       }

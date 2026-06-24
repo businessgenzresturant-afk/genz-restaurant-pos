@@ -12,7 +12,10 @@ export async function GET(
     // Await params in Next.js 15
     const { token } = await params;
     
+    console.log('🔍 KDS Token Validation - Received token:', token ? `${token.substring(0, 10)}...` : 'NONE');
+    
     if (!token) {
+      console.error('❌ Token validation failed: No token provided');
       return NextResponse.json(
         { error: 'Token is required' },
         { status: 400 }
@@ -26,18 +29,29 @@ export async function GET(
     });
 
     if (!restaurant) {
+      console.error('❌ Token validation failed: Restaurant not found for token:', token.substring(0, 10) + '...');
+      
+      // DEBUG: Check if ANY restaurants exist with tokens
+      const allRestaurants = await prisma.restaurant.findMany({
+        select: { id: true, name: true, kdsDisplayToken: true }
+      });
+      console.log(`📊 Total restaurants in DB: ${allRestaurants.length}`);
+      console.log(`📊 Restaurants with tokens: ${allRestaurants.filter(r => r.kdsDisplayToken).length}`);
+      
       return NextResponse.json(
         { error: 'Invalid token' },
         { status: 404 }
       );
     }
 
+    console.log('✅ Token validation successful for restaurant:', restaurant.name, '(', restaurant.id, ')');
+
     return NextResponse.json({
       restaurantId: restaurant.id,
       restaurantName: restaurant.name
     });
   } catch (error) {
-    console.error('Token validation error:', error);
+    console.error('❌ Token validation error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
