@@ -40,8 +40,8 @@ export function ReceiptPrintTemplate({ bill, onClose }: ReceiptPrintTemplateProp
           
           body {
             font-family: 'Courier New', monospace;
-            font-size: 12px;
-            line-height: 1.4;
+            font-size: 13px;
+            line-height: 1.5;
             color: #000;
             background: #fff;
             padding: 10px;
@@ -65,7 +65,7 @@ export function ReceiptPrintTemplate({ bill, onClose }: ReceiptPrintTemplateProp
           }
           
           .restaurant-name {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 2px;
@@ -73,15 +73,15 @@ export function ReceiptPrintTemplate({ bill, onClose }: ReceiptPrintTemplateProp
           }
           
           .restaurant-info {
-            font-size: 10px;
-            line-height: 1.5;
+            font-size: 11px;
+            line-height: 1.6;
           }
           
           .bill-info {
             border-bottom: 1px dashed #000;
             padding-bottom: 10px;
             margin-bottom: 10px;
-            font-size: 11px;
+            font-size: 12px;
           }
           
           .info-row {
@@ -107,7 +107,7 @@ export function ReceiptPrintTemplate({ bill, onClose }: ReceiptPrintTemplateProp
             border-bottom: 1px solid #000;
             padding-bottom: 5px;
             margin-bottom: 8px;
-            font-size: 11px;
+            font-size: 12px;
             text-transform: uppercase;
           }
           
@@ -115,7 +115,7 @@ export function ReceiptPrintTemplate({ bill, onClose }: ReceiptPrintTemplateProp
             display: flex;
             justify-content: space-between;
             margin-bottom: 6px;
-            font-size: 11px;
+            font-size: 12px;
           }
           
           .item-name {
@@ -131,7 +131,7 @@ export function ReceiptPrintTemplate({ bill, onClose }: ReceiptPrintTemplateProp
           
           .item-special {
             color: #666;
-            font-size: 10px;
+            font-size: 11px;
             margin-left: 15px;
             margin-top: 2px;
           }
@@ -139,7 +139,7 @@ export function ReceiptPrintTemplate({ bill, onClose }: ReceiptPrintTemplateProp
           .totals-section {
             padding-bottom: 10px;
             margin-bottom: 10px;
-            font-size: 11px;
+            font-size: 12px;
           }
           
           .total-row {
@@ -149,7 +149,7 @@ export function ReceiptPrintTemplate({ bill, onClose }: ReceiptPrintTemplateProp
           }
           
           .total-final {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             border-top: 2px solid #000;
             padding-top: 8px;
@@ -159,7 +159,7 @@ export function ReceiptPrintTemplate({ bill, onClose }: ReceiptPrintTemplateProp
           .payment-status {
             text-align: center;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 14px;
             padding: 8px;
             border: 2px solid #000;
             margin: 10px 0;
@@ -171,12 +171,13 @@ export function ReceiptPrintTemplate({ bill, onClose }: ReceiptPrintTemplateProp
             border-top: 2px dashed #000;
             padding-top: 10px;
             margin-top: 15px;
-            font-size: 10px;
+            font-size: 11px;
           }
           
           .footer-message {
             font-weight: bold;
             margin-bottom: 5px;
+            font-size: 12px;
           }
           
           @media print {

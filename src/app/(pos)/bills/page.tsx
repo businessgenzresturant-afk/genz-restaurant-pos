@@ -10,6 +10,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import Image from 'next/image';
 import { Portal } from '@/components/ui/portal';
 import { useAuth } from '@/lib/useAuth';
+import { ReceiptPrintTemplate } from '@/components/billing/ReceiptPrintTemplate';
 
 export default function BillsPage() {
   const { user, isAdmin, isStaff } = useAuth();
@@ -269,146 +270,6 @@ export default function BillsPage() {
     }
   };
 
-  const handlePayAndPrint = async (billId: string, paymentMethod: string) => {
-    // Block if discount error exists
-    if (discountError) {
-      toast.error(discountError);
-      return;
-    }
-    
-    // Validate discount percent
-    const discountPct = discountPercent ? parseFloat(discountPercent) : 0;
-    const maxDiscount = isStaff ? 15 : 30;
-    if (discountPct < 0 || discountPct > maxDiscount) {
-      toast.error(`Discount must be between 0% and ${maxDiscount}%`);
-      return;
-    }
-
-    // Validate points redemption
-    const pointsRedeem = pointsToRedeem ? parseInt(pointsToRedeem) : 0;
-    if (customerData && pointsRedeem > customerData.pointsBalance) {
-      toast.error(`Cannot redeem more than ${customerData.pointsBalance} points`);
-      return;
-    }
-
-    // P0 FIX: Calculate final total including GST - Use helper function
-    const finalTotal = calculateFinalTotal(selectedBill, discountPct, pointsRedeem, gstApplied);
-
-    // Validate split payment amounts
-    let cash = 0;
-    let online = 0;
-    
-    if (isSplitPayment) {
-      cash = cashAmount ? parseFloat(cashAmount) : 0;
-      online = onlineAmount ? parseFloat(onlineAmount) : 0;
-      
-      if (Math.abs(cash + online - finalTotal) > 0.01) {
-        toast.error(`Payment amounts must equal ₹${finalTotal.toFixed(2)}. Current: ₹${(cash + online).toFixed(2)}`);
-        return;
-      }
-    } else {
-      if (paymentMethod === 'CASH') {
-        cash = finalTotal;
-      } else {
-        online = finalTotal;
-      }
-    }
-
-    // 1. Get print contents first before closing
-    const printContents = document.getElementById('print-receipt')?.innerHTML;
-    
-    setLoading(true);
-    try {
-      const response = await fetch(`/api/bills/${billId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          status: 'PAID',
-          paymentMethod: isSplitPayment ? 'SPLIT' : paymentMethod,
-          cashAmount: cash,
-          onlineAmount: online,
-          customerPhone: customerPhone || null,
-          discountPercent: discountPct,
-          pointsToRedeem: pointsRedeem
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to update bill status');
-      }
-
-      toast.success('Payment recorded successfully!');
-      
-      // Refresh bill list
-      await fetchBills();
-
-      // Reset state
-      setShowPaymentModal(false);
-      setShowBillModal(false);
-      setSelectedBill(null);
-      setCustomerPhone('');
-      setCustomerName('');
-      setCustomerData(null);
-      setDiscountPercent('');
-      setPointsToRedeem('');
-      setPaymentConfirmed(null);
-      setIsSplitPayment(false);
-      setCashAmount('');
-      setOnlineAmount('');
-      setGstApplied(true);
-
-      // 2. Trigger Printing
-      if (printContents) {
-        const printWindow = window.open('', '', 'height=800,width=600');
-        if (printWindow) {
-          printWindow.document.write(`
-            <html><head><title>Bill Receipt</title>
-            <style>
-              @page { margin: 0; }
-              body { font-family: monospace; padding: 10px; margin: 0; background: white; color: black; }
-              .receipt { max-width: 300px; margin: 0 auto; font-size: 12px; line-height: 1.4; }
-              .text-center { text-align: center; }
-              .border-t { border-top: 1px dashed #000; margin-top: 8px; padding-top: 8px; }
-              .border-b { border-bottom: 1px dashed #000; margin-bottom: 8px; padding-bottom: 8px; }
-              .flex { display: flex; justify-content: space-between; align-items: flex-start; }
-              .font-bold { font-weight: bold; }
-              .font-black { font-weight: 900; }
-              .mt-4 { margin-top: 16px; }
-              .mb-4 { margin-bottom: 16px; }
-              .mb-2 { margin-bottom: 8px; }
-              .pb-2 { padding-bottom: 8px; }
-              .py-3 { padding-top: 12px; padding-bottom: 12px; }
-              .p-3 { padding: 12px; }
-              .space-y-1\\.5 > * + * { margin-top: 6px; }
-              .text-xs { font-size: 11px; }
-              .text-lg { font-size: 16px; }
-              .uppercase { text-transform: uppercase; }
-              .tracking-wider { letter-spacing: 0.05em; }
-              img { max-width: 100%; height: auto; display: block; margin: 0 auto; border-radius: 50%; }
-              * { box-sizing: border-box; }
-              /* Hide UI elements not meant for print */
-              button, .no-print { display: none !important; }
-            </style>
-            </head><body onload="window.print(); window.close();">
-            <div class="receipt">${printContents}</div>
-            </body></html>
-          `);
-          printWindow.document.close();
-        }
-      }
-
-      // 3. Close the modal
-      setShowBillModal(false);
-      setSelectedBill(null);
-    } catch (err) {
-      setError('Failed to update bill status. Please try again.');
-      console.error('Error updating bill status:', err);
-      toast.error('Failed to process payment');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleClearTable = async (tableId: string) => {
     const toastId = toast.loading('🧹 Clearing table...', { duration: Infinity });
     setLoading(true);
@@ -604,114 +465,9 @@ export default function BillsPage() {
                 </Button>
               </div>
 
-              <div id="print-receipt" className="mb-6 p-6 bg-card text-card-foreground rounded-2xl border border-border print:bg-white print:text-black print:border-none print:w-full print:max-w-full print:p-4 max-h-[50vh] overflow-y-auto custom-scrollbar">
-                <div className="text-center mb-4">
-                  <div className="flex justify-center mb-3">
-                    <div className="w-24 h-24 rounded-full overflow-hidden bg-white p-1 mx-auto">
-                      <Image src="/images/Gen-z-logo.jpg" alt="Gen-Z POS" width={96} height={96} className="w-full h-full object-cover rounded-full mx-auto" />
-                    </div>
-                  </div>
-                  <h2 className="text-lg font-black uppercase tracking-wider mb-1 text-center">GEN-Z RESTAURANT</h2>
-                  <p className="text-xs text-muted-foreground print:text-gray-600">123 Main Street, New Delhi, India</p>
-                  <p className="text-xs text-muted-foreground print:text-gray-600">GST No: 07AABCG1234A1Z5</p>
-                  <p className="text-xs text-muted-foreground print:text-gray-600">Tel: +91 98765 43210</p>
-                </div>
-
-                <div className="border-t border-b border-dashed border-border py-3 mb-4 text-xs space-y-1.5 bg-muted/30 print:bg-transparent p-3 rounded-lg print:border-black">
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Order #:</span>
-                    <span className="font-mono">{selectedBill.order.id.slice(-8).toUpperCase()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Date:</span>
-                    <span>{new Date(selectedBill.order.createdAt).toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Table:</span>
-                    <span className="font-bold">Table {selectedBill.order.table?.number}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-semibold">Customer:</span>
-                    <span>{selectedBill.order.customerName || 'Walk-in'}</span>
-                  </div>
-                  {selectedBill.order.customerPhone && (
-                    <div className="flex justify-between">
-                      <span className="font-semibold">Phone:</span>
-                      <span>{selectedBill.order.customerPhone}</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="mb-4 bg-muted/30 print:bg-transparent p-3 rounded-lg">
-                  <div className="flex justify-between font-black text-foreground border-b border-border pb-2 mb-2 text-xs uppercase tracking-wider print:border-black">
-                    <span>Item</span>
-                    <span>Amt</span>
-                  </div>
-                  <div className="space-y-2">
-                    {(() => {
-                      const mergedItems = selectedBill.order.items.reduce((acc: any[], item: any) => {
-                        const cleanInstr = (item.specialInstructions || '').replace('[URGENT ADDITION]', '').trim();
-                        const existing = acc.find(i => i.menuItem?.id === item.menuItem?.id && i.cleanInstr === cleanInstr);
-                        if (existing) {
-                          existing.quantity += item.quantity;
-                        } else {
-                          acc.push({ ...item, cleanInstr });
-                        }
-                        return acc;
-                      }, []);
-
-                      return mergedItems.map((item: any, idx: number) => (
-                        <div key={idx} className="text-xs">
-                          <div className="flex justify-between items-center">
-                            <span className="font-bold text-foreground print:text-black">{item.quantity}x {item.menuItem.name}</span>
-                            <span className="font-semibold">₹{(item.quantity * item.price).toFixed(2)}</span>
-                          </div>
-                          {item.cleanInstr && (
-                            <div className="text-red-500 text-xs mt-0.5 ml-1 font-medium">
-                              ⚠️ {item.cleanInstr}
-                            </div>
-                          )}
-                        </div>
-                      ));
-                    })()}
-                  </div>
-                </div>
-
-                <div className="border-t border-dashed border-border pt-3 space-y-2 text-xs bg-muted/30 print:bg-transparent p-3 rounded-lg print:border-black">
-                  <div className="flex justify-between text-muted-foreground print:text-black">
-                    <span>Subtotal</span>
-                    <span>₹{selectedBill.subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-muted-foreground print:text-black">
-                    <span>CGST (9%)</span>
-                    <span>₹{((selectedBill.tax || 0) / 2).toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-muted-foreground print:text-black">
-                    <span>SGST (9%)</span>
-                    <span>₹{((selectedBill.tax || 0) / 2).toFixed(2)}</span>
-                  </div>
-                  {(selectedBill.discount || 0) > 0 && (
-                    <div className="flex justify-between text-green-500">
-                      <span>Discount</span>
-                      <span>-₹{(selectedBill.discount || 0).toFixed(2)}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between font-black text-lg mt-3 pt-3 border-t border-border bg-primary/10 print:bg-transparent p-2 rounded print:border-black">
-                    <span>TOTAL</span>
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-600 to-amber-600 print:text-black">₹{selectedBill.total.toFixed(2)}</span>
-                  </div>
-                </div>
-
-                {selectedBill.status === 'PAID' && (
-                  <div className="mt-4 text-center font-black text-sm border border-green-500/50 text-green-500 py-2 rounded-lg bg-green-500/10">
-                    ✓ PAID VIA {selectedBill.paymentMethod || 'CASH'}
-                  </div>
-                )}
-
-                <div className="text-center mt-6 text-xs text-muted-foreground print:text-gray-500">
-                  <p className="font-medium">Thank you for dining with us! 💚</p>
-                  <p className="mt-1">Visit us again at genzpos.com</p>
-                </div>
+              {/* Use shared ReceiptPrintTemplate for consistent formatting */}
+              <div className="mb-6">
+                <ReceiptPrintTemplate bill={selectedBill} />
               </div>
 
               <div className="mb-6 bg-muted/30 border border-border p-4 rounded-xl">
@@ -782,30 +538,13 @@ export default function BillsPage() {
                       </Button>
                     )}
                     <Button
-                      onClick={() => handlePayAndPrint(selectedBill.id, selectedPaymentMethod)}
+                      onClick={() => handleMarkPaid(selectedBill.id, selectedPaymentMethod)}
                       variant="gradient"
                       className="bg-gradient-to-r from-orange-600 to-amber-600 font-bold flex items-center gap-2 rounded-xl"
                     >
-                      {selectedPaymentMethod === 'CASH' ? '💵' : '🌐'} Pay & Print
-                    </Button>
-                    <Button
-                      onClick={handlePrintBill}
-                      variant="outline"
-                      className="font-bold rounded-xl"
-                    >
-                      🖨️ Print Draft
+                      {selectedPaymentMethod === 'CASH' ? '💵' : '🌐'} Mark as Paid
                     </Button>
                   </>
-                )}
-
-                {selectedBill.status === 'PAID' && (
-                  <Button
-                    onClick={handlePrintBill}
-                    variant="gradient"
-                    className="bg-gradient-to-r from-green-600 to-emerald-600"
-                  >
-                    🖨️ Re-print Bill
-                  </Button>
                 )}
               </div>
             </div>

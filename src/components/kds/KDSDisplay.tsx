@@ -257,6 +257,7 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
             
             if (recentlyServedOrder) {
               console.log(`🔥 NEW order on recently served table ${order.table?.number}: This is a running table!`);
+              console.log(`   Previous order ${recentlyServedOrder.id} was served ${Math.floor((new Date().getTime() - new Date(recentlyServedOrder.updatedAt || recentlyServedOrder.createdAt).getTime()) / 1000)}s ago`);
               hasUrgent = true;
               urgentOrderIds.push(order.id);
             }
