@@ -11,9 +11,24 @@ export default function PublicKDSDisplay() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Check if restaurantId is in hash (from TV browser fallback)
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash) {
+      const hashRestaurantId = window.location.hash.substring(1);
+      if (hashRestaurantId && hashRestaurantId.length > 10) {
+        console.log('📍 Found restaurant ID in hash, using it directly');
+        setRestaurantId(hashRestaurantId);
+        setLoading(false);
+        // Clear hash from URL
+        window.history.replaceState(null, '', window.location.pathname);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     let mounted = true;
     let fallbackTimer: NodeJS.Timeout;
+    let forcedRestaurantId: string | null = null;
 
     async function validateToken() {
       try {
@@ -42,27 +57,42 @@ export default function PublicKDSDisplay() {
 
         const data = await response.json();
         console.log('✅ Client: Validation successful:', data);
+        forcedRestaurantId = data.restaurantId;
         
         if (!mounted) return;
         
         setRestaurantId(data.restaurantId);
         setLoading(false);
         
-        // FALLBACK: If setState is slow on TV browser, force it after 2 seconds
+        // AGGRESSIVE FALLBACK for TV browsers: Force hide loading and show KDS
         fallbackTimer = setTimeout(() => {
-          if (mounted && loading) {
-            console.warn('⚠️ Loading state stuck, forcing display...');
-            setRestaurantId(data.restaurantId);
+          console.warn('⚠️ TV Browser Fallback: Forcing KDS display after validation success');
+          
+          // Try multiple approaches to ensure loading stops
+          if (mounted) {
+            // 1. Force setState again
+            setRestaurantId(forcedRestaurantId);
             setLoading(false);
-            // Force re-render by reloading if still stuck
+            
+            // 2. Direct DOM manipulation - hide loading div
+            const loadingDiv = document.querySelector('[class*="animate-spin"]')?.closest('div');
+            if (loadingDiv) {
+              console.log('🎯 Hiding loading div directly via DOM');
+              loadingDiv.style.display = 'none';
+            }
+            
+            // 3. Last resort: Force page redirect to bypass React state
             setTimeout(() => {
-              if (document.querySelector('[class*="animate-spin"]')) {
-                console.error('🔄 Still loading, forcing reload...');
+              const stillLoading = document.querySelector('[class*="animate-spin"]');
+              if (stillLoading && forcedRestaurantId) {
+                console.error('🔄 TV Browser stuck - forcing hard redirect with restaurant ID in hash');
+                // Use hash to pass restaurantId without changing URL
+                window.location.hash = forcedRestaurantId;
                 window.location.reload();
               }
-            }, 1000);
+            }, 1500);
           }
-        }, 2000);
+        }, 1000);
         
       } catch (err) {
         console.error('❌ Client: Token validation error:', err);
@@ -79,7 +109,7 @@ export default function PublicKDSDisplay() {
       mounted = false;
       clearTimeout(fallbackTimer);
     };
-  }, [params.token, loading]);
+  }, [params.token]);
 
   if (loading) {
     return (
