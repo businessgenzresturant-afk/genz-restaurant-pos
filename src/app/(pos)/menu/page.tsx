@@ -268,22 +268,25 @@ export default function MenuPage() {
         method: 'DELETE',
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('Failed to delete menu item');
+        // Show specific error message from API
+        throw new Error(data.detail || data.error || 'Failed to delete menu item');
       }
 
       toast.success('✅ Menu item deleted successfully!', { 
         id: toastId,
-        description: 'Item removed from menu'
+        description: data.deleted ? `Removed: ${data.deleted}` : 'Item removed from menu'
       });
 
       setShowDeleteModal(false);
       setItemToDelete(null);
       await fetchMenuItems();
-    } catch (err) {
-      toast.error('❌ Failed to delete menu item', { 
+    } catch (err: any) {
+      toast.error('❌ Cannot delete menu item', { 
         id: toastId,
-        description: 'Please try again'
+        description: err.message || 'Please try again'
       });
       console.error('Error deleting menu item:', err);
     } finally {

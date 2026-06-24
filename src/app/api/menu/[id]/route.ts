@@ -84,16 +84,62 @@ export async function DELETE(
 
   try {
     const params = await context.params;
-    await prisma.menuItem.delete({
+    const menuItemId = params.id;
+    const restaurantId = (auth.session.user as any).restaurantId;
+
+    // Check if menu item exists and belongs to this restaurant
+    const menuItem = await prisma.menuItem.findUnique({
       where: { 
-        id: params.id,
-        restaurantId: (auth.session.user as any).restaurantId
+        id: menuItemId,
+        restaurantId: restaurantId
+      },
+      include: {
+        orderItems: {
+          select: { id: true }
+        }
       }
     });
 
-    return NextResponse.json({ message: 'Menu item deleted successfully' });
-  } catch (error) {
+    if (!menuItem) {
+      return NextResponse.json({ error: 'Menu item not found' }, { status: 404 });
+    }
+
+    // Check if menu item is being used in any orders
+    if (menuItem.orderItems.length > 0) {
+      return NextResponse.json({ 
+        error: 'Cannot delete menu item that has been ordered',
+        detail: `This item is used in ${menuItem.orderItems.length} order(s). You can mark it as unavailable instead.`
+      }, { status: 400 });
+    }
+
+    // Safe to delete - no order items reference this menu item
+    await prisma.menuItem.delete({
+      where: { 
+        id: menuItemId,
+        restaurantId: restaurantId
+      }
+    });
+
+    console.log(`✅ Menu item deleted: ${menuItem.name} (${menuItemId})`);
+
+    return NextResponse.json({ 
+      message: 'Menu item deleted successfully',
+      deleted: menuItem.name
+    });
+  } catch (error: any) {
     console.error('Error deleting menu item:', error);
-    return NextResponse.json({ error: 'Failed to delete menu item' }, { status: 500 });
+    
+    // Check for foreign key constraint error
+    if (error.code === 'P2003' || error.message?.includes('foreign key constraint')) {
+      return NextResponse.json({ 
+        error: 'Cannot delete menu item',
+        detail: 'This item is being used in orders. Mark it as unavailable instead.'
+      }, { status: 400 });
+    }
+    
+    return NextResponse.json({ 
+      error: 'Failed to delete menu item',
+      detail: error.message || 'Unknown error'
+    }, { status: 500 });
   }
 }
