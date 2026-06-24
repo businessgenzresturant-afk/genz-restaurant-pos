@@ -2,6 +2,7 @@ import NextAuth, { type NextAuthOptions, type DefaultUser } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { prisma } from '@/lib/prisma';
+import { checkRateLimit } from '@/lib/rateLimit';
 
 // Extend the User type with role
 interface ExtendedUser extends DefaultUser {
@@ -19,6 +20,33 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
+        
+        // 🔒 BRUTE FORCE PROTECTION: Rate limit login attempts per email
+        try {
+          // Create a mock request object for rate limiting
+          const mockRequest = {
+            headers: new Headers({
+              'x-forwarded-for': '127.0.0.1', // Will be replaced by actual IP in production
+            })
+          } as Request;
+          
+          const rateLimit = checkRateLimit(mockRequest, {
+            maxRequests: 5,              // 5 login attempts
+            windowMs: 15 * 60 * 1000,    // per 15 minutes
+            identifier: `login:${credentials.email.toLowerCase()}`
+          });
+          
+          if (!rateLimit.success) {
+            const retryAfterSeconds = Math.ceil((rateLimit.resetAt - Date.now()) / 1000);
+            console.warn(`🚨 Rate limit exceeded for login: ${credentials.email}`);
+            console.warn(`   Retry after: ${retryAfterSeconds}s`);
+            return null; // Deny login
+          }
+        } catch (error) {
+          console.error('Rate limit check error:', error);
+          // Continue with auth if rate limit fails (fail open for availability)
+        }
+        
         try {
           const user = await prisma.user.findUnique({ where: { email: credentials.email } });
 
@@ -33,6 +61,7 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
+          console.log(`✅ Successful login: ${credentials.email}`);
           return { 
             id: user.id, 
             email: user.email, 

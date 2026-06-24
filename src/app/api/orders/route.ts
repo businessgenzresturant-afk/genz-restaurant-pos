@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { checkAuth } from '@/lib/api-auth';
 import { checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib/rateLimit';
+import { sanitizeSpecialInstructions, sanitizeCustomerInput } from '@/lib/sanitize';
 
 // Force dynamic route to prevent caching
 export const dynamic = 'force-dynamic';
@@ -102,7 +103,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Validate quantities
+    // Validate quantities and sanitize inputs
     for (const item of items) {
       if (!item.menuItemId) {
         return NextResponse.json(
@@ -116,12 +117,9 @@ export async function POST(request: Request) {
           { status: 400 }
         );
       }
-      // Sanitize special instructions (basic XSS prevention)
+      // 🔒 SECURITY: Sanitize special instructions to prevent SQL injection and XSS
       if (item.specialInstructions) {
-        item.specialInstructions = item.specialInstructions
-          .replace(/<[^>]*>/g, '') // Remove HTML tags
-          .replace(/[<>'"]/g, '') // Remove potentially dangerous characters
-          .substring(0, 500); // Limit length
+        item.specialInstructions = sanitizeSpecialInstructions(item.specialInstructions);
       }
     }
 
@@ -164,6 +162,10 @@ export async function POST(request: Request) {
 
     // Create a map for quick lookup
     const menuItemMap = new Map(menuItems.map(m => [m.id, m]));
+
+    // 🔒 SECURITY: Sanitize customer inputs to prevent injection attacks
+    const sanitizedCustomerName = customerName ? sanitizeCustomerInput(customerName) : 'Walk-in Customer';
+    const sanitizedCustomerPhone = customerPhone ? sanitizeCustomerInput(customerPhone) : null;
 
     // Calculate total amount and prepare items for creation
     let totalAmount = 0;
@@ -286,8 +288,8 @@ export async function POST(request: Request) {
             tableId: tableId || null,
             orderType: orderType || 'DINE_IN',
             guests: guests ? parseInt(guests) : null,
-            customerName: customerName || 'Walk-in Customer',
-            customerPhone: customerPhone || null,
+            customerName: sanitizedCustomerName,
+            customerPhone: sanitizedCustomerPhone,
             totalAmount,
             status: 'PENDING',
             paymentStatus: 'PENDING',

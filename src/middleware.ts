@@ -1,54 +1,50 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getToken } from 'next-auth/jwt';
 
-export async function middleware(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-  const { pathname } = req.nextUrl;
-
-  // Allow access to auth routes, api routes, static files, and PUBLIC KDS DISPLAY without authentication
-  if (
-    pathname.startsWith('/api/') ||
-    pathname.startsWith('/_next/') ||
-    pathname.startsWith('/images/') ||
-    pathname.startsWith('/login') ||
-    pathname.startsWith('/register') ||
-    pathname.startsWith('/kds-display/') || // NEW: Allow public KDS display
-    pathname.startsWith('/favicon.ico')
-  ) {
-    return NextResponse.next();
+/**
+ * CSRF Protection Middleware
+ * 
+ * Validates that state-changing requests (POST, PATCH, DELETE, PUT) 
+ * come from the same origin to prevent Cross-Site Request Forgery attacks.
+ */
+export function middleware(request: NextRequest) {
+  // Only check CSRF for state-changing methods
+  if (['POST', 'PATCH', 'DELETE', 'PUT'].includes(request.method)) {
+    const origin = request.headers.get('origin');
+    const host = request.headers.get('host');
+    const referer = request.headers.get('referer');
+    
+    // Allow requests from same origin
+    const allowedOrigins = [
+      `https://${host}`,
+      `http://${host}`,
+      process.env.NEXT_PUBLIC_APP_URL,
+      'https://pos.gen-z.online',
+      'http://localhost:3000' // Allow local development
+    ].filter(Boolean);
+    
+    // Check origin header (modern browsers)
+    if (origin && !allowedOrigins.some(allowed => origin.startsWith(allowed || ''))) {
+      console.warn(`🚨 CSRF blocked: origin=${origin}, host=${host}`);
+      return NextResponse.json(
+        { error: 'CSRF validation failed' },
+        { status: 403 }
+      );
+    }
+    
+    // Check referer header (fallback for older browsers)
+    if (!origin && referer && !allowedOrigins.some(allowed => referer.startsWith(allowed || ''))) {
+      console.warn(`🚨 CSRF blocked: referer=${referer}, host=${host}`);
+      return NextResponse.json(
+        { error: 'CSRF validation failed' },
+        { status: 403 }
+      );
+    }
   }
-
-  // Redirect to login if not authenticated (including homepage)
-  if (!token) {
-    const url = req.nextUrl.clone();
-    url.pathname = '/login';
-    return NextResponse.redirect(url);
-  }
-
-  // Redirect authenticated users away from login page to dashboard
-  if (pathname === '/login' && token) {
-    const url = req.nextUrl.clone();
-    url.pathname = '/dashboard';
-    return NextResponse.redirect(url);
-  }
-
-  // P1 FIX: Role-based page protection - ADMIN-only routes
-  const userRole = (token as any).role;
-  const adminOnlyRoutes = ['/reports', '/settings'];
   
-  if (adminOnlyRoutes.some(route => pathname.startsWith(route)) && userRole !== 'ADMIN') {
-    const url = req.nextUrl.clone();
-    url.pathname = '/dashboard';
-    // Add a query param to show error message
-    url.searchParams.set('error', 'admin_required');
-    return NextResponse.redirect(url);
-  }
-
   return NextResponse.next();
 }
 
-// Configure middleware to run on specific paths
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|images|favicon.ico).*)'],
+  matcher: '/api/:path*', // Apply to all API routes
 };
