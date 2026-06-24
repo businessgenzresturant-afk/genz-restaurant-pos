@@ -57,8 +57,8 @@ export function ReceiptPrintTemplate({ bill, onClose }: ReceiptPrintTemplateProp
           }
           
           .logo {
-            width: 80px;
-            height: 80px;
+            width: 120px;
+            height: 120px;
             margin: 0 auto 10px;
             border-radius: 50%;
             overflow: hidden;
@@ -233,7 +233,7 @@ export function ReceiptPrintTemplate({ bill, onClose }: ReceiptPrintTemplateProp
       <div id="receipt-print-content" className="hidden">
         <div className="receipt-header">
           <div className="logo">
-            <img src="/images/Gen-z-logo.jpg" alt="Gen-Z Logo" width="100%" height="100%" style={{ objectFit: 'cover' }} />
+            <img src="/images/Gen-z-logo.jpg" alt="Gen-Z Logo" width="120" height="120" style={{ objectFit: 'cover' }} />
           </div>
           <div className="restaurant-name">Gen-Z Restaurant</div>
           <div className="restaurant-info">
@@ -356,12 +356,12 @@ export function ReceiptPrintTemplate({ bill, onClose }: ReceiptPrintTemplateProp
       {/* Preview (visible on screen) */}
       <div className="bg-card border-2 border-border rounded-xl p-6 max-h-[500px] overflow-y-auto">
         <div className="text-center mb-4 pb-4 border-b-2 border-dashed border-border">
-          <div className="w-20 h-20 rounded-full overflow-hidden mx-auto mb-3 border-2 border-primary">
+          <div className="w-32 h-32 rounded-full overflow-hidden mx-auto mb-3 border-2 border-primary shadow-lg">
             <Image 
               src="/images/Gen-z-logo.jpg" 
               alt="Gen-Z Logo" 
-              width={80} 
-              height={80}
+              width={128} 
+              height={128}
               className="w-full h-full object-cover"
             />
           </div>

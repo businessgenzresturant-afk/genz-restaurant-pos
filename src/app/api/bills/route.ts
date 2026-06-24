@@ -80,15 +80,10 @@ export async function POST(request: Request) {
 
     const { orderId } = validation.data;
 
-    // Check if order exists and is completed
+    // Check if order exists
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: {
-        items: {
-          include: {
-            menuItem: true
-          }
-        },
         table: true
       }
     });
@@ -104,37 +99,102 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if bill already exists
-    const existingBill = await prisma.bill.findUnique({
-      where: { orderId }
-    });
+    // CRITICAL FIX: Get ALL orders for this table (not billed yet)
+    // This ensures full table bill includes all orders
+    let allTableOrders: any[] = [];
+    
+    if (order.tableId) {
+      console.log(`[Bill Creation] Table ${order.table?.number}: Finding all unbilled orders`);
+      
+      // Find all orders for this table that haven't been billed
+      allTableOrders = await prisma.order.findMany({
+        where: {
+          tableId: order.tableId,
+          status: { in: ['PENDING', 'PREPARING', 'READY', 'SERVED', 'COMPLETED'] },
+          bill: null // Orders that haven't been billed yet
+        },
+        include: {
+          items: {
+            include: {
+              menuItem: true
+            }
+          },
+          table: true
+        },
+        orderBy: { createdAt: 'asc' }
+      });
 
-    if (existingBill) {
+      console.log(`[Bill Creation] Found ${allTableOrders.length} unbilled orders for Table ${order.table?.number}`);
+      allTableOrders.forEach((o, idx) => {
+        console.log(`  Order ${idx + 1}: ${o.items.length} items, Status: ${o.status}, Amount: ₹${o.totalAmount}`);
+      });
+    } else {
+      // No table (takeaway/delivery), just include this order
+      allTableOrders = [await prisma.order.findUnique({
+        where: { id: orderId },
+        include: {
+          items: {
+            include: {
+              menuItem: true
+            }
+          },
+          table: true
+        }
+      })].filter(Boolean);
+    }
+
+    if (allTableOrders.length === 0) {
       return NextResponse.json(
-        { error: 'Bill already exists for this order' },
+        { error: 'No unbilled orders found for this table' },
         { status: 400 }
       );
     }
 
-    // Calculate bill amounts using TAX_RATE from environment or default to 18%
-    const subtotal = order.totalAmount;
+    // Check if any order already has a bill
+    const existingBills = await prisma.bill.findMany({
+      where: {
+        orderId: { in: allTableOrders.map(o => o.id) }
+      }
+    });
+
+    if (existingBills.length > 0) {
+      return NextResponse.json(
+        { error: 'One or more orders already have bills. Please refresh and try again.' },
+        { status: 400 }
+      );
+    }
+
+    // Calculate total from ALL orders
+    const subtotal = allTableOrders.reduce((sum, o) => sum + o.totalAmount, 0);
     const taxRate = process.env.TAX_RATE ? parseFloat(process.env.TAX_RATE) : 0.18;
     const tax = subtotal * taxRate;
-    const discount = 0; // Can be added later
+    const discount = 0;
     const total = subtotal + tax - discount;
 
+    console.log(`[Bill Creation] Creating bill for Table ${order.table?.number || 'Takeaway'}`);
+    console.log(`  Total orders: ${allTableOrders.length}`);
+    console.log(`  Subtotal: ₹${subtotal}`);
+    console.log(`  Tax: ₹${tax}`);
+    console.log(`  Total: ₹${total}`);
+
     const bill = await prisma.$transaction(async (tx) => {
-      // If order is SERVED, mark it as COMPLETED
-      if (order.status === 'SERVED') {
-        await tx.order.update({
-          where: { id: orderId },
-          data: { status: 'COMPLETED' }
-        });
+      // Mark ALL orders as COMPLETED
+      for (const tableOrder of allTableOrders) {
+        if (tableOrder.status === 'SERVED' || tableOrder.status === 'READY') {
+          await tx.order.update({
+            where: { id: tableOrder.id },
+            data: { status: 'COMPLETED' }
+          });
+        }
       }
 
+      // Create bill linked to PRIMARY order (first one chronologically)
+      // But include reference to all order IDs in metadata
+      const primaryOrder = allTableOrders[0];
+      
       return tx.bill.create({
         data: {
-          orderId,
+          orderId: primaryOrder.id,
           tableId: order.tableId,
           subtotal,
           tax,
@@ -152,14 +212,33 @@ export async function POST(request: Request) {
               },
               table: true
             }
-          }
+          },
+          table: true
         }
       });
     });
 
-    return NextResponse.json(bill, { status: 201 });
+    // IMPORTANT: Manually fetch and attach ALL orders' items to the bill response
+    // So frontend gets complete picture
+    const allItems = allTableOrders.flatMap(o => o.items);
+    
+    const enhancedBill = {
+      ...bill,
+      order: {
+        ...bill.order,
+        items: allItems // Replace with ALL items from all orders
+      },
+      _meta: {
+        orderCount: allTableOrders.length,
+        orderIds: allTableOrders.map(o => o.id)
+      }
+    };
+
+    console.log(`[Bill Creation] ✅ Bill created with ${allItems.length} total items from ${allTableOrders.length} orders`);
+
+    return NextResponse.json(enhancedBill, { status: 201 });
   } catch (error) {
-    console.error('Error creating bill:', error);
+    console.error('[Bill Creation] Error:', error);
     return NextResponse.json(
       { error: 'Failed to create bill. Please try again.' },
       { status: 500 }
