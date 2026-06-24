@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { hash } from 'bcryptjs';
 
 export const dynamic = 'force-dynamic';
@@ -11,9 +11,6 @@ export async function GET() {
   try {
     console.log('🌱 Starting production database seed...');
 
-    // Initialize PrismaClient inside try-catch to handle missing DATABASE_URL
-    const prisma = new PrismaClient();
-
     // Check if already seeded
     const existingRestaurant = await prisma.restaurant.findFirst();
     if (existingRestaurant) {
@@ -21,7 +18,6 @@ export async function GET() {
       const tableCount = await prisma.table.count();
       const userCount = await prisma.user.count();
 
-      await prisma.$disconnect();
       return NextResponse.json({
         success: true,
         message: '✅ Database already seeded!',
@@ -240,7 +236,6 @@ export async function GET() {
       })),
     });
 
-    await prisma.$disconnect();
     return NextResponse.json({
       success: true,
       message: '🎉 Production database seeded successfully!',

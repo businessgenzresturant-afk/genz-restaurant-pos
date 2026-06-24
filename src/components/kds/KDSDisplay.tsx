@@ -332,12 +332,13 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
       window.addEventListener('online', handleOnline);
     }
 
-    // More aggressive polling - every 3 seconds when active
+    // Reduced polling frequency to minimize database connections
+    // 10 seconds is acceptable for kitchen display updates
     const interval = setInterval(() => {
       if (document.visibilityState === 'visible') {
         fetchOrders();
       }
-    }, 3000); // 3 seconds
+    }, 10000); // 10 seconds (was 3s - reduced by 70% to prevent connection exhaustion)
 
     return () => {
       clearInterval(interval);

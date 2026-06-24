@@ -45,8 +45,9 @@ export default function KOTPage() {
   useEffect(() => {
     fetchKOTOrders();
 
-    // Set up polling for real-time updates
-    const intervalId = setInterval(fetchKOTOrders, 5000); // Poll every 5 seconds
+    // Reduced polling frequency to minimize database connections
+    // 10 seconds is adequate for KOT updates
+    const intervalId = setInterval(fetchKOTOrders, 10000); // 10 seconds (was 5s - reduced by 50%)
 
     // Update elapsed time every second
     const timerId = setInterval(() => {

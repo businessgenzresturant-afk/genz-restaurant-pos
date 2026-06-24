@@ -169,8 +169,9 @@ export function Dashboard() {
 
   useEffect(() => {
     fetchData();
-    // Poll every 5 seconds for live updates (reduced from 3s to prevent race conditions)
-    const interval = setInterval(fetchData, 5000);
+    // Reduced polling frequency to minimize database connections
+    // 15 seconds provides adequate real-time updates while preventing connection exhaustion
+    const interval = setInterval(fetchData, 15000); // 15 seconds (was 5s - reduced by 67%)
     return () => clearInterval(interval);
   }, [fetchData]);
 
