@@ -139,7 +139,7 @@ export async function POST(request: Request) {
       allTableOrders = await prisma.order.findMany({
         where: {
           tableId: order.tableId,
-          status: { in: ['PENDING', 'PREPARING', 'READY', 'SERVED', 'COMPLETED'] },
+          status: { in: ['PENDING', 'PREPARING', 'READY', 'SERVED'] }, // 🐛 FIX: Removed COMPLETED - those are already billed!
           bill: null // Orders that haven't been billed yet
         },
         include: {
