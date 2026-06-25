@@ -405,7 +405,7 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
           <div className="flex-1 overflow-hidden flex flex-col lg:flex-row">
             
             {/* LEFT COLUMN - Order Items */}
-            <div className="flex-1 p-6 border-b lg:border-b-0 lg:border-r border-border overflow-y-auto">
+            <div className="flex-1 p-6 border-b lg:border-b-0 lg:border-r border-border overflow-y-auto custom-scrollbar">
               <h3 className="text-lg font-bold text-foreground mb-4">Order Items</h3>
               
               <div className="space-y-3">
@@ -460,7 +460,7 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
 
             {/* RIGHT COLUMN - Payment & Customer */}
             <div className="w-full lg:w-[480px] flex flex-col">
-              <div className="flex-1 p-6 overflow-y-auto space-y-4">
+              <div className="flex-1 p-6 overflow-y-auto space-y-4 custom-scrollbar">
                 
                 {/* Payment Summary */}
                 <div className="bg-muted/50 rounded-xl p-4 border border-border">

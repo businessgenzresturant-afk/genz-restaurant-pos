@@ -50,7 +50,7 @@ export function TableSelectModal({ isOpen, onClose, tables, activeOrders, onSele
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto flex-1">
+        <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
           {physicalTables.length === 0 ? (
             <div className="text-center py-12 text-muted-foreground">
               No tables found in the database.

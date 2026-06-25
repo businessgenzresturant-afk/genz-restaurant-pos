@@ -119,33 +119,36 @@ export function TableDrawer({ isOpen, onClose, table, activeOrder, onAddItem, on
     <>
       <div className="fixed inset-0 bg-black/60 z-[150] backdrop-blur-sm animate-fade-in" onClick={onClose} />
       
+      {/* 🔧 UX FIX: Proper flexbox layout for scrolling */}
       <div className={`fixed right-0 top-0 h-full w-full max-w-md bg-background border-l border-border shadow-2xl z-[160] transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col`}>
         
-        {/* Header */}
-        <div className="p-6 border-b border-border flex justify-between items-start bg-muted/30">
-          <div>
-            <h2 className="text-2xl font-black text-foreground capitalize">
-              {activeOrder && activeOrder.orderType !== 'DINE_IN' 
-                ? activeOrder.orderType.toLowerCase()
-                : `Table ${table?.number || ''}`}
-            </h2>
-            <div className="flex items-center gap-3 mt-2">
-              <p className="text-sm font-semibold text-muted-foreground">
-                {table ? (table.status === 'AVAILABLE' ? '🟢 Available' : '🔴 Occupied') : 'Active Order'}
-              </p>
-              {table && activeOrder && onTransferClick && (
-                <button
-                  onClick={onTransferClick}
-                  className="px-2.5 py-1 bg-primary/10 text-primary hover:bg-primary/20 text-xs font-bold rounded-lg transition-colors"
-                >
-                  Transfer Table
-                </button>
-              )}
+        {/* Header - Fixed at top */}
+        <div className="flex-shrink-0 p-6 border-b border-border bg-muted/30">
+          <div className="flex justify-between items-start">
+            <div>
+              <h2 className="text-2xl font-black text-foreground capitalize">
+                {activeOrder && activeOrder.orderType !== 'DINE_IN' 
+                  ? activeOrder.orderType.toLowerCase()
+                  : `Table ${table?.number || ''}`}
+              </h2>
+              <div className="flex items-center gap-3 mt-2">
+                <p className="text-sm font-semibold text-muted-foreground">
+                  {table ? (table.status === 'AVAILABLE' ? '🟢 Available' : '🔴 Occupied') : 'Active Order'}
+                </p>
+                {table && activeOrder && onTransferClick && (
+                  <button
+                    onClick={onTransferClick}
+                    className="px-2.5 py-1 bg-primary/10 text-primary hover:bg-primary/20 text-xs font-bold rounded-lg transition-colors"
+                  >
+                    Transfer Table
+                  </button>
+                )}
+              </div>
             </div>
+            <button onClick={onClose} className="p-2 rounded-full hover:bg-muted transition-all active:scale-[0.90]">
+              <X className="w-6 h-6 text-muted-foreground" />
+            </button>
           </div>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-muted transition-all active:scale-[0.90]">
-            <X className="w-6 h-6 text-muted-foreground" />
-          </button>
         </div>
 
         {/* Customer Info */}

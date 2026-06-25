@@ -61,8 +61,8 @@ export function TakeawayDeliveryModal({
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-6 overflow-y-auto flex-1 bg-muted/5">
+        {/* Content - Proper scrolling fix */}
+        <div className="p-6 overflow-y-auto flex-1 bg-muted/5 custom-scrollbar">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             
             {/* New Order Button */}

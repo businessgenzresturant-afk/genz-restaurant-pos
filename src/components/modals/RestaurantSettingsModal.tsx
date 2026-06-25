@@ -96,7 +96,7 @@ export default function RestaurantSettingsModal({ isOpen, onClose }: RestaurantS
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-background to-muted/20">
+        <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-background to-muted/20 custom-scrollbar">
           {loading ? (
             <div className="text-center py-8 text-muted-foreground">Loading...</div>
           ) : (

@@ -99,7 +99,7 @@ export default function ManageTablesModal({ isOpen, onClose }: ManageTablesModal
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-background to-muted/20">
+        <div className="flex-1 overflow-y-auto p-6 bg-gradient-to-b from-background to-muted/20 custom-scrollbar">
           {/* Add New Table */}
           <div className="bg-gradient-to-br from-primary/10 to-primary/5 rounded-2xl p-5 mb-6 border-2 border-primary/20 shadow-lg">
             <h3 className="text-sm font-black text-foreground mb-4 flex items-center gap-2">

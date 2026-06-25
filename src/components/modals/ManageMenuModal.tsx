@@ -269,7 +269,7 @@ export default function ManageMenuModal({ isOpen, onClose }: ManageMenuModalProp
         </div>
 
         {/* Content */}
-        <div className="manage-menu-content flex-1 overflow-y-auto p-6 bg-gradient-to-b from-background to-muted/20">
+        <div className="manage-menu-content flex-1 overflow-y-auto p-6 bg-gradient-to-b from-background to-muted/20 custom-scrollbar">
           {/* Add Form */}
           {showAddForm && (
             <div className="bg-muted/50 rounded-xl p-4 mb-6 animate-fade-in">
