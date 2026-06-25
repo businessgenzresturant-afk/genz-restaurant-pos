@@ -1,12 +1,22 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth-config';
+import { checkAuth } from '@/lib/api-auth';
 
 /**
- * DEBUG ENDPOINT: Check current session details
+ * 🔒 SECURITY: DEBUG ENDPOINT - ADMIN ONLY
  * Helps diagnose why dashboard shows "No tables found" despite tables existing
  */
-export async function GET() {
+export async function GET(request: Request) {
+  // P0 FIX: Require ADMIN authentication
+  const auth = await checkAuth(request, 'ADMIN');
+  if (auth.error) return auth.error;
+
+  // Double-check NODE_ENV
+  if (process.env.NODE_ENV === 'production') {
+    return new NextResponse('Not Found', { status: 404 });
+  }
+
   try {
     const session = await getServerSession(authOptions);
     
@@ -33,8 +43,9 @@ export async function GET() {
 
   } catch (error) {
     console.error('[DEBUG-SESSION] Error:', error);
+    // 🔒 SECURITY: Don't expose details in production
     return NextResponse.json(
-      { error: 'Failed to get session', details: (error as any).message },
+      { error: 'Failed to get session' },
       { status: 500 }
     );
   }

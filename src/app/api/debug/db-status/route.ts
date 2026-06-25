@@ -1,7 +1,21 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { checkAuth } from '@/lib/api-auth';
 
-export async function GET() {
+// 🔒 SECURITY: This debug endpoint should NEVER be accessible in production
+// Force disable in production build
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: Request) {
+  // P0 FIX: Require ADMIN authentication
+  const auth = await checkAuth(request, 'ADMIN');
+  if (auth.error) return auth.error;
+
+  // Double-check NODE_ENV
+  if (process.env.NODE_ENV === 'production') {
+    return new NextResponse('Not Found', { status: 404 });
+  }
+
   try {
     // Check database connection
     await prisma.$connect();
@@ -44,10 +58,10 @@ export async function GET() {
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
+    // 🔒 SECURITY: Don't expose stack traces in production
     return NextResponse.json({
       status: 'error',
-      error: error.message,
-      stack: error.stack,
+      error: 'Internal server error',
     }, { status: 500 });
   }
 }

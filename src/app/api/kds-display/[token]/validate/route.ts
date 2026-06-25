@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib/rateLimit';
 
 // Force dynamic route
 export const dynamic = 'force-dynamic';
@@ -8,6 +9,17 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ token: string }> }
 ) {
+  // 🔒 SECURITY: Rate limit token validation to prevent brute force attacks
+  const rateLimit = checkRateLimit(request, {
+    maxRequests: 10,           // 10 validation attempts
+    windowMs: 60 * 1000,       // per minute
+    identifier: `kds-validate:${request.headers.get('x-forwarded-for') || 'unknown'}`
+  });
+  
+  if (!rateLimit.success) {
+    return createRateLimitResponse(rateLimit.resetAt);
+  }
+
   try {
     // Await params in Next.js 15
     const { token } = await params;
@@ -52,6 +64,7 @@ export async function GET(
     });
   } catch (error) {
     console.error('❌ Token validation error:', error);
+    // 🔒 SECURITY: Don't expose error details
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -1,11 +1,17 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { checkAuth } from '@/lib/api-auth';
+import { checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib/rateLimit';
 
 export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const rateLimit = checkRateLimit(request, RateLimitPresets.API);
+  if (!rateLimit.success) {
+    return createRateLimitResponse(rateLimit.resetAt);
+  }
+
   const auth = await checkAuth(request);
   if (auth.error) return auth.error;
 
@@ -16,6 +22,11 @@ export async function POST(
 
     if (!newTableId) {
       return NextResponse.json({ error: 'newTableId is required' }, { status: 400 });
+    }
+
+    // 🔒 SECURITY: Validate newTableId is a valid format (basic check)
+    if (typeof newTableId !== 'string' || newTableId.length < 10 || newTableId.length > 50) {
+      return NextResponse.json({ error: 'Invalid table ID format' }, { status: 400 });
     }
 
     const restaurantId = (auth.session.user as any).restaurantId;
