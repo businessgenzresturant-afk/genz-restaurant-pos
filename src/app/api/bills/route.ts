@@ -92,11 +92,23 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
-    if (order.status !== 'COMPLETED' && order.status !== 'SERVED') {
+    // Allow bill generation for any active order status
+    // COMPLETED orders already have bills, so reject those
+    if (order.status === 'COMPLETED') {
       return NextResponse.json(
-        { error: 'Can only generate bill for served or completed orders' },
+        { error: 'This order already has a bill generated' },
         { status: 400 }
       );
+    }
+
+    // Auto-mark orders as SERVED before billing if they're READY
+    // This ensures proper workflow tracking
+    if (order.status === 'READY') {
+      await prisma.order.update({
+        where: { id: orderId },
+        data: { status: 'SERVED' }
+      });
+      console.log(`[Bill Creation] Auto-marked order ${orderId} as SERVED (was READY)`);
     }
 
     // CRITICAL FIX: Get ALL orders for this table (not billed yet)
@@ -178,14 +190,13 @@ export async function POST(request: Request) {
     console.log(`  Total: ₹${total}`);
 
     const bill = await prisma.$transaction(async (tx) => {
-      // Mark ALL orders as COMPLETED
+      // Mark ALL orders as COMPLETED (regardless of current status)
+      // Orders in any status (PENDING, PREPARING, READY, SERVED) should become COMPLETED when billed
       for (const tableOrder of allTableOrders) {
-        if (tableOrder.status === 'SERVED' || tableOrder.status === 'READY') {
-          await tx.order.update({
-            where: { id: tableOrder.id },
-            data: { status: 'COMPLETED' }
-          });
-        }
+        await tx.order.update({
+          where: { id: tableOrder.id },
+          data: { status: 'COMPLETED' }
+        });
       }
 
       // Create bill linked to PRIMARY order (first one chronologically)
