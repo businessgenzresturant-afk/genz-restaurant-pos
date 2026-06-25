@@ -106,45 +106,69 @@
 
 /* ============================================
    ANIMATION UTILITY CLASSES
+   ⚡ OPTIMIZED FOR OLD COMPUTERS
    ============================================ */
 
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ⚡ PERFORMANCE: Lightweight animations for old hardware */
 .animate-fade-in {
-  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fadeIn 0.2s ease-out both;
 }
 
 .animate-slide-up {
-  animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: slideUp 0.2s ease-out both;
 }
 
 .animate-slide-in-right {
-  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: slideInRight 0.2s ease-out both;
 }
 
 .animate-scale-in {
-  animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: scaleIn 0.15s ease-out both;
 }
 
+/* ⚡ PERFORMANCE: Reduced glow animation */
 .animate-pulse-glow {
-  animation: pulseGlow 2s ease-in-out infinite;
+  animation: pulseGlow 3s ease-in-out infinite;
 }
 
 .animate-spin {
   animation: spin 1s linear infinite;
 }
 
+/* ⚡ PERFORMANCE: Disabled stagger on old hardware */
+@media (max-width: 768px) {
+  .stagger-children > * {
+    animation: fadeIn 0.15s ease-out both;
+    animation-delay: 0ms !important;
+  }
+}
+
 /* Staggered children — add to parent, children auto-stagger */
 .stagger-children > * {
-  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: fadeIn 0.2s ease-out both;
 }
 .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
-.stagger-children > *:nth-child(2) { animation-delay: 60ms; }
-.stagger-children > *:nth-child(3) { animation-delay: 120ms; }
-.stagger-children > *:nth-child(4) { animation-delay: 180ms; }
-.stagger-children > *:nth-child(5) { animation-delay: 240ms; }
-.stagger-children > *:nth-child(6) { animation-delay: 300ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 40ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 80ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 120ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 160ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 200ms; }
 
 /* ============================================
    SKELETON SHIMMER (loading placeholder)
+   ⚡ OPTIMIZED: Slower animation for better performance
    ============================================ */
 
 .skeleton {
@@ -156,7 +180,7 @@
     hsl(var(--muted)) 75%
   );
   background-size: 200% 100%;
-  animation: shimmer 1.8s ease-in-out infinite;
+  animation: shimmer 2.5s ease-in-out infinite;
 }
 
 /* ============================================
@@ -196,18 +220,19 @@ textarea,
 }
 
 /* ============================================
-   GLOBAL TRANSITION TUNING (snappy 200ms)
+   GLOBAL TRANSITION TUNING
+   ⚡ OPTIMIZED: Faster transitions for snappier feel
    ============================================ */
 
 button, a, .card-enhanced, .transition-colors, .transition-all {
-  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-  transition-duration: 200ms;
+  transition-timing-function: ease-out;
+  transition-duration: 150ms;
 }
 
 input, textarea {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
-  transition-duration: 200ms;
+  transition-property: color, background-color, border-color, box-shadow;
+  transition-timing-function: ease-out;
+  transition-duration: 150ms;
 }
 
 /* ============================================
@@ -221,18 +246,18 @@ input, textarea {
 
 /* Enhanced form fields */
 .input-enhanced {
-  @apply rounded-xl bg-background border border-input hover:border-ring/50 focus:bg-background focus:ring-2 focus:ring-ring/30 focus:border-ring shadow-sm;
+  @apply rounded-xl bg-background border border-input hover:border-ring/50 focus:bg-background focus:ring-2 focus:ring-ring/30 focus:border-ring;
 }
 
-/* Sleek button base */
+/* Sleek button base - optimized for performance */
 .button-enhanced {
-  @apply rounded-xl transition-all duration-200 ease-out active:scale-[0.97] cursor-pointer;
+  @apply rounded-xl transition-all duration-150 ease-out active:scale-[0.98] cursor-pointer;
 }
 
 /* Modal backdrop — reusable across all modals */
 .modal-backdrop {
   @apply fixed inset-0 bg-black/60 backdrop-blur-sm;
-  animation: fadeIn 0.2s ease-out both;
+  animation: fadeIn 0.15s ease-out both;
 }
 
 /* Status badge — used on KOT, KDS, orders, bills */
@@ -241,8 +266,22 @@ input, textarea {
 }
 
 /* ============================================
-   SCROLLBAR
+   SCROLLBAR - Custom smooth scrollbar
    ============================================ */
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/25 rounded-full;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/40;
+}
 
 ::-webkit-scrollbar {
   width: 6px;

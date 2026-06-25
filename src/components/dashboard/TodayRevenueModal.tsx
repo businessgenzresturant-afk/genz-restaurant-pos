@@ -179,68 +179,71 @@ export function TodayRevenueModal({ isOpen, onClose, todayRevenue }: TodayRevenu
           {/* Left panel: Stats & Bills List */}
           <div className="flex-1 p-6 overflow-y-auto custom-scrollbar border-r border-border/50 space-y-6">
             
-            {/* Today's Sales Stat Card */}
-            <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/20 rounded-2xl p-5 flex items-center justify-between shadow-md shadow-emerald-500/5">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Today&apos;s Sales Volume</p>
-                <p className="text-3xl font-black text-emerald-950 dark:text-emerald-300 mt-1">₹{todayRevenue.toLocaleString()}</p>
-                <p className="text-xs text-muted-foreground/80 mt-1">Calculated from completed/paid orders today</p>
-              </div>
-              <div className="p-4 bg-emerald-500/20 rounded-full text-emerald-600 ">
-                <Sparkles className="w-8 h-8" />
-              </div>
-            </div>
-
-            {/* Payment Method Breakdown */}
-            {breakdown && (
-              <div className="bg-gradient-to-br from-blue-500/10 to-indigo-500/5 border border-blue-500/20 rounded-2xl p-5 shadow-md shadow-blue-500/5">
-                <h4 className="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 mb-3">Payment Method Breakdown</h4>
-                <div className="space-y-2 text-sm">
-                  {breakdown.cash > 0 && (
-                    <div className="flex justify-between items-center">
-                      <span className="flex items-center gap-2 text-muted-foreground">
-                        <DollarSign className="w-4 h-4 text-green-500" />
-                        <span>Cash</span>
-                      </span>
-                      <span className="font-bold text-foreground">₹{breakdown.cash.toFixed(2)}</span>
-                    </div>
-                  )}
-                  {breakdown.upi > 0 && (
-                    <div className="flex justify-between items-center">
-                      <span className="flex items-center gap-2 text-muted-foreground">
-                        <Wallet className="w-4 h-4 text-orange-500" />
-                        <span>UPI</span>
-                      </span>
-                      <span className="font-bold text-foreground">₹{breakdown.upi.toFixed(2)}</span>
-                    </div>
-                  )}
-                  {breakdown.card > 0 && (
-                    <div className="flex justify-between items-center">
-                      <span className="flex items-center gap-2 text-muted-foreground">
-                        <CreditCard className="w-4 h-4 text-blue-500" />
-                        <span>Card</span>
-                      </span>
-                      <span className="font-bold text-foreground">₹{breakdown.card.toFixed(2)}</span>
-                    </div>
-                  )}
-                  {breakdown.split > 0 && (
-                    <div className="flex justify-between items-center">
-                      <span className="flex items-center gap-2 text-muted-foreground">
-                        <Receipt className="w-4 h-4 text-purple-500" />
-                        <span>Split Payment</span>
-                      </span>
-                      <span className="font-bold text-foreground">₹{breakdown.split.toFixed(2)}</span>
-                    </div>
-                  )}
-                  {breakdown.total > 0 && (
-                    <div className="flex justify-between items-center pt-2 border-t border-blue-500/20 font-bold text-base">
-                      <span className="text-foreground">Total Revenue</span>
-                      <span className="text-emerald-600 dark:text-emerald-400">₹{breakdown.total.toFixed(2)}</span>
-                    </div>
-                  )}
+            {/* Today's Total Revenue Card - ENHANCED */}
+            <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border-2 border-emerald-500/30 rounded-2xl p-6 shadow-lg shadow-emerald-500/10">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-2">Today&apos;s Total Revenue</p>
+                  <p className="text-4xl font-black text-emerald-950 dark:text-emerald-300">₹{todayRevenue.toLocaleString()}</p>
+                  <p className="text-xs text-muted-foreground/80 mt-1">{bills.length} {bills.length === 1 ? 'bill' : 'bills'} completed today</p>
+                </div>
+                <div className="p-4 bg-emerald-500/20 rounded-full text-emerald-600">
+                  <Sparkles className="w-8 h-8" />
                 </div>
               </div>
-            )}
+              
+              {/* Payment Method Totals - Prominent Display */}
+              {breakdown && breakdown.total > 0 && (
+                <div className="mt-4 pt-4 border-t-2 border-emerald-500/20">
+                  <p className="text-xs font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400 mb-3">Today&apos;s Collection Breakdown</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* Cash Collection */}
+                    {breakdown.cash > 0 && (
+                      <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <DollarSign className="w-4 h-4 text-green-600" />
+                          <span className="text-xs font-bold text-green-700 dark:text-green-400 uppercase">Cash</span>
+                        </div>
+                        <p className="text-xl font-black text-green-950 dark:text-green-300">₹{breakdown.cash.toFixed(2)}</p>
+                      </div>
+                    )}
+                    
+                    {/* UPI Collection */}
+                    {breakdown.upi > 0 && (
+                      <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Wallet className="w-4 h-4 text-orange-600" />
+                          <span className="text-xs font-bold text-orange-700 dark:text-orange-400 uppercase">UPI</span>
+                        </div>
+                        <p className="text-xl font-black text-orange-950 dark:text-orange-300">₹{breakdown.upi.toFixed(2)}</p>
+                      </div>
+                    )}
+                    
+                    {/* Card Collection */}
+                    {breakdown.card > 0 && (
+                      <div className="bg-blue-500/10 border border-blue-500/30 rounded-xl p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <CreditCard className="w-4 h-4 text-blue-600" />
+                          <span className="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase">Card</span>
+                        </div>
+                        <p className="text-xl font-black text-blue-950 dark:text-blue-300">₹{breakdown.card.toFixed(2)}</p>
+                      </div>
+                    )}
+                    
+                    {/* Split Payment Collection */}
+                    {breakdown.split > 0 && (
+                      <div className="bg-purple-500/10 border border-purple-500/30 rounded-xl p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Receipt className="w-4 h-4 text-purple-600" />
+                          <span className="text-xs font-bold text-purple-700 dark:text-purple-400 uppercase">Split</span>
+                        </div>
+                        <p className="text-xl font-black text-purple-950 dark:text-purple-300">₹{breakdown.split.toFixed(2)}</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Bills Section */}
             <div className="space-y-4">
