@@ -126,32 +126,32 @@ export async function POST(request: Request) {
     // P1 FIX: Validate table and menu items belong to user's restaurant for multi-tenant isolation
     const restaurantId = (auth.session.user as any).restaurantId;
     
-    // Check table availability and lock it - WITH RESTAURANT VALIDATION
-    let table = null;
-    if (tableId) {
-      table = await prisma.table.findFirst({
+    // ⚡ PERFORMANCE: Fetch table and menu items in PARALLEL instead of sequential
+    console.time('⏱️ DB-PARALLEL-FETCH');
+    const [table, menuItems] = await Promise.all([
+      // Check table availability and lock it - WITH RESTAURANT VALIDATION
+      tableId ? prisma.table.findFirst({
         where: { 
           id: tableId,
           restaurantId: restaurantId // Ensure table belongs to user's restaurant
         },
-      });
+      }) : Promise.resolve(null),
+      
+      // Fetch all menu items to get prices and validate - WITH RESTAURANT VALIDATION
+      prisma.menuItem.findMany({
+        where: {
+          id: {
+            in: items.map((i: any) => i.menuItemId)
+          },
+          restaurantId: restaurantId // Ensure menu items belong to user's restaurant
+        }
+      })
+    ]);
+    console.timeEnd('⏱️ DB-PARALLEL-FETCH');
 
-      if (!table) {
-        return NextResponse.json({ error: 'Table not found or does not belong to your restaurant' }, { status: 404 });
-      }
+    if (tableId && !table) {
+      return NextResponse.json({ error: 'Table not found or does not belong to your restaurant' }, { status: 404 });
     }
-
-    // Fetch all menu items to get prices and validate - WITH RESTAURANT VALIDATION
-    console.time('⏱️ DB-MENU-FETCH');
-    const menuItems = await prisma.menuItem.findMany({
-      where: {
-        id: {
-          in: items.map((i: any) => i.menuItemId)
-        },
-        restaurantId: restaurantId // Ensure menu items belong to user's restaurant
-      }
-    });
-    console.timeEnd('⏱️ DB-MENU-FETCH');
 
     if (menuItems.length !== items.length) {
       return NextResponse.json(

@@ -80,6 +80,7 @@ model Order {
   @@index([createdAt])
   @@index([status, createdAt])
   @@index([customerPhone])
+  @@index([tableId, status]) // ⚡ PERFORMANCE: Fast bill generation query
 }
 
 model OrderItem {

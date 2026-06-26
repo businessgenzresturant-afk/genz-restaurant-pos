@@ -87,20 +87,40 @@ export async function POST(request: Request) {
 
     const { orderId } = validation.data;
 
-    // ⚡ PERFORMANCE: Fetch order with all data in single query
-    console.time('⏱️ DB-ORDER-FETCH');
-    const order = await prisma.order.findUnique({
-      where: { id: orderId },
-      include: {
-        table: true,
-        items: {
-          include: {
-            menuItem: true
+    // ⚡ PERFORMANCE BOOST: Fetch order + check existing bill + find all table orders in PARALLEL
+    console.time('⏱️ DB-PARALLEL-FETCH-ALL');
+    const [order, allTableOrders] = await Promise.all([
+      // Fetch the specific order with all data
+      prisma.order.findUnique({
+        where: { id: orderId },
+        include: {
+          table: true,
+          items: {
+            include: {
+              menuItem: true
+            }
           }
         }
-      }
-    });
-    console.timeEnd('⏱️ DB-ORDER-FETCH');
+      }),
+      
+      // Fetch ALL unbilled orders for this table (we'll filter by tableId after getting the order)
+      prisma.order.findMany({
+        where: {
+          bill: null, // Orders that haven't been billed yet
+          status: { in: ['PENDING', 'PREPARING', 'READY', 'SERVED'] }
+        },
+        include: {
+          items: {
+            include: {
+              menuItem: true
+            }
+          },
+          table: true
+        },
+        orderBy: { createdAt: 'asc' }
+      })
+    ]);
+    console.timeEnd('⏱️ DB-PARALLEL-FETCH-ALL');
 
     if (!order) {
       console.timeEnd('⏱️ TOTAL-BILL-GENERATION');
@@ -129,41 +149,24 @@ export async function POST(request: Request) {
 
     // CRITICAL FIX: Get ALL orders for this table (not billed yet)
     // This ensures full table bill includes all orders
-    let allTableOrders: any[] = [];
+    let finalTableOrders: any[] = [];
     
     if (order.tableId) {
-      console.log(`[Bill Creation] Table ${order.table?.number}: Finding all unbilled orders`);
+      console.log(`[Bill Creation] Table ${order.table?.number}: Filtering unbilled orders from pre-fetched data`);
       
-      // ⚡ PERFORMANCE: Fetch all unbilled orders with items in single query
-      console.time('⏱️ DB-TABLE-ORDERS-FETCH');
-      allTableOrders = await prisma.order.findMany({
-        where: {
-          tableId: order.tableId,
-          status: { in: ['PENDING', 'PREPARING', 'READY', 'SERVED'] }, // 🐛 FIX: Removed COMPLETED - those are already billed!
-          bill: null // Orders that haven't been billed yet
-        },
-        include: {
-          items: {
-            include: {
-              menuItem: true
-            }
-          },
-          table: true
-        },
-        orderBy: { createdAt: 'asc' }
-      });
-      console.timeEnd('⏱️ DB-TABLE-ORDERS-FETCH');
+      // ⚡ PERFORMANCE: Filter from already-fetched orders instead of new query
+      finalTableOrders = allTableOrders.filter(o => o.tableId === order.tableId);
 
-      console.log(`[Bill Creation] Found ${allTableOrders.length} unbilled orders for Table ${order.table?.number}`);
-      allTableOrders.forEach((o, idx) => {
+      console.log(`[Bill Creation] Found ${finalTableOrders.length} unbilled orders for Table ${order.table?.number}`);
+      finalTableOrders.forEach((o, idx) => {
         console.log(`  Order ${idx + 1}: ${o.items.length} items, Status: ${o.status}, Amount: ₹${o.totalAmount}`);
       });
     } else {
       // No table (takeaway/delivery), use the already-fetched order with items
-      allTableOrders = [order];
+      finalTableOrders = [order];
     }
 
-    if (allTableOrders.length === 0) {
+    if (finalTableOrders.length === 0) {
       console.timeEnd('⏱️ TOTAL-BILL-GENERATION');
       return NextResponse.json(
         { error: 'No unbilled orders found for this table' },
@@ -171,14 +174,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // ⚡ PERFORMANCE: Check for existing bills in a single query
-    console.time('⏱️ DB-CHECK-EXISTING-BILLS');
-    const existingBills = await prisma.bill.findMany({
-      where: {
-        orderId: { in: allTableOrders.map(o => o.id) }
-      }
-    });
-    console.timeEnd('⏱️ DB-CHECK-EXISTING-BILLS');
+    // ⚡ PERFORMANCE: Check for existing bills using pre-fetched data instead of new query
+    const existingBills = finalTableOrders.filter(o => o.bill !== null);
 
     if (existingBills.length > 0) {
       console.timeEnd('⏱️ TOTAL-BILL-GENERATION');
@@ -190,7 +187,7 @@ export async function POST(request: Request) {
 
     // Calculate total from ALL orders - ONLY ACTIVE ITEMS (exclude CANCELLED)
     // CRITICAL: Must recalculate from actual items, not use stale order.totalAmount
-    const subtotal = allTableOrders.reduce((sum, o) => {
+    const subtotal = finalTableOrders.reduce((sum, o) => {
       const orderSubtotal = o.items
         .filter((item: any) => item.status === 'ACTIVE') // Exclude cancelled items
         .reduce((itemSum: number, item: any) => itemSum + (item.price * item.quantity), 0);
@@ -202,7 +199,7 @@ export async function POST(request: Request) {
     const total = subtotal + tax - discount;
 
     console.log(`[Bill Creation] Creating bill for Table ${order.table?.number || 'Takeaway'}`);
-    console.log(`  Total orders: ${allTableOrders.length}`);
+    console.log(`  Total orders: ${finalTableOrders.length}`);
     console.log(`  Subtotal: ₹${subtotal}`);
     console.log(`  Tax: ₹${tax}`);
     console.log(`  Total: ₹${total}`);
@@ -213,13 +210,13 @@ export async function POST(request: Request) {
       // Mark ALL orders as COMPLETED in a single batch operation
       // Orders in any status (PENDING, PREPARING, READY, SERVED) should become COMPLETED when billed
       await tx.order.updateMany({
-        where: { id: { in: allTableOrders.map(o => o.id) } },
+        where: { id: { in: finalTableOrders.map(o => o.id) } },
         data: { status: 'COMPLETED' }
       });
 
       // Create bill linked to PRIMARY order (first one chronologically)
       // But include reference to all order IDs in metadata
-      const primaryOrder = allTableOrders[0];
+      const primaryOrder = finalTableOrders[0];
       
       return tx.bill.create({
         data: {
@@ -250,7 +247,7 @@ export async function POST(request: Request) {
 
     // IMPORTANT: Manually fetch and attach ALL orders' items to the bill response
     // So frontend gets complete picture
-    const allItems = allTableOrders.flatMap(o => o.items);
+    const allItems = finalTableOrders.flatMap(o => o.items);
     
     const enhancedBill = {
       ...bill,
@@ -259,12 +256,12 @@ export async function POST(request: Request) {
         items: allItems // Replace with ALL items from all orders
       },
       _meta: {
-        orderCount: allTableOrders.length,
-        orderIds: allTableOrders.map(o => o.id)
+        orderCount: finalTableOrders.length,
+        orderIds: finalTableOrders.map(o => o.id)
       }
     };
 
-    console.log(`[Bill Creation] ✅ Bill created with ${allItems.length} total items from ${allTableOrders.length} orders`);
+    console.log(`[Bill Creation] ✅ Bill created with ${allItems.length} total items from ${finalTableOrders.length} orders`);
 
     console.timeEnd('⏱️ TOTAL-BILL-GENERATION');
     return NextResponse.json(enhancedBill, { status: 201 });
