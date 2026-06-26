@@ -37,16 +37,24 @@ interface KDSDisplayProps {
 }
 
 export default function KDSDisplay({ restaurantId, readOnly = false, enableReconnect = false, autoStart = false }: KDSDisplayProps) {
+  console.log('[KDS] 🎬 Component function called - restaurantId:', restaurantId);
+  
   const [orders, setOrders] = useState<any[]>(() => {
+    console.log('[KDS] 📦 Initializing orders state');
     if (typeof window !== 'undefined' && (window as any).__pos_kds_cache?.orders) {
+      console.log('[KDS] ✅ Found cached orders:', (window as any).__pos_kds_cache.orders.length);
       return (window as any).__pos_kds_cache.orders;
     }
+    console.log('[KDS] ℹ️ No cached orders, starting with empty array');
     return [];
   });
   const [loading, setLoading] = useState(() => {
+    console.log('[KDS] 📦 Initializing loading state');
     if (typeof window !== 'undefined' && (window as any).__pos_kds_cache?.orders) {
+      console.log('[KDS] ✅ Cache exists, loading = false');
       return false;
     }
+    console.log('[KDS] ⏳ No cache, loading = true');
     return true;
   });
   const [now, setNow] = useState(new Date());
@@ -61,21 +69,30 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
     new: null,
     urgent: null
   });
+  
+  console.log('[KDS] 🏁 All state initialized - hasInteracted:', hasInteracted, 'loading:', loading);
 
   useEffect(() => {
+    console.log('[KDS] ⏰ Clock useEffect mounted');
     const timer = setInterval(() => setNow(new Date()), 1000);
-    return () => clearInterval(timer);
+    return () => {
+      console.log('[KDS] ⏰ Clock useEffect cleanup');
+      clearInterval(timer);
+    };
   }, []);
 
   // Preload audio files
   useEffect(() => {
+    console.log('[KDS] 🔊 Audio preload useEffect mounted');
     if (typeof window !== 'undefined') {
+      console.log('[KDS] 🔊 Creating audio elements');
       audioContextRef.current.new = new Audio('/sounds/new-order.mp3');
       audioContextRef.current.urgent = new Audio('/sounds/urgent.mp3');
       
       // Preload
       audioContextRef.current.new.load();
       audioContextRef.current.urgent.load();
+      console.log('[KDS] 🔊 Audio elements created and loading');
     }
   }, []);
 
@@ -190,16 +207,19 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
   }, []);
 
   const fetchOrders = useCallback(async () => {
+    console.log('[KDS] 🌐 fetchOrders called');
     try {
       // 🔥 ERROR HANDLING: Add timeout to fetch
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
       
+      console.log('[KDS] 🌐 Starting fetch to /api/orders');
       const response = await fetch('/api/orders?status=PENDING,PREPARING', {
         signal: controller.signal
       });
       
       clearTimeout(timeoutId);
+      console.log('[KDS] ✅ Fetch response received - status:', response.status);
       
       if (!response.ok) {
         console.error(`❌ [KDS] API error: ${response.status} ${response.statusText}`);
@@ -221,7 +241,9 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
       // 🔥 ERROR HANDLING: Validate JSON response
       let data;
       try {
+        console.log('[KDS] 📄 Parsing JSON response');
         data = await response.json();
+        console.log('[KDS] ✅ JSON parsed successfully - type:', typeof data, 'isArray:', Array.isArray(data));
       } catch (jsonError) {
         console.error('❌ [KDS] Invalid JSON response:', jsonError);
         return;
@@ -229,6 +251,7 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
       
       // 🔥 ERROR HANDLING: Ensure data is array
       const finalOrders = Array.isArray(data) ? data : [];
+      console.log('[KDS] 📦 Final orders count:', finalOrders.length);
       
       // 🔥 ERROR HANDLING: Validate each order has required fields
       const validOrders = finalOrders.filter((order: any) => {
@@ -242,6 +265,8 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
         }
         return true;
       });
+      
+      console.log('[KDS] ✅ Valid orders count:', validOrders.length);
       
       // Detect new urgent additions or new orders to play sound
       const prev = previousOrdersRef.current;
@@ -318,13 +343,16 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
       }
 
       previousOrdersRef.current = validOrders;
+      console.log('[KDS] 📝 Updated previousOrdersRef');
       setOrders(validOrders);
+      console.log('[KDS] 📝 Called setOrders with', validOrders.length, 'orders');
 
       // Save to cache
       if (typeof window !== 'undefined') {
         (window as any).__pos_kds_cache = {
           orders: validOrders
         };
+        console.log('[KDS] 💾 Saved to cache');
       }
     } catch (error: any) {
       // 🔥 ERROR HANDLING: Comprehensive error catching
@@ -343,11 +371,13 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
         }
       }
     } finally {
+      console.log('[KDS] 🏁 fetchOrders finally - setting loading = false');
       setLoading(false);
     }
   }, [addSoundNotification, enableReconnect, failureCount]);
 
   useEffect(() => {
+    console.log('[KDS] 🚀 Main useEffect mounted - starting initial fetch');
     // Initial fetch
     fetchOrders();
 
@@ -368,6 +398,7 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
       }
     };
 
+    console.log('[KDS] 📡 Setting up event listeners');
     document.addEventListener('visibilitychange', handleVisibilityChange);
     if (enableReconnect) {
       window.addEventListener('online', handleOnline);
@@ -375,6 +406,7 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
 
     // Reduced polling frequency to minimize database connections
     // 10 seconds is acceptable for kitchen display updates
+    console.log('[KDS] ⏲️ Setting up 10-second polling interval');
     const interval = setInterval(() => {
       if (document.visibilityState === 'visible') {
         fetchOrders();
@@ -382,6 +414,7 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
     }, 10000); // 10 seconds (was 3s - reduced by 70% to prevent connection exhaustion)
 
     return () => {
+      console.log('[KDS] 🧹 Main useEffect cleanup');
       clearInterval(interval);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (enableReconnect) {
@@ -647,6 +680,7 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
   const showSkeletons = loading && orders.length === 0;
 
   const handleStartKDS = () => {
+    console.log('[KDS] 🖱️ User clicked to start KDS');
     setHasInteracted(true);
     // Silent play to unlock audio context
     if (audioContextRef.current.new) {
@@ -659,7 +693,10 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
     }
   };
 
+  console.log('[KDS] 🎨 Render - hasInteracted:', hasInteracted, 'loading:', loading, 'orders:', orders.length);
+
   if (!hasInteracted) {
+    console.log('[KDS] 🎨 Rendering interaction gate');
     return (
       <div 
         className="fixed inset-0 bg-gradient-to-br from-background via-background to-primary/5 z-50 flex items-center justify-center cursor-pointer"
@@ -688,6 +725,7 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
     );
   }
 
+  console.log('[KDS] 🎨 Rendering main KDS display');
   return (
     <div className="min-h-screen bg-background p-6 overflow-x-hidden font-sans">
       <div className="flex justify-between items-center mb-8 pb-4 border-b border-border">
