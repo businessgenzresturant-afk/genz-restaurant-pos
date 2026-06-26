@@ -191,7 +191,9 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Create Account Link */}
+          {/* Create Account Link - DISABLED FOR PRODUCTION */}
+          {/* Only ADMIN can create staff accounts from dashboard */}
+          {/* 
           <div className="text-center">
             <p className="text-zinc-500 text-sm">
               Don&apos;t have an account?{' '}
@@ -203,6 +205,7 @@ export default function LoginPage() {
               </a>
             </p>
           </div>
+          */}
 
           {/* Footer */}
           <div className="pt-4 border-t border-zinc-800 flex items-center justify-between">

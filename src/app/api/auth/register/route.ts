@@ -13,6 +13,18 @@ const registerSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  // 🔒 REGISTRATION DISABLED FOR PRODUCTION
+  // Only existing users can login. New staff must be added by ADMIN from dashboard.
+  return NextResponse.json(
+    { 
+      error: 'Public registration is disabled. Please contact your restaurant administrator to create an account.',
+      code: 'REGISTRATION_DISABLED'
+    },
+    { status: 403 }
+  );
+
+  /* REGISTRATION CODE DISABLED - Uncomment if needed for multi-restaurant SaaS
+  
   // More relaxed rate limit for registration (10 requests per minute)
   const rateLimit = checkRateLimit(request, { maxRequests: 10, windowMs: 60 * 1000 });
   if (!rateLimit.success) {
@@ -100,4 +112,5 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+  */
 }

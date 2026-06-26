@@ -40,6 +40,7 @@ export default function Header() {
   const userEmail = session?.user?.email || 'user@example.com';
   const userRole = (session?.user as any)?.role || 'STAFF';
   const userInitial = userName.charAt(0).toUpperCase();
+  const isAdmin = userRole === 'ADMIN';
 
   const getPageTitle = () => {
     switch (pathname) {
@@ -124,74 +125,78 @@ export default function Header() {
                 <p className="text-[9px] font-bold text-primary uppercase tracking-wider mt-0.5">{userRole}</p>
               </div>
               
-              {/* Management Options */}
-              <button 
-                onClick={() => {
-                  setDropdownOpen(false);
-                  setShowTablesModal(true);
-                }}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-muted text-foreground"
-              >
-                <LayoutGrid className="w-4 h-4 text-muted-foreground" />
-                Manage Tables
-              </button>
-              
-              <button 
-                onClick={() => {
-                  setDropdownOpen(false);
-                  setShowMenuModal(true);
-                }}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-muted text-foreground"
-              >
-                <Utensils className="w-4 h-4 text-muted-foreground" />
-                Manage Menu
-              </button>
-              
-              <button 
-                onClick={() => {
-                  setDropdownOpen(false);
-                  setShowRestaurantSettingsModal(true);
-                }}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-muted text-foreground"
-              >
-                <Store className="w-4 h-4 text-muted-foreground" />
-                Restaurant Settings
-              </button>
-              
-              <button 
-                onClick={() => {
-                  setDropdownOpen(false);
-                  setShowStaffModal(true);
-                }}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-muted text-foreground"
-              >
-                <Users className="w-4 h-4 text-muted-foreground" />
-                Manage Staff
-              </button>
-              
-              <button 
-                onClick={() => {
-                  setDropdownOpen(false);
-                  setShowTaxPricingModal(true);
-                }}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-muted text-foreground"
-              >
-                <ReceiptIcon className="w-4 h-4 text-muted-foreground" />
-                Tax & Pricing
-              </button>
-              
-              <Link 
-                href="/settings" 
-                onClick={() => setDropdownOpen(false)} 
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors ${
-                  pathname === '/settings' ? 'bg-primary/10 text-primary' : 'hover:bg-muted text-foreground'
-                }`}
-              >
-                <Settings className="w-4 h-4 text-muted-foreground" />
-                System Settings
-              </Link>
-              
-              <div className="border-t border-border/50 my-1" />
+              {/* Management Options - ADMIN ONLY */}
+              {isAdmin && (
+                <>
+                  <button 
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      setShowTablesModal(true);
+                    }}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-muted text-foreground"
+                  >
+                    <LayoutGrid className="w-4 h-4 text-muted-foreground" />
+                    Manage Tables
+                  </button>
+                  
+                  <button 
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      setShowMenuModal(true);
+                    }}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-muted text-foreground"
+                  >
+                    <Utensils className="w-4 h-4 text-muted-foreground" />
+                    Manage Menu
+                  </button>
+                  
+                  <button 
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      setShowRestaurantSettingsModal(true);
+                    }}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-muted text-foreground"
+                  >
+                    <Store className="w-4 h-4 text-muted-foreground" />
+                    Restaurant Settings
+                  </button>
+                  
+                  <button 
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      setShowStaffModal(true);
+                    }}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-muted text-foreground"
+                  >
+                    <Users className="w-4 h-4 text-muted-foreground" />
+                    Manage Staff
+                  </button>
+                  
+                  <button 
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      setShowTaxPricingModal(true);
+                    }}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-muted text-foreground"
+                  >
+                    <ReceiptIcon className="w-4 h-4 text-muted-foreground" />
+                    Tax & Pricing
+                  </button>
+                  
+                  <Link 
+                    href="/settings" 
+                    onClick={() => setDropdownOpen(false)} 
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors ${
+                      pathname === '/settings' ? 'bg-primary/10 text-primary' : 'hover:bg-muted text-foreground'
+                    }`}
+                  >
+                    <Settings className="w-4 h-4 text-muted-foreground" />
+                    System Settings
+                  </Link>
+                  
+                  <div className="border-t border-border/50 my-1" />
+                </>
+              )}
               
               <button 
                 onClick={() => {
