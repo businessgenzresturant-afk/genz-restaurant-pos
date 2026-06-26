@@ -79,20 +79,32 @@ export async function PATCH(
 
     const order = orderItem.order;
 
-    // Don't allow cancelling items from already billed orders
+    // 🔧 CRITICAL FIX: Don't allow cancelling items after ANY bill generated (not just PAID)
     const bill = await prisma.bill.findFirst({
-      where: { orderId: id, status: 'PAID' }
+      where: { orderId: id }  // Any bill, regardless of status
     });
 
     if (bill) {
       return NextResponse.json(
-        { error: 'Cannot cancel items from paid orders' },
+        { error: `Cannot cancel items after bill generated. Bill ID: ${bill.id}` },
         { status: 400 }
       );
     }
 
     // Update the order item status and recalculate order total
     const result = await prisma.$transaction(async (tx) => {
+      // Get the order item details before cancelling
+      const itemToCancel = await tx.orderItem.findUnique({
+        where: { id: itemId },
+        include: {
+          menuItem: true
+        }
+      });
+
+      if (!itemToCancel) {
+        throw new Error('Order item not found');
+      }
+
       // Cancel the item with reason and user ID
       const updatedItem = await tx.orderItem.update({
         where: { id: itemId },
@@ -102,6 +114,19 @@ export async function PATCH(
           cancelledByUserId: userId
         }
       });
+
+      // 🔧 CRITICAL FIX: Restore stock when item is cancelled
+      if (itemToCancel.menuItem && itemToCancel.menuItem.stockQuantity !== null && itemToCancel.menuItem.stockQuantity !== undefined) {
+        const restoredStock = itemToCancel.menuItem.stockQuantity + itemToCancel.quantity;
+        await tx.menuItem.update({
+          where: { id: itemToCancel.menuItemId },
+          data: {
+            stockQuantity: restoredStock,
+            available: true // Make available again if stock restored
+          }
+        });
+        console.log(`✅ Stock restored for ${itemToCancel.menuItem.name}: ${itemToCancel.menuItem.stockQuantity} → ${restoredStock}`);
+      }
 
       // Recalculate order total (sum of ACTIVE items only)
       const activeItems = await tx.orderItem.findMany({

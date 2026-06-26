@@ -207,6 +207,16 @@ export async function POST(request: Request) {
       const menuItem = menuItemMap.get(item.menuItemId);
       if (!menuItem) throw new Error('Menu item not found');
       
+      // 🔧 CRITICAL FIX: Validate stock before creating order
+      if (menuItem.stockQuantity !== null && menuItem.stockQuantity !== undefined) {
+        if (menuItem.stockQuantity < item.quantity) {
+          throw new Error(`Insufficient stock for ${menuItem.name}. Available: ${menuItem.stockQuantity}, Requested: ${item.quantity}`);
+        }
+        if (!menuItem.available) {
+          throw new Error(`${menuItem.name} is currently unavailable`);
+        }
+      }
+      
       // Determine price based on portion type
       let price = menuItem.price;
       if (item.portionType === 'HALF' && menuItem.priceHalf) {
