@@ -107,8 +107,27 @@ export function Dashboard() {
       });
 
       // Handle auth errors gracefully - redirect to login
-      if (tablesRes.status === 401) {
-        console.error('[Dashboard] Authentication error - redirecting to login');
+      if (tablesRes.status === 401 || ordersRes.status === 401 || reportsRes.status === 401 || menuRes.status === 401) {
+        console.error('[Dashboard] Authentication error detected - session expired or invalid');
+        
+        // Check if it's an invalid session token error
+        try {
+          const errorData = await tablesRes.json().catch(() => ({}));
+          if (errorData.code === 'INVALID_SESSION_TOKEN' || errorData.error?.includes('Session expired')) {
+            console.error('[Dashboard] Invalid session token - forcing logout and redirect');
+            // Clear any cached data
+            if (typeof window !== 'undefined') {
+              delete (window as any).__pos_cache;
+            }
+            // Redirect to login page
+            window.location.href = '/login';
+            return;
+          }
+        } catch (e) {
+          console.error('[Dashboard] Error parsing auth error:', e);
+        }
+        
+        // Generic auth error - still redirect
         window.location.href = '/login';
         return;
       }

@@ -51,8 +51,29 @@ export async function checkAuth(req?: any, requiredRole?: UserRole) {
     }
 
     return { error: null, session };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Auth check error:", error);
+    
+    // 🔧 FIX: Detect Invalid JWT errors (Invalid Compact JWE, JWEInvalid, etc.)
+    // This happens when session token is corrupted or from different NEXTAUTH_SECRET
+    const errorMessage = error?.message || error?.name || '';
+    const isInvalidToken = errorMessage.includes('JWE') || 
+                          errorMessage.includes('JWT') || 
+                          errorMessage.includes('Invalid') ||
+                          error?.name === 'JWEInvalid' ||
+                          error?.name === 'JWTExpired';
+    
+    if (isInvalidToken) {
+      console.error('⚠️ Invalid session token detected - user needs to re-login');
+      return {
+        error: NextResponse.json({ 
+          error: "Session expired or invalid. Please logout and login again.",
+          code: "INVALID_SESSION_TOKEN"
+        }, { status: 401 }),
+        session: null
+      };
+    }
+    
     return {
       error: NextResponse.json({ error: "Auth check failed" }, { status: 401 }),
       session: null

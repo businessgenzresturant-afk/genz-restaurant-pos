@@ -233,18 +233,29 @@ export async function POST(request: Request) {
       };
     });
 
-    // CRITICAL FIX: Move table status check and order lookup INSIDE transaction
+    // ✅ CRITICAL FIX: Move table status check and order lookup INSIDE transaction with ROW LOCKING
     // This prevents TOCTOU race condition where multiple devices see "AVAILABLE"
     // and each create separate orders for the same table
     try {
       console.time('⏱️ TRANSACTION');
       const result = await prisma.$transaction(async (tx) => {
-        // Check table status INSIDE transaction (CRITICAL FIX)
-        const currentTable = tableId ? await tx.table.findUnique({
-          where: { id: tableId }
-        }) : null;
+        // ✅ CRITICAL FIX: Lock table row with FOR UPDATE to prevent concurrent modifications
+        // This ensures only ONE transaction can proceed at a time for this table
+        let currentTable = null;
+        if (tableId) {
+          const lockedTables = await tx.$queryRaw<Array<{id: string, status: string, number: number}>>`
+            SELECT id, status, number FROM "Table"
+            WHERE id = ${tableId}
+            FOR UPDATE
+          `;
+          currentTable = lockedTables && lockedTables.length > 0 ? lockedTables[0] : null;
+          
+          if (!currentTable) {
+            throw new Error('Table not found');
+          }
+        }
 
-        // Find active order INSIDE transaction (CRITICAL FIX)
+        // Find active order INSIDE locked transaction (CRITICAL FIX)
         // 🔧 BUGFIX: Include SERVED orders - customers often add items after being served (running table)
         // Only exclude COMPLETED orders (those that have been billed and paid)
         const activeOrder = tableId ? await tx.order.findFirst({
@@ -384,6 +395,9 @@ export async function POST(request: Request) {
         console.timeEnd('⏱️ STOCK-UPDATES');
 
         return { type: 'CREATE', order: newOrder };
+      }, {
+        isolationLevel: 'Serializable',  // ✅ Highest isolation level to prevent phantom reads
+        timeout: 10000  // 10 second timeout to prevent indefinite locks
       });
       console.timeEnd('⏱️ TRANSACTION');
 
