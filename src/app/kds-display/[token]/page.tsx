@@ -12,11 +12,16 @@ interface Props {
 export default async function PublicKDSDisplay({ params }: Props) {
   const { token } = await params;
   
+  // 🔍 DIAGNOSTIC: Log every request to verify TV is reaching server
+  console.log(`[KDS] 🔍 Request received - Token: ${token}, Time: ${new Date().toISOString()}`);
+  
   // Validate token server-side
   const restaurant = await prisma.restaurant.findUnique({
     where: { kdsDisplayToken: token },
     select: { id: true, name: true }
   });
+
+  console.log(`[KDS] Restaurant lookup result: ${restaurant ? `✅ Found: ${restaurant.name} (ID: ${restaurant.id})` : '❌ Not found'}`);
 
   if (!restaurant) {
     return (
