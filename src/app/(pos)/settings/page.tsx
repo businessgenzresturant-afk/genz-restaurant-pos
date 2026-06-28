@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +14,7 @@ export const dynamic = 'force-dynamic';
 
 export default function SettingsPage() {
   const { data: session, status } = useSession();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [kdsToken, setKdsToken] = useState<string | null>(null);
   const [showKdsToken, setShowKdsToken] = useState(false);
@@ -146,6 +148,14 @@ export default function SettingsPage() {
   const maskedToken = kdsToken ? `${kdsToken.substring(0, 12)}...${kdsToken.substring(kdsToken.length - 12)}` : 'Loading...';
   const kdsURL = kdsToken ? `https://pos.gen-z.online/kds-display/${kdsToken}` : '';
   const isAdmin = session?.user ? (session.user as any).role === 'ADMIN' : false;
+
+  // ADMIN-ONLY ROUTE GUARD: redirect non-admins back to dashboard
+  useEffect(() => {
+    if (status === 'loading') return;
+    if (status === 'authenticated' && (session?.user as any)?.role !== 'ADMIN') {
+      router.replace('/dashboard');
+    }
+  }, [status, session, router]);
 
   // Show loading state while session is being fetched or during SSR
   if (typeof window === 'undefined' || status === 'loading') {

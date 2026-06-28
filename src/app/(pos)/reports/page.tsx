@@ -1,11 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 
 export default function ReportsPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [startDate, setStartDate] = useState(() => {
     if (typeof window !== 'undefined' && (window as any).__pos_reports_cache?.startDate) {
       return (window as any).__pos_reports_cache.startDate;
@@ -35,6 +39,14 @@ export default function ReportsPage() {
       setEndDate(today);
     }
   }, [startDate, endDate]);
+
+  // ADMIN-ONLY ROUTE GUARD: redirect non-admins back to dashboard
+  useEffect(() => {
+    if (status === 'loading') return;
+    if (status === 'authenticated' && (session?.user as any)?.role !== 'ADMIN') {
+      router.replace('/dashboard');
+    }
+  }, [status, session, router]);
 
   const generateReport = async () => {
     if (!startDate || !endDate) {

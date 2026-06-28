@@ -10,6 +10,7 @@ import { Pencil, Eye, EyeOff, Trash2, Search, Plus, X, AlertTriangle } from 'luc
 import { Portal } from '@/components/ui/portal';
 import { DietIndicator } from '@/components/ui/diet-indicator';
 import { useAuth } from '@/lib/useAuth';
+import { useSession } from 'next-auth/react';
 
 const CATEGORIES = [
   'All',
@@ -28,6 +29,7 @@ const CATEGORIES = [
 
 export default function MenuPage() {
   const { user, isAdmin, isStaff } = useAuth();
+  const { data: session, status } = useSession();
   const router = useRouter();
   
   const [menuItems, setMenuItems] = useState<any[]>(() => {
@@ -67,6 +69,14 @@ export default function MenuPage() {
   const [available, setAvailable] = useState(true);
   const [dietType, setDietType] = useState<'VEG' | 'NON_VEG'>('VEG');
   const [stockQuantity, setStockQuantity] = useState<string>('');
+
+  // ADMIN-ONLY ROUTE GUARD: redirect non-admins back to dashboard
+  useEffect(() => {
+    if (status === 'loading') return;
+    if (status === 'authenticated' && (session?.user as any)?.role !== 'ADMIN') {
+      router.replace('/dashboard');
+    }
+  }, [status, session, router]);
 
   useEffect(() => {
     fetchMenuItems();
