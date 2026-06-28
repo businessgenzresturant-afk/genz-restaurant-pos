@@ -28,9 +28,11 @@ import { TransferTableModal } from './TransferTableModal';
 import { PaymentModal } from '@/components/billing/PaymentModal';
 import { Portal } from '@/components/ui/portal';
 import { toast } from 'sonner';
+import { useAuth } from '@/lib/useAuth';
 
 export function Dashboard() {
   const router = useRouter();
+  const { isAdmin } = useAuth();
   
   const [tables, setTables] = useState<any[]>(() => {
     if (typeof window !== 'undefined' && (window as any).__pos_cache?.tables) {
@@ -92,22 +94,29 @@ export function Dashboard() {
     try {
       console.log('[Dashboard] Starting data fetch...');
       
-      const [tablesRes, ordersRes, reportsRes, menuRes] = await Promise.all([
+      // Only fetch reports for admin users - staff gets 403 on /api/reports
+      const fetchPromises: Promise<Response>[] = [
         fetch('/api/tables', { cache: 'no-store' }),
         fetch('/api/orders?status=PENDING,PREPARING,READY,SERVED', { cache: 'no-store' }),
-        fetch('/api/reports', { cache: 'no-store' }),
         fetch('/api/menu', { cache: 'no-store' }),
-      ]);
+      ];
+      if (isAdmin) {
+        fetchPromises.push(fetch('/api/reports', { cache: 'no-store' }));
+      }
+
+      const responses = await Promise.all(fetchPromises);
+      const [tablesRes, ordersRes, menuRes] = responses;
+      const reportsRes = isAdmin ? responses[3] : null;
 
       console.log('[Dashboard] API responses:', {
         tables: tablesRes.status,
         orders: ordersRes.status,
-        reports: reportsRes.status,
+        reports: reportsRes?.status ?? 'skipped (staff)',
         menu: menuRes.status
       });
 
       // Handle auth errors gracefully - redirect to login
-      if (tablesRes.status === 401 || ordersRes.status === 401 || reportsRes.status === 401 || menuRes.status === 401) {
+      if (tablesRes.status === 401 || ordersRes.status === 401 || (reportsRes && reportsRes.status === 401) || menuRes.status === 401) {
         console.error('[Dashboard] Authentication error detected - session expired or invalid');
         
         // Check if it's an invalid session token error
@@ -137,7 +146,7 @@ export function Dashboard() {
       const o = ordersRes.ok ? await ordersRes.json() : [];
       const m = menuRes.ok ? await menuRes.json() : [];
       let rev = 0;
-      if (reportsRes.ok) {
+      if (reportsRes && reportsRes.ok) {
         const r = await reportsRes.json();
         rev = r.dailySalesTotal || 0;
       }
@@ -184,7 +193,7 @@ export function Dashboard() {
       setLoading(false);
       console.log('[Dashboard] Loading complete');
     }
-  }, []);
+  }, [isAdmin]);
 
   useEffect(() => {
     fetchData();

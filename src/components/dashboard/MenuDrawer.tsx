@@ -24,6 +24,7 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
     if (isOpen) {
       setActiveTab('menu');
       setIsSubmitting(false); // Reset on open
+      setCart([]); // Clear cart on open to prevent stale or cross-table items
     }
   }, [isOpen]);
 

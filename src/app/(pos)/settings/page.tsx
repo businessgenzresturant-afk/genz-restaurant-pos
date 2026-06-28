@@ -552,15 +552,15 @@ export default function SettingsPage() {
         <div className="bg-muted/50 rounded-lg p-4 space-y-2 border border-border">
           <div className="flex justify-between">
             <span className="text-sm font-medium text-muted-foreground">Name:</span>
-            <span className="text-sm font-bold text-foreground">Admin User</span>
+            <span className="text-sm font-bold text-foreground">{session?.user?.name || 'Admin User'}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-sm font-medium text-muted-foreground">Email:</span>
-            <span className="text-sm font-bold text-foreground">admin@genz.com</span>
+            <span className="text-sm font-bold text-foreground">{session?.user?.email || 'admin@genz.com'}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-sm font-medium text-muted-foreground">Role:</span>
-            <span className="text-sm font-bold text-primary">ADMIN</span>
+            <span className="text-sm font-bold text-primary">{(session?.user as any)?.role || 'ADMIN'}</span>
           </div>
         </div>
       </Card>

@@ -6,7 +6,7 @@ Modern, feature-rich Point of Sale system built for restaurants with Next.js 14,
 
 **Live URL:** https://pos.gen-z.online  
 **Status:** 🟢 Fully Operational  
-**Last Updated:** June 21, 2026
+**Last Updated:** June 29, 2026
 
 ---
 
@@ -20,9 +20,13 @@ Modern, feature-rich Point of Sale system built for restaurants with Next.js 14,
 - Email: `admin@genz.com`
 - Password: `admin123`
 
-**Staff Credentials:**
+**Production Credentials:**
+- Email: `business.genzresturant@gmail.com`
+- Password: `Admin@123`
+
+**Demo Staff Credentials:**
 - Email: `staff@genz.com`
-- Password: `staff123`
+- Password: `Staff@123`
 
 ---
 

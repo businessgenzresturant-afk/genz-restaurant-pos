@@ -1,52 +1,55 @@
-const puppeteer = require('puppeteer');
-const fs = require('fs');
+// Test login directly with database
+const { PrismaClient } = require('@prisma/client');
+const bcrypt = require('bcryptjs');
 
-(async () => {
-  console.log('🚀 Starting browser automation test...');
-  const browser = await puppeteer.launch({ headless: 'new' });
-  const page = await browser.newPage();
+const prisma = new PrismaClient();
+
+async function testLogin() {
+  console.log('🧪 Testing Login...\n');
   
-  try {
-    console.log('🌐 Navigating to http://localhost:3000/login...');
-    let res = await page.goto('http://localhost:3000/login', { waitUntil: 'networkidle0' }).catch(() => null);
-    if (!res || !res.ok()) {
-        console.log('Trying 3001...');
-        res = await page.goto('http://localhost:3001/login', { waitUntil: 'networkidle0' }).catch(() => null);
-    }
-    
-    console.log('✅ Page loaded. Waiting for body...');
-    await page.waitForSelector('body', { timeout: 5000 });
-    
-    console.log('⌨️ Typing credentials...');
-    await page.type('#email', 'admin@genz.com');
-    await page.type('#password', 'admin123');
-    
-    console.log('🖱️ Clicking submit button...');
-    await page.click('button[type="submit"]');
-    
-    console.log('⏳ Waiting 3 seconds for response...');
-    await new Promise(r => setTimeout(r, 3000));
-    
-    const currentUrl = page.url();
-    console.log(`📍 Current URL after login: ${currentUrl}`);
-    
-    // Check for error text
-    const errorText = await page.evaluate(() => document.body.innerText);
-    if (errorText.includes('Invalid credentials')) {
-        console.log('❌ Error found on page: Invalid credentials');
-        await page.screenshot({ path: 'login-failed.png' });
-        console.log('📸 Saved screenshot of failure to login-failed.png');
-    } else if (currentUrl.includes('/dashboard') || currentUrl.endsWith('/')) {
-        console.log('🎉 SUCCESS: Successfully logged into the dashboard via browser automation!');
-        await page.screenshot({ path: 'login-success.png' });
-        console.log('📸 Saved screenshot of success to login-success.png');
-    } else {
-        console.log('❌ Unknown state. Taking screenshot anyway.');
-        await page.screenshot({ path: 'login-unknown.png' });
-    }
-  } catch (err) {
-    console.error('❌ Test failed with error:', err.message);
-  } finally {
-    await browser.close();
+  const email = 'business.genzresturant@gmail.com';
+  const password = 'Admin@123';
+  
+  console.log('1. Fetching user from database...');
+  const user = await prisma.user.findUnique({ 
+    where: { email } 
+  });
+  
+  if (!user) {
+    console.log('❌ User not found!');
+    return;
   }
-})();
+  
+  console.log('✅ User found:', {
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    passwordLength: user.password.length
+  });
+  
+  console.log('\n2. Testing password...');
+  const isValid = await bcrypt.compare(password, user.password);
+  
+  if (isValid) {
+    console.log('✅ Password is CORRECT!');
+    console.log('\n✅ Login should work!');
+    console.log('\n📝 Use these credentials:');
+    console.log(`   Email: ${email}`);
+    console.log(`   Password: ${password}`);
+  } else {
+    console.log('❌ Password is WRONG!');
+    console.log('\n🔧 Fixing password...');
+    
+    const newHash = await bcrypt.hash(password, 10);
+    await prisma.user.update({
+      where: { email },
+      data: { password: newHash }
+    });
+    
+    console.log('✅ Password fixed! Try again.');
+  }
+  
+  await prisma.$disconnect();
+}
+
+testLogin().catch(console.error);
