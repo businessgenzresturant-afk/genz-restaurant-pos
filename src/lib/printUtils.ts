@@ -48,14 +48,14 @@ export const printReceipt = (bill: any, type: 'receipt' | 'kot' = 'receipt') => 
             padding: 4mm 2mm;
           }
           .kot-header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 5px; margin-bottom: 5px; }
-          .kot-title { font-size: 28px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
-          .info-row { display: flex; justify-content: space-between; font-size: 16px; margin-bottom: 4px; font-weight: bold; }
-          .items-header { border-bottom: 2px solid #000; padding-bottom: 4px; margin-bottom: 6px; margin-top: 10px; font-size: 16px; font-weight: bold; display: flex; justify-content: space-between; text-transform: uppercase; }
-          .item-row { font-size: 20px; font-weight: 900; display: flex; justify-content: space-between; margin-bottom: 6px; align-items: flex-start; line-height: 1.2; }
+          .kot-title { font-size: 32px; font-weight: normal; letter-spacing: 1px; text-transform: uppercase; }
+          .info-row { display: flex; justify-content: space-between; font-size: 20px; margin-bottom: 4px; font-weight: normal; }
+          .items-header { border-bottom: 2px solid #000; padding-bottom: 4px; margin-bottom: 6px; margin-top: 10px; font-size: 20px; font-weight: normal; display: flex; justify-content: space-between; text-transform: uppercase; }
+          .item-row { font-size: 24px; font-weight: normal; display: flex; justify-content: space-between; margin-bottom: 6px; align-items: flex-start; line-height: 1.2; }
           .item-name { flex: 1; padding-right: 8px; }
-          .item-qty { font-size: 22px; white-space: nowrap; }
-          .item-special { font-size: 15px; color: #000; font-weight: bold; font-style: italic; margin-left: 10px; margin-bottom: 8px; border-left: 2px solid #000; padding-left: 5px; }
-          .footer { text-align: center; border-top: 2px dashed #000; margin-top: 12px; padding-top: 8px; font-size: 12px; font-weight: bold; }
+          .item-qty { font-size: 24px; white-space: nowrap; }
+          .item-special { font-size: 18px; color: #000; font-weight: normal; font-style: italic; margin-left: 10px; margin-bottom: 8px; border-left: 2px solid #000; padding-left: 5px; }
+          .footer { text-align: center; border-top: 2px dashed #000; margin-top: 12px; padding-top: 8px; font-size: 16px; font-weight: normal; }
         </style>
       </head>
       <body>
@@ -108,41 +108,162 @@ export const printReceipt = (bill: any, type: 'receipt' | 'kot' = 'receipt') => 
           @page { margin: 0; size: 80mm auto; }
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body { 
-            font-family: monospace; 
-            font-size: 15px; 
-            line-height: 1.3; 
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+            font-size: 20px; 
+            line-height: 1.4; 
             color: #000; 
             background: #fff; 
-            width: 100%; 
-            max-width: 78mm;
+            width: 76mm; /* Standard 80mm thermal roll */
             margin: 0 auto;
             padding: 4mm 2mm;
+            position: relative;
           }
           
-          .text-center { text-align: center; }
-          .text-right { text-align: right; }
-          .font-bold { font-weight: bold; }
-          .font-black { font-weight: 900; }
-          .uppercase { text-transform: uppercase; }
+          /* Watermark */
+          .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            opacity: 0.15;
+            z-index: 0;
+            pointer-events: none;
+            display: flex;
+            justify-content: center;
+          }
+          .watermark img {
+            width: 100%;
+            filter: grayscale(100%);
+          }
           
-          .divider { border-top: 2px solid #000; margin: 6px 0; }
-          .divider-thin { border-top: 1px solid #000; margin: 4px 0; }
+          .receipt-content { position: relative; z-index: 1; }
           
-          .receipt-header { margin-bottom: 4px; }
-          .invoice-title { font-size: 14px; font-weight: bold; }
-          .restaurant-name { font-size: 22px; font-weight: 900; margin-top: 2px; }
-          .restaurant-info { font-size: 14px; font-weight: bold; line-height: 1.4; margin-top: 2px;}
+          .receipt-header { 
+            text-align: center; 
+            margin-bottom: 12px; 
+            border-bottom: 2px dashed #000; 
+            padding-bottom: 12px; 
+          }
+          .restaurant-logo {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: center;
+          }
+          .restaurant-logo img {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+            filter: grayscale(100%);
+          }
+          .restaurant-name { 
+            font-size: 28px; 
+            font-weight: normal; 
+            text-transform: uppercase; 
+            margin-bottom: 4px; 
+          }
+          .restaurant-info { 
+            font-size: 18px; 
+            line-height: 1.5;
+            font-weight: normal; 
+          }
           
-          .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; font-weight: bold; font-size: 14px; }
+          .bill-info { 
+            border-bottom: 2px dashed #000; 
+            padding-bottom: 8px; 
+            margin-bottom: 8px; 
+            font-size: 18px; 
+          }
+          .info-row { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 3px; 
+          }
+          .info-label { font-weight: normal; }
           
-          .items-table { width: 100%; margin-top: 4px; }
-          .table-header { display: grid; grid-template-columns: 3.5fr 1fr 1.5fr 1.5fr; font-weight: bold; font-size: 14px; }
-          .item-row { display: grid; grid-template-columns: 3.5fr 1fr 1.5fr 1.5fr; font-weight: bold; font-size: 14px; align-items: start; margin-bottom: 4px;}
-          .item-name { word-wrap: break-word; }
-          .item-special { font-size: 12px; font-style: italic; margin-left: 12px; margin-bottom: 4px; }
+          .items-section { 
+            border-bottom: 2px dashed #000; 
+            padding-bottom: 8px; 
+            margin-bottom: 8px; 
+          }
+          .items-header { 
+            display: flex; 
+            justify-content: space-between; 
+            font-weight: normal; 
+            border-bottom: 2px solid #000; 
+            padding-bottom: 4px; 
+            margin-bottom: 6px; 
+            font-size: 20px; 
+            text-transform: uppercase; 
+          }
+          .item-row { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 4px; 
+            font-size: 20px; 
+            font-weight: normal;
+            align-items: flex-start;
+          }
+          .item-name { 
+            flex: 1; 
+            padding-right: 5px;
+            word-wrap: break-word;
+          }
+          .item-price { 
+            white-space: nowrap;
+            text-align: right; 
+          }
+          .item-special { 
+            color: #000; 
+            font-size: 18px; 
+            margin-top: 1px;
+            margin-bottom: 4px; 
+            font-style: italic;
+          }
           
-          .summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; font-weight: bold; font-size: 14px; margin: 4px 0; }
-          .grand-total { display: flex; justify-content: space-between; font-weight: 900; font-size: 18px; margin: 4px 0; }
+          .totals-section { 
+            padding-bottom: 8px; 
+            margin-bottom: 8px; 
+            font-size: 20px; 
+            font-weight: normal;
+          }
+          .total-row { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 4px; 
+          }
+          .total-final { 
+            font-size: 26px;
+            font-weight: normal; 
+            border-top: 2px solid #000; 
+            border-bottom: 2px solid #000; 
+            padding: 6px 0; 
+            margin-top: 6px; 
+          }
+          
+          .payment-status { 
+            text-align: center; 
+            font-weight: normal; 
+            font-size: 24px; 
+            padding: 8px; 
+            border: 2px dashed #000; 
+            margin: 12px 0; 
+            text-transform: uppercase; 
+          }
+          
+          .footer { 
+            text-align: center; 
+            border-top: 2px dashed #000; 
+            padding-top: 12px; 
+            margin-top: 12px; 
+            font-size: 14px;
+            font-weight: bold; 
+          }
+          .footer-message { 
+            font-size: 16px;
+            font-weight: 900; 
+            margin-bottom: 4px; 
+          }
           
           @media print { 
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -150,131 +271,128 @@ export const printReceipt = (bill: any, type: 'receipt' | 'kot' = 'receipt') => 
         </style>
       </head>
       <body>
-        <div class="receipt-header text-center">
-          <div class="invoice-title uppercase">RETAIL INVOICE</div>
-          <div class="restaurant-name uppercase">Gen-Z Restaurant</div>
-          <div class="restaurant-info">
-            <div>123 Main Street, New Delhi-110001</div>
-            <div>GST: 07AABCG1234A1Z5</div>
-            <div>Tel: +91 98765 43210</div>
-          </div>
+        <div class="watermark">
+          <img src="/images/Gen-z-logo.jpg" alt="Watermark" />
         </div>
-
-        <div class="divider"></div>
-
-        <div class="font-bold" style="font-size: 14px;">
-          Name: ${bill.order?.customerName || bill.customerName || 'Walk-in'}
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="grid-2">
-          <div>Date: ${new Date(orderTime).toLocaleDateString('en-GB', {day: '2-digit', month: '2-digit', year: '2-digit'})} ${new Date(orderTime).toLocaleTimeString('en-GB', {hour: '2-digit', minute:'2-digit'})}</div>
-          <div>${bill.order?.table || bill.table ? `Dine In: ${bill.order?.table?.number || bill.table?.number}` : 'Takeaway'}</div>
-          <div>Cashier: admin</div>
-          <div>Bill No.: ${(bill.id || '').slice(-6).toUpperCase()}</div>
-          ${bill.order?.id ? `<div>Token No.: ${bill.order.id.slice(-3).toUpperCase()}</div>` : ''}
-        </div>
-
-        <div class="divider"></div>
-
-        <div class="items-table">
-          <div class="table-header">
-            <span>No.Item</span>
-            <span class="text-center">Qty.</span>
-            <span class="text-right">Price</span>
-            <span class="text-right">Amou</span>
-          </div>
-          
-          <div class="divider"></div>
-
-          ${mergedItems.map((item: any, idx: number) => `
-            <div class="item-row">
-               <span class="item-name">${idx + 1} ${item.menuItem?.name || item.name || 'Item'}</span>
-               <span class="text-center">${item.quantity}</span>
-               <span class="text-right">${(item.menuItem?.price || item.price || 0).toFixed(2)}</span>
-               <span class="text-right">${(item.quantity * (item.menuItem?.price || item.price || 0)).toFixed(2)}</span>
+        <div class="receipt-content">
+          <div class="receipt-header">
+            <div class="restaurant-logo">
+              <img src="/images/Gen-z-logo.jpg" alt="Gen-Z Logo" />
             </div>
-            ${item.cleanInstr ? `<div class="item-special">Note: ${item.cleanInstr}</div>` : ''}
-          `).join('')}
-        </div>
+            <div class="restaurant-name">Gen-Z Restaurant</div>
+            <div class="restaurant-info">
+              <div>123 Main Street, New Delhi</div>
+              <div>GST: 07AABCG1234A1Z5</div>
+              <div>Tel: +91 98765 43210</div>
+            </div>
+          </div>
 
-        <div class="divider"></div>
+          <div class="bill-info">
+            <div class="info-row">
+              <span class="info-label">Bill #:</span>
+              <span>${(bill.id || '').slice(-8).toUpperCase()}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Date:</span>
+              <span>${new Date(orderTime).toLocaleString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+            </div>
+            ${bill.order?.table || bill.table ? `
+            <div class="info-row">
+              <span class="info-label">Table:</span>
+              <span>T-${bill.order?.table?.number || bill.table?.number || '?'}</span>
+            </div>
+            ` : ''}
+            <div class="info-row">
+              <span class="info-label">Customer:</span>
+              <span>${bill.order?.customerName || bill.customerName || 'Walk-in'}</span>
+            </div>
+            ${bill.order?.customerPhone || bill.customerPhone ? `
+            <div class="info-row">
+              <span class="info-label">Phone:</span>
+              <span>${bill.order?.customerPhone || bill.customerPhone}</span>
+            </div>
+            ` : ''}
+          </div>
 
-        <div class="summary-grid">
-          <span>Total Qty: ${mergedItems.reduce((acc: number, item: any) => acc + item.quantity, 0)}</span>
-          <span class="text-right">Sub Total</span>
-          <span class="text-right">${(bill.subtotal || 0).toFixed(2)}</span>
-        </div>
-        
-        ${bill.serviceChargeApplied && bill.serviceChargeAmount ? `
-        <div class="summary-grid" style="margin-top:0;">
-          <span></span>
-          <span class="text-right">Service (10%)</span>
-          <span class="text-right">${bill.serviceChargeAmount.toFixed(2)}</span>
-        </div>
-        ` : ''}
-        
-        ${bill.gstApplied !== false && bill.tax ? `
-        <div class="summary-grid" style="margin-top:0;">
-          <span></span>
-          <span class="text-right">CGST (9%)</span>
-          <span class="text-right">${(bill.tax / 2).toFixed(2)}</span>
-        </div>
-        <div class="summary-grid" style="margin-top:0;">
-          <span></span>
-          <span class="text-right">SGST (9%)</span>
-          <span class="text-right">${(bill.tax / 2).toFixed(2)}</span>
-        </div>
-        ` : ''}
-        
-        ${bill.discountPercent > 0 ? `
-        <div class="summary-grid" style="margin-top:0;">
-          <span></span>
-          <span class="text-right">Discount</span>
-          <span class="text-right">-${((bill.subtotal * bill.discountPercent) / 100).toFixed(2)}</span>
-        </div>
-        ` : ''}
-        
-        ${bill.pointsRedeemed > 0 ? `
-        <div class="summary-grid" style="margin-top:0;">
-          <span></span>
-          <span class="text-right">Points</span>
-          <span class="text-right">-${bill.pointsRedeemed.toFixed(2)}</span>
-        </div>
-        ` : ''}
+          <div class="items-section">
+            <div class="items-header">
+              <span>Item</span>
+              <span>Amount</span>
+            </div>
+            ${mergedItems.map((item: any) => `
+              <div>
+                <div class="item-row">
+                  <span class="item-name">${item.quantity}x ${item.menuItem?.name || item.name || 'Unknown Item'}</span>
+                  <span class="item-price">₹${(item.quantity * (item.menuItem?.price || item.price || 0)).toFixed(2)}</span>
+                </div>
+                ${item.cleanInstr ? `<div class="item-special">Note: ${item.cleanInstr}</div>` : ''}
+              </div>
+            `).join('')}
+          </div>
 
-        <div class="divider"></div>
+          <div class="totals-section">
+            <div class="total-row">
+              <span>Subtotal:</span>
+              <span>₹${(bill.subtotal || 0).toFixed(2)}</span>
+            </div>
+            ${bill.serviceChargeApplied && bill.serviceChargeAmount ? `
+            <div class="total-row">
+              <span>Service (10%):</span>
+              <span>₹${bill.serviceChargeAmount.toFixed(2)}</span>
+            </div>
+            ` : ''}
+            ${bill.gstApplied !== false && bill.tax ? `
+            <div class="total-row">
+              <span>CGST (9%):</span>
+              <span>₹${(bill.tax / 2).toFixed(2)}</span>
+            </div>
+            <div class="total-row">
+              <span>SGST (9%):</span>
+              <span>₹${(bill.tax / 2).toFixed(2)}</span>
+            </div>
+            ` : ''}
+            ${bill.discountPercent > 0 ? `
+            <div class="total-row">
+              <span>Discount (${bill.discountPercent}%):</span>
+              <span>-₹${((bill.subtotal * bill.discountPercent) / 100).toFixed(2)}</span>
+            </div>
+            ` : ''}
+            ${bill.pointsRedeemed > 0 ? `
+            <div class="total-row">
+              <span>Points:</span>
+              <span>-₹${bill.pointsRedeemed.toFixed(2)}</span>
+            </div>
+            ` : ''}
+            <div class="total-row total-final">
+              <span>TOTAL:</span>
+              <span>₹${(bill.total || 0).toFixed(2)}</span>
+            </div>
+          </div>
 
-        <div class="grand-total">
-          <span>Grand Total</span>
-          <span>₹ ${(bill.total || 0).toFixed(2)}</span>
-        </div>
-        
-        <div class="divider"></div>
+          ${bill.status === 'PAID' ? `
+          <div class="payment-status">
+            ✓ PAID - ${bill.paymentMethod || 'CASH'}
+          </div>
+          ` : ''}
 
-        <div class="text-center font-bold" style="font-size: 16px; margin-top: 8px;">
-          Thanks for ordering
-        </div>
-        
-        ${bill.status === 'PAID' ? `
-        <div class="text-center font-bold" style="font-size: 14px; margin-top: 8px;">
-          ✓ PAID - ${bill.paymentMethod || 'CASH'}
-        </div>
-        ` : ''}
+          ${bill.paymentMethod === 'SPLIT' ? `
+          <div class="totals-section">
+            <div class="total-row">
+              <span>Cash:</span>
+              <span>₹${(bill.cashAmount || 0).toFixed(2)}</span>
+            </div>
+            <div class="total-row">
+              <span>Online:</span>
+              <span>₹${(bill.onlineAmount || 0).toFixed(2)}</span>
+            </div>
+          </div>
+          ` : ''}
 
-        ${bill.paymentMethod === 'SPLIT' ? `
-        <div class="summary-grid" style="margin-top:8px;">
-          <span></span>
-          <span class="text-right">Cash:</span>
-          <span class="text-right">${(bill.cashAmount || 0).toFixed(2)}</span>
+          <div class="footer">
+            <div class="footer-message">Thank you for dining! 💚</div>
+            <div>Visit again soon!</div>
+          </div>
         </div>
-        <div class="summary-grid" style="margin-top:0;">
-          <span></span>
-          <span class="text-right">Online:</span>
-          <span class="text-right">${(bill.onlineAmount || 0).toFixed(2)}</span>
-        </div>
-        ` : ''}
       </body>
       </html>
     `;
