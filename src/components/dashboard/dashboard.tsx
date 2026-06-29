@@ -197,10 +197,21 @@ export function Dashboard() {
 
   useEffect(() => {
     fetchData();
-    // Reduced polling frequency to minimize database connections
-    // 15 seconds provides adequate real-time updates while preventing connection exhaustion
-    const interval = setInterval(fetchData, 15000); // 15 seconds (was 5s - reduced by 67%)
-    return () => clearInterval(interval);
+    // Poll every 5 seconds for near-realtime updates
+    const interval = setInterval(fetchData, 5000);
+    
+    // Also refetch when the tab becomes visible (e.g., user switches back from kitchen screen)
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        fetchData();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, [fetchData]);
 
   // Removed dashboard click sound preloading

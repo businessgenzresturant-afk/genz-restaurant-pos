@@ -37,25 +37,25 @@ export const printReceipt = (bill: any, type: 'receipt' | 'kot' = 'receipt') => 
         <title>KOT - ${bill.id?.slice(-8).toUpperCase() || 'NEW'}</title>
         <base href="${window.location.origin}">
         <style>
-          @page { margin: 0; }
+          @page { margin: 0; size: 80mm auto; }
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body { 
-            font-family: Arial, sans-serif; 
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
             color: #000; 
             background: #fff; 
-            width: 100%;
-            margin: 0;
-            padding: 2mm;
+            width: 76mm; /* Standard 80mm roll printable area */
+            margin: 0 auto;
+            padding: 4mm 2mm;
           }
           .kot-header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 5px; margin-bottom: 5px; }
-          .kot-title { font-size: 24px; font-weight: bold; }
-          .info-row { display: flex; justify-content: space-between; font-size: 16px; margin-bottom: 3px; font-weight: bold; }
-          .items-header { border-bottom: 1px solid #000; padding-bottom: 3px; margin-bottom: 3px; font-size: 14px; font-weight: bold; display: flex; justify-content: space-between; }
-          .item-row { font-size: 18px; font-weight: bold; display: flex; justify-content: space-between; margin-bottom: 5px; }
-          .item-name { flex: 1; padding-right: 5px; }
-          .item-qty { font-size: 20px; white-space: nowrap; }
-          .item-special { font-size: 14px; color: #333; font-style: italic; margin-left: 10px; margin-bottom: 5px; }
-          .footer { text-align: center; border-top: 2px dashed #000; margin-top: 10px; padding-top: 5px; font-size: 12px; }
+          .kot-title { font-size: 28px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+          .info-row { display: flex; justify-content: space-between; font-size: 16px; margin-bottom: 4px; font-weight: bold; }
+          .items-header { border-bottom: 2px solid #000; padding-bottom: 4px; margin-bottom: 6px; margin-top: 10px; font-size: 16px; font-weight: bold; display: flex; justify-content: space-between; text-transform: uppercase; }
+          .item-row { font-size: 20px; font-weight: 900; display: flex; justify-content: space-between; margin-bottom: 6px; align-items: flex-start; line-height: 1.2; }
+          .item-name { flex: 1; padding-right: 8px; }
+          .item-qty { font-size: 22px; white-space: nowrap; }
+          .item-special { font-size: 15px; color: #000; font-weight: bold; font-style: italic; margin-left: 10px; margin-bottom: 8px; border-left: 2px solid #000; padding-left: 5px; }
+          .footer { text-align: center; border-top: 2px dashed #000; margin-top: 12px; padding-top: 8px; font-size: 12px; font-weight: bold; }
         </style>
       </head>
       <body>
@@ -105,164 +105,180 @@ export const printReceipt = (bill: any, type: 'receipt' | 'kot' = 'receipt') => 
         <title>Receipt - ${(bill.id || '').slice(-8).toUpperCase()}</title>
         <base href="${window.location.origin}">
         <style>
-          @page { margin: 0; }
+          @page { margin: 0; size: 80mm auto; }
           * { margin: 0; padding: 0; box-sizing: border-box; }
           body { 
-            font-family: Arial, sans-serif; 
-            font-size: 14px; 
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+            font-size: 15px; 
             line-height: 1.4; 
             color: #000; 
             background: #fff; 
-            width: 100%;
-            margin: 0;
-            padding: 2mm;
+            width: 76mm; /* Standard 80mm thermal roll */
+            margin: 0 auto;
+            padding: 4mm 2mm;
             position: relative;
           }
           
           /* Watermark */
-          body::before {
-            content: '';
-            position: absolute;
+          .watermark {
+            position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 80%;
-            height: 80%;
-            background-image: url('/images/Gen-z-logo.jpg');
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: contain;
-            opacity: 0.08;
+            width: 60%;
+            opacity: 0.15;
             z-index: 0;
             pointer-events: none;
+            display: flex;
+            justify-content: center;
+          }
+          .watermark img {
+            width: 100%;
+            filter: grayscale(100%);
           }
           
           .receipt-content { position: relative; z-index: 1; }
           
           .receipt-header { 
             text-align: center; 
-            margin-bottom: 10px; 
-            border-bottom: 1px dashed #000; 
-            padding-bottom: 10px; 
+            margin-bottom: 12px; 
+            border-bottom: 2px dashed #000; 
+            padding-bottom: 12px; 
+          }
+          .restaurant-logo {
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: center;
+          }
+          .restaurant-logo img {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+            filter: grayscale(100%);
           }
           .restaurant-name { 
-            font-size: 22px; 
-            font-weight: bold; 
+            font-size: 24px; 
+            font-weight: 900; 
             text-transform: uppercase; 
             margin-bottom: 4px; 
           }
           .restaurant-info { 
-            font-size: 13px; 
-            line-height: 1.4; 
+            font-size: 14px; 
+            line-height: 1.5;
+            font-weight: 600; 
           }
           
           .bill-info { 
-            border-bottom: 1px dashed #000; 
-            padding-bottom: 5px; 
-            margin-bottom: 5px; 
-            font-size: 13px; 
+            border-bottom: 2px dashed #000; 
+            padding-bottom: 8px; 
+            margin-bottom: 8px; 
+            font-size: 14px; 
           }
           .info-row { 
             display: flex; 
             justify-content: space-between; 
-            margin-bottom: 2px; 
+            margin-bottom: 3px; 
           }
           .info-label { font-weight: bold; }
           
           .items-section { 
-            border-bottom: 1px dashed #000; 
-            padding-bottom: 5px; 
-            margin-bottom: 5px; 
+            border-bottom: 2px dashed #000; 
+            padding-bottom: 8px; 
+            margin-bottom: 8px; 
           }
           .items-header { 
             display: flex; 
             justify-content: space-between; 
-            font-weight: bold; 
-            border-bottom: 1px solid #000; 
-            padding-bottom: 3px; 
-            margin-bottom: 4px; 
-            font-size: 14px; 
+            font-weight: 900; 
+            border-bottom: 2px solid #000; 
+            padding-bottom: 4px; 
+            margin-bottom: 6px; 
+            font-size: 15px; 
             text-transform: uppercase; 
           }
           .item-row { 
             display: flex; 
             justify-content: space-between; 
-            margin-bottom: 3px; 
-            font-size: 14px; 
+            margin-bottom: 4px; 
+            font-size: 15px; 
+            font-weight: bold;
             align-items: flex-start;
           }
           .item-name { 
             flex: 1; 
-            font-weight: 600; 
             padding-right: 5px;
             word-wrap: break-word;
           }
           .item-price { 
-            font-weight: bold; 
             white-space: nowrap;
             text-align: right; 
           }
           .item-special { 
-            color: #444; 
-            font-size: 12px; 
+            color: #000; 
+            font-size: 13px; 
             margin-top: 1px;
-            margin-bottom: 3px; 
+            margin-bottom: 4px; 
             font-style: italic;
           }
           
           .totals-section { 
-            padding-bottom: 5px; 
-            margin-bottom: 5px; 
-            font-size: 14px; 
+            padding-bottom: 8px; 
+            margin-bottom: 8px; 
+            font-size: 15px; 
+            font-weight: bold;
           }
           .total-row { 
             display: flex; 
             justify-content: space-between; 
-            margin-bottom: 3px; 
+            margin-bottom: 4px; 
           }
           .total-final { 
-            font-size: 18px;
-            font-weight: bold; 
-            border-top: 1px solid #000; 
-            border-bottom: 1px solid #000; 
-            padding: 4px 0; 
-            margin-top: 4px; 
+            font-size: 20px;
+            font-weight: 900; 
+            border-top: 2px solid #000; 
+            border-bottom: 2px solid #000; 
+            padding: 6px 0; 
+            margin-top: 6px; 
           }
           
           .payment-status { 
             text-align: center; 
-            font-weight: bold; 
-            font-size: 16px; 
-            padding: 6px; 
-            border: 1px dashed #000; 
-            margin: 8px 0; 
+            font-weight: 900; 
+            font-size: 18px; 
+            padding: 8px; 
+            border: 2px dashed #000; 
+            margin: 12px 0; 
             text-transform: uppercase; 
           }
           
           .footer { 
             text-align: center; 
-            border-top: 1px dashed #000; 
-            padding-top: 8px; 
-            margin-top: 8px; 
-            font-size: 13px; 
+            border-top: 2px dashed #000; 
+            padding-top: 12px; 
+            margin-top: 12px; 
+            font-size: 14px;
+            font-weight: bold; 
           }
           .footer-message { 
-            font-weight: bold; 
-            margin-bottom: 3px; 
-            font-size: 14px;
+            font-size: 16px;
+            font-weight: 900; 
+            margin-bottom: 4px; 
           }
           
           @media print { 
-            body::before { 
-              print-color-adjust: exact; 
-              -webkit-print-color-adjust: exact; 
-            }
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           }
         </style>
       </head>
       <body>
+        <div class="watermark">
+          <img src="/images/Gen-z-logo.jpg" alt="Watermark" />
+        </div>
         <div class="receipt-content">
           <div class="receipt-header">
+            <div class="restaurant-logo">
+              <img src="/images/Gen-z-logo.jpg" alt="Gen-Z Logo" />
+            </div>
             <div class="restaurant-name">Gen-Z Restaurant</div>
             <div class="restaurant-info">
               <div>123 Main Street, New Delhi</div>

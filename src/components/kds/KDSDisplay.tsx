@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Card } from '@/components/ui/card';
-import { Flame, UtensilsCrossed, ShoppingBag, Bike, Package, Volume2, VolumeX } from 'lucide-react';
+import { Flame, UtensilsCrossed, ShoppingBag, Bike, Package, Volume2, VolumeX, Printer, X, ClipboardList } from 'lucide-react';
 import { toast } from 'sonner';
 
 // Sound notification queue item
@@ -62,6 +62,7 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
   const [soundEnabled, setSoundEnabled] = useState(!autoStart); // Disable sound in TV mode
   const [hasInteracted, setHasInteracted] = useState(autoStart); // Skip interaction in TV mode
   const [isReconnecting, setIsReconnecting] = useState(false);
+  const [selectedOrderSummary, setSelectedOrderSummary] = useState<any | null>(null);
   // 🔧 BUG-07 FIX: Use ref instead of state for failureCount.
   // useState caused fetchOrders to be recreated on every failure (it was in the dep array),
   // which tore down and restarted the polling interval on EVERY network error.
@@ -677,26 +678,50 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
           </div>
         </div>
         
-        <div className="mt-4 pt-3 border-t border-border flex flex-wrap gap-2 items-center justify-between">
-          <div>
-            {order.status === 'PENDING' ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black bg-amber-500/10 border border-amber-500/20 text-amber-400 uppercase tracking-wider">
-                🍳 Pending
-              </span>
-            ) : order.status === 'PREPARING' ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black bg-orange-500/10 border border-orange-500/20 text-orange-400 uppercase tracking-wider">
-                🍳 Preparing
-              </span>
-            ) : null}
-          </div>
-          
-          {isUrgent && (
-            <div className="flex-1 flex justify-end">
-              <span className="bg-gradient-to-r from-red-600 to-red-500 text-white text-xs font-black px-4 py-2 rounded-xl tracking-widest uppercase shadow-lg shadow-red-500/50 animate-pulse border-2 border-red-400">
-                🔥 URGENT
-              </span>
+        <div className="mt-4 pt-3 border-t border-border space-y-2">
+          <div className="flex flex-wrap gap-2 items-center justify-between">
+            <div>
+              {order.status === 'PENDING' ? (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black bg-amber-500/10 border border-amber-500/20 text-amber-400 uppercase tracking-wider">
+                  🍳 Pending
+                </span>
+              ) : order.status === 'PREPARING' ? (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black bg-orange-500/10 border border-orange-500/20 text-orange-400 uppercase tracking-wider">
+                  🍳 Preparing
+                </span>
+              ) : null}
             </div>
-          )}
+            
+            {isUrgent && (
+              <div className="flex-1 flex justify-end">
+                <span className="bg-gradient-to-r from-red-600 to-red-500 text-white text-xs font-black px-4 py-2 rounded-xl tracking-widest uppercase shadow-lg shadow-red-500/50 animate-pulse border-2 border-red-400">
+                  🔥 URGENT
+                </span>
+              </div>
+            )}
+          </div>
+          {/* KOT Actions Row */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSelectedOrderSummary(order)}
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border border-border bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground transition-all active:scale-[0.97]"
+            >
+              <ClipboardList className="w-3.5 h-3.5" />
+              Details
+            </button>
+            <button
+              onClick={() => {
+                import('@/lib/printUtils').then(({ printReceipt }) => {
+                  printReceipt(order, 'kot');
+                });
+                toast.success('KOT sent to printer!');
+              }}
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 transition-all active:scale-[0.97]"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              Print KOT
+            </button>
+          </div>
         </div>
       </Card>
     );
@@ -752,8 +777,9 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
 
   console.log('[KDS] 🎨 Rendering main KDS display');
   return (
-    <div className="min-h-screen bg-background p-6 overflow-x-hidden font-sans">
-      <div className="flex justify-between items-center mb-8 pb-4 border-b border-border">
+    <>
+      <div className="min-h-screen bg-background p-6 overflow-x-hidden font-sans">
+        <div className="flex justify-between items-center mb-8 pb-4 border-b border-border">
         <h1 className="text-4xl font-black text-foreground tracking-tight">KITCHEN DISPLAY</h1>
         <div className="flex gap-4 items-center">
           {/* Reconnecting Indicator */}
@@ -856,5 +882,74 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
 
       </div>
     </div>
+
+    {/* Order Summary Popup - MUST be inside return wrapper */}
+    {selectedOrderSummary && (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+        onClick={() => setSelectedOrderSummary(null)}
+      >
+        <div
+          className="bg-card border-2 border-border rounded-3xl shadow-2xl w-full max-w-sm p-6 relative"
+          onClick={e => e.stopPropagation()}
+        >
+          <button
+            onClick={() => setSelectedOrderSummary(null)}
+            className="absolute top-4 right-4 p-2 hover:bg-muted rounded-xl transition-colors"
+          >
+            <X className="w-5 h-5 text-muted-foreground" />
+          </button>
+
+          <div className="mb-4">
+            <h2 className="text-2xl font-black text-foreground">
+              {selectedOrderSummary.table ? `Table ${selectedOrderSummary.table.number}` : `#${selectedOrderSummary.id.slice(-6).toUpperCase()}`}
+            </h2>
+            <p className="text-sm text-muted-foreground font-bold mt-1">
+              {selectedOrderSummary.orderType.replace('_', ' ')} &bull; {new Date(selectedOrderSummary.createdAt).toLocaleTimeString()}
+            </p>
+          </div>
+
+          <div className="space-y-2 mb-5 max-h-72 overflow-y-auto">
+            {selectedOrderSummary.items.filter((i: any) => i.status !== 'CANCELLED').map((item: any, idx: number) => (
+              <div key={idx} className="flex items-start justify-between gap-2 p-2 rounded-xl bg-muted/40">
+                <div>
+                  <p className="font-bold text-sm text-foreground">
+                    <span className="text-primary font-black mr-1.5">{item.quantity}×</span>
+                    {item.menuItem?.name || 'Item'}
+                  </p>
+                  {item.portionType && (
+                    <span className="text-xs text-primary/70 font-semibold">{item.portionType}</span>
+                  )}
+                  {item.specialInstructions && (
+                    <p className="text-xs text-muted-foreground mt-0.5">📝 {item.specialInstructions}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex gap-2 border-t border-border pt-4">
+            <span className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-black border uppercase tracking-wider ${
+              selectedOrderSummary.status === 'PENDING' ? 'bg-amber-500/10 border-amber-500/20 text-amber-400' : 'bg-orange-500/10 border-orange-500/20 text-orange-400'
+            }`}>
+              🍳 {selectedOrderSummary.status}
+            </span>
+            <button
+              onClick={() => {
+                import('@/lib/printUtils').then(({ printReceipt }) => {
+                  printReceipt(selectedOrderSummary, 'kot');
+                });
+                toast.success('KOT sent to printer!');
+              }}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-bold text-sm border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 transition-all"
+            >
+              <Printer className="w-4 h-4" />
+              Reprint KOT
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
