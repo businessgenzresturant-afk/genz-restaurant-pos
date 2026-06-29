@@ -14,14 +14,6 @@ export async function GET(request: Request) {
 
   try {
     const user = auth.session.user as any;
-    
-    // Debug logging
-    console.log('[/api/tables] Session user:', {
-      email: user?.email,
-      role: user?.role,
-      restaurantId: user?.restaurantId,
-      hasRestaurantId: !!user?.restaurantId
-    });
 
     // CRITICAL FIX: If restaurantId is missing from session, user needs to re-login
     if (!user?.restaurantId) {
@@ -38,7 +30,6 @@ export async function GET(request: Request) {
       include: { restaurant: true }
     });
     
-    console.log(`[/api/tables] Found ${tables.length} tables for restaurant ${user.restaurantId}`);
     
     return NextResponse.json(tables, {
       headers: {

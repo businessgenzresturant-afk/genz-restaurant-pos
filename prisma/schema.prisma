@@ -43,6 +43,7 @@ model Table {
   @@unique([restaurantId, number])
   @@index([restaurantId])
   @@index([status])
+  @@index([restaurantId, status]) // ⚡ PERFORMANCE: Fast dashboard query
 }
 
 model MenuItem {
@@ -145,6 +146,8 @@ model Bill {
   @@index([customerId])
   @@index([status, createdAt])
   @@index([paidAt])
+  @@index([tableId]) // ⚡ PERFORMANCE: Table bills lookup
+  @@index([orderId, tableId]) // ⚡ PERFORMANCE: Joint lookup
 }
 
 model Customer {

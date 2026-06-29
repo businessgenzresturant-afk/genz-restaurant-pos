@@ -24,7 +24,6 @@ export async function GET(
     // Await params in Next.js 15
     const { token } = await params;
     
-    console.log('🔍 KDS Token Validation - Received token:', token ? `${token.substring(0, 10)}...` : 'NONE');
     
     if (!token) {
       console.error('❌ Token validation failed: No token provided');
@@ -47,8 +46,6 @@ export async function GET(
       const allRestaurants = await prisma.restaurant.findMany({
         select: { id: true, name: true, kdsDisplayToken: true }
       });
-      console.log(`📊 Total restaurants in DB: ${allRestaurants.length}`);
-      console.log(`📊 Restaurants with tokens: ${allRestaurants.filter(r => r.kdsDisplayToken).length}`);
       
       return NextResponse.json(
         { error: 'Invalid token' },
@@ -56,7 +53,6 @@ export async function GET(
       );
     }
 
-    console.log('✅ Token validation successful for restaurant:', restaurant.name, '(', restaurant.id, ')');
 
     return NextResponse.json({
       restaurantId: restaurant.id,

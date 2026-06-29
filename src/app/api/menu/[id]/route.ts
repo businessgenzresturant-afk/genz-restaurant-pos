@@ -136,7 +136,6 @@ export async function DELETE(
       }
     });
 
-    console.log(`✅ Menu item deleted: ${menuItem.name} (${menuItemId})`);
 
     return NextResponse.json({ 
       message: 'Menu item deleted successfully',

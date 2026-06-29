@@ -33,7 +33,6 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    console.log('[Registration] Request received:', { email: body.email, name: body.name });
     
     const { name, email, password, restaurantName, restaurantAddress } = registerSchema.parse(body);
 
@@ -43,7 +42,6 @@ export async function POST(request: Request) {
     });
 
     if (existingUser) {
-      console.log('[Registration] User already exists:', email);
       return NextResponse.json(
         { error: "User with this email already exists" },
         { status: 400 }
@@ -51,24 +49,20 @@ export async function POST(request: Request) {
     }
 
     // Hash password
-    console.log('[Registration] Hashing password...');
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // 🔒 CRITICAL SECURITY FIX: Each registration creates a NEW restaurant
     // This ensures proper multi-tenant isolation - no data leakage between restaurants
-    console.log('[Registration] Creating new restaurant for user...');
     const restaurant = await prisma.restaurant.create({
       data: {
         name: restaurantName || `${name}'s Restaurant`,
         address: restaurantAddress || 'Update your restaurant address in settings',
       },
     });
-    console.log('[Registration] Restaurant created:', restaurant.id);
 
     // 🔒 SECURITY: First user of new restaurant becomes ADMIN automatically
     // This user has full control over their restaurant
     const role = 'ADMIN';
-    console.log('[Registration] Creating ADMIN user for new restaurant...');
 
     // Create user
     const user = await prisma.user.create({
@@ -81,7 +75,6 @@ export async function POST(request: Request) {
       },
     });
 
-    console.log('[Registration] User created successfully:', user.id, user.email, user.role);
 
     // Remove password from response
     const { password: _, ...userWithoutPassword } = user;

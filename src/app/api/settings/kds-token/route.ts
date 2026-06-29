@@ -108,7 +108,6 @@ export async function PUT(request: Request) {
       select: { kdsDisplayToken: true }
     });
 
-    console.log(`✅ KDS Display Token updated to custom value for restaurant ${restaurantId}`);
 
     return NextResponse.json({
       token: restaurant.kdsDisplayToken,

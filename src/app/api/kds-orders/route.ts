@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib/rateLimit';
+import { withTiming } from '@/lib/api-logger';
 
 // Force dynamic route to prevent caching
 export const dynamic = 'force-dynamic';
@@ -12,7 +13,7 @@ export const fetchCache = 'force-no-store';
  * This endpoint is specifically for KDS TV displays that don't have user authentication
  * Access is controlled by restaurantId parameter which is validated server-side via token
  */
-export async function GET(request: Request) {
+export const GET = withTiming(async (request: Request) => {
   const rateLimit = checkRateLimit(request, RateLimitPresets.PUBLIC);
   if (!rateLimit.success) {
     return createRateLimitResponse(rateLimit.resetAt);
@@ -86,4 +87,4 @@ export async function GET(request: Request) {
     console.error('[KDS Orders API] Error fetching orders:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+}, '/api/kds-orders');

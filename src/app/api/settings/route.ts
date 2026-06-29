@@ -123,7 +123,6 @@ export async function PUT(request: Request) {
       },
     });
 
-    console.log(`✅ Settings updated for restaurant ${restaurantId}`);
     return NextResponse.json(restaurant);
   } catch (error) {
     console.error('Error updating settings:', error);

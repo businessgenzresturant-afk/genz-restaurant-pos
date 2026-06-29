@@ -9,7 +9,6 @@ export async function GET() {
     return new NextResponse('Not Found', { status: 404 });
   }
   try {
-    console.log('🌱 Starting production database seed...');
 
     // Check if already seeded
     const existingRestaurant = await prisma.restaurant.findFirst();

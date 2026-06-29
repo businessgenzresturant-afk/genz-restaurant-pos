@@ -2,14 +2,15 @@ import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { checkAuth } from '@/lib/api-auth';
 import { checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib/rateLimit';
+import { withTiming } from '@/lib/api-logger';
 
 export const dynamic = 'force-dynamic';
 
 // PATCH - Cancel an order item (set status to CANCELLED)
-export async function PATCH(
+export const PATCH = withTiming(async (
   request: Request,
   { params }: { params: Promise<{ id: string; itemId: string }> }
-) {
+) => {
   const rateLimit = checkRateLimit(request, RateLimitPresets.API);
   if (!rateLimit.success) {
     return createRateLimitResponse(rateLimit.resetAt);
@@ -125,7 +126,6 @@ export async function PATCH(
             available: true // Make available again if stock restored
           }
         });
-        console.log(`✅ Stock restored for ${itemToCancel.menuItem.name}: ${itemToCancel.menuItem.stockQuantity} → ${restoredStock}`);
       }
 
       // Recalculate order total (sum of ACTIVE items only)
@@ -163,7 +163,6 @@ export async function PATCH(
             where: { id: order.tableId },
             data: { status: 'AVAILABLE' }
           });
-          console.log(`✅ Table auto-cleared: All items cancelled, no other orders`);
         }
       }
 
@@ -173,9 +172,6 @@ export async function PATCH(
     return NextResponse.json(result);
   } catch (error) {
     console.error('Error cancelling order item:', error);
-    return NextResponse.json(
-      { error: 'Failed to cancel order item' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to cancel item' }, { status: 500 });
   }
-}
+}, '/api/orders/[id]/items/[itemId]');

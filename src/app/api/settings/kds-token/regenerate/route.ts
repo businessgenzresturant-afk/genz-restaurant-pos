@@ -30,7 +30,6 @@ export async function POST(request: Request) {
       select: { kdsDisplayToken: true }
     });
 
-    console.log(`🔄 KDS Display Token regenerated for restaurant ${restaurantId}`);
 
     return NextResponse.json({
       token: restaurant.kdsDisplayToken,

@@ -2,11 +2,12 @@ import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { checkAuth } from '@/lib/api-auth';
 import { checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib/rateLimit';
+import { withTiming } from '@/lib/api-logger';
 
-export async function GET(
+export const GET = withTiming(async (
   request: Request,
   { params }: { params: Promise<{ id: string }> }
-) {
+) => {
   const rateLimit = checkRateLimit(request, RateLimitPresets.API);
   if (!rateLimit.success) {
     return createRateLimitResponse(rateLimit.resetAt);
@@ -43,12 +44,12 @@ export async function GET(
     console.error('Error fetching order:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+}, '/api/orders/[id]');
 
-export async function PATCH(
+export const PATCH = withTiming(async (
   request: Request,
   { params }: { params: Promise<{ id: string }> }
-) {
+) => {
   const rateLimit = checkRateLimit(request, RateLimitPresets.API);
   if (!rateLimit.success) {
     return createRateLimitResponse(rateLimit.resetAt);
@@ -123,7 +124,6 @@ export async function PATCH(
             where: { id: order.tableId },
             data: { status: 'RUNNING' }
           });
-          console.log(`✅ [Optimistic] Table ${order.table?.number} set to RUNNING (order served)`);
         }
 
         return NextResponse.json(order);
@@ -158,7 +158,6 @@ export async function PATCH(
           where: { id: updatedOrder.tableId },
           data: { status: 'RUNNING' }
         });
-        console.log(`✅ Table ${updatedOrder.table?.number} set to RUNNING (order served)`);
       }
 
       return updatedOrder;
@@ -169,7 +168,7 @@ export async function PATCH(
     console.error('Error updating order:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+}, '/api/orders/[id]');
 
 export async function DELETE(
   request: Request,

@@ -18,12 +18,12 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [cart, setCart] = useState<{menuItemId: string, quantity: number, specialInstructions: string, portionType?: 'HALF' | 'FULL'}[]>([]);
   const [activeTab, setActiveTab] = useState<'menu' | 'cart'>('menu');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitState, setSubmitState] = useState<'IDLE' | 'SAVING' | 'UPDATING_KITCHEN' | 'DONE'>('IDLE');
 
   React.useEffect(() => {
     if (isOpen) {
       setActiveTab('menu');
-      setIsSubmitting(false); // Reset on open
+      setSubmitState('IDLE'); // Reset on open
       setCart([]); // Clear cart on open to prevent stale or cross-table items
     }
   }, [isOpen]);
@@ -95,15 +95,27 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
   const totalAmount = cart.reduce((sum, item) => sum + (getMenuItemPrice(item.menuItemId, item.portionType) * item.quantity), 0);
 
   const handleSubmit = async () => {
-    if (cart.length > 0 && !isSubmitting) {
-      setIsSubmitting(true);
+    if (cart.length > 0 && submitState === 'IDLE') {
+      setSubmitState('SAVING');
       try {
+        // Create an artificial state transition for better UX visibility
+        let isComplete = false;
+        setTimeout(() => {
+          if (!isComplete) setSubmitState('UPDATING_KITCHEN');
+        }, 400);
+
         await onPlaceOrder(cart);
+        isComplete = true;
+        setSubmitState('DONE');
         setCart([]);
-        // Success - parent handles close
+        
+        setTimeout(() => {
+          setSubmitState('IDLE');
+          // parent handles close via onPlaceOrder completion
+        }, 500);
       } catch (error) {
         console.error('Failed to place order:', error);
-        setIsSubmitting(false);
+        setSubmitState('IDLE');
       }
     }
   };
@@ -358,17 +370,29 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
             </div>
             <Button 
               className="w-full h-14 text-lg font-bold shadow-md shadow-orange-500/20 bg-orange-500 hover:bg-orange-600 active:scale-[0.97] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={cart.length === 0 || isSubmitting}
+              disabled={cart.length === 0 || submitState !== 'IDLE'}
               onClick={handleSubmit}
             >
-              {isSubmitting ? (
-                <>
-                  <div className="w-5 h-5 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Sending...
-                </>
-              ) : (
+              {submitState === 'IDLE' && (
                 <>
                   <Send className="w-5 h-5 mr-2" /> Send to Kitchen
+                </>
+              )}
+              {submitState === 'SAVING' && (
+                <>
+                  <div className="w-5 h-5 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Saving Order...
+                </>
+              )}
+              {submitState === 'UPDATING_KITCHEN' && (
+                <>
+                  <div className="w-5 h-5 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Updating Kitchen...
+                </>
+              )}
+              {submitState === 'DONE' && (
+                <>
+                  ✅ Done
                 </>
               )}
             </Button>

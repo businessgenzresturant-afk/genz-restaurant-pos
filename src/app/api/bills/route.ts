@@ -3,13 +3,14 @@ import { NextResponse } from 'next/server';
 import { checkAuth } from '@/lib/api-auth';
 import { createBillSchema } from '@/lib/validations';
 import { checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib/rateLimit';
+import { withTiming } from '@/lib/api-logger';
 
 // Force dynamic route to prevent caching
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 // GET bills with optional filtering
-export async function GET(request: Request) {
+export const GET = withTiming(async (request: Request) => {
   const rateLimit = checkRateLimit(request, RateLimitPresets.API);
   if (!rateLimit.success) {
     return createRateLimitResponse(rateLimit.resetAt);
@@ -55,10 +56,10 @@ export async function GET(request: Request) {
     console.error('Error fetching bills:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+}, '/api/bills');
 
 // POST create new bill
-export async function POST(request: Request) {
+export const POST = withTiming(async (request: Request) => {
   console.time('⏱️ TOTAL-BILL-GENERATION');
   
   const rateLimit = checkRateLimit(request, RateLimitPresets.API);
@@ -181,7 +182,6 @@ export async function POST(request: Request) {
     // COMPLETED orders already have bills, so reject those
     if (order.status === 'COMPLETED') {
       console.timeEnd('⏱️ TOTAL-BILL-GENERATION');
-      console.warn('[Bill Creation] Order already COMPLETED - orderId:', orderId);
       return NextResponse.json(
         { error: 'This order is already completed. Please refresh the page.' },
         { status: 400 }
@@ -191,7 +191,6 @@ export async function POST(request: Request) {
     // CRITICAL FIX: Check if the main order already has a bill
     if (order.bill !== null && order.bill !== undefined) {
       console.timeEnd('⏱️ TOTAL-BILL-GENERATION');
-      console.warn('[Bill Creation] Order already has bill - orderId:', orderId, 'billId:', order.bill.id);
       return NextResponse.json(
         { error: 'This order already has a bill generated. Bill ID: ' + order.bill.id },
         { status: 400 }
@@ -205,7 +204,6 @@ export async function POST(request: Request) {
         where: { id: orderId },
         data: { status: 'SERVED' }
       });
-      console.log(`[Bill Creation] Auto-marked order ${orderId} as SERVED (was READY)`);
     }
 
     // CRITICAL FIX: Get ALL orders for this table (not billed yet)
@@ -213,7 +211,6 @@ export async function POST(request: Request) {
     let finalTableOrders: any[] = [];
     
     if (order.tableId) {
-      console.log(`[Bill Creation] Table ${order.table?.number}: Filtering unbilled orders from pre-fetched data`);
       
       // ⚡ PERFORMANCE: Filter from already-fetched orders instead of new query
       // CRITICAL FIX: Only include orders that have at least 1 ACTIVE item
@@ -223,17 +220,14 @@ export async function POST(request: Request) {
         // Count active items
         const activeItemCount = o.items.filter((item: any) => item.status === 'ACTIVE').length;
         if (activeItemCount === 0) {
-          console.warn(`[Bill Creation] Skipping order ${o.id} - all items cancelled`);
           return false;
         }
         
         return true;
       });
 
-      console.log(`[Bill Creation] Found ${finalTableOrders.length} unbilled orders with active items for Table ${order.table?.number}`);
       finalTableOrders.forEach((o, idx) => {
         const activeItems = o.items.filter((item: any) => item.status === 'ACTIVE').length;
-        console.log(`  Order ${idx + 1}: ${activeItems} active items (${o.items.length} total), Status: ${o.status}, Amount: ₹${o.totalAmount}`);
       });
     } else {
       // No table (takeaway/delivery), use the already-fetched order with items
@@ -242,7 +236,6 @@ export async function POST(request: Request) {
       if (activeItemCount > 0) {
         finalTableOrders = [order];
       } else {
-        console.warn(`[Bill Creation] Takeaway order ${order.id} has no active items`);
       }
     }
 
@@ -277,7 +270,6 @@ export async function POST(request: Request) {
     // CRITICAL FIX: If subtotal is 0 (all items cancelled), reject bill generation
     if (subtotal <= 0) {
       console.timeEnd('⏱️ TOTAL-BILL-GENERATION');
-      console.warn('[Bill Creation] All items are cancelled, cannot generate bill with ₹0');
       return NextResponse.json(
         { error: 'Cannot generate bill: All items have been cancelled. Please add items or clear the table.' },
         { status: 400 }
@@ -289,11 +281,6 @@ export async function POST(request: Request) {
     const discount = 0;
     const total = subtotal + tax - discount;
 
-    console.log(`[Bill Creation] Creating bill for Table ${order.table?.number || 'Takeaway'}`);
-    console.log(`  Total orders: ${finalTableOrders.length}`);
-    console.log(`  Subtotal: ₹${subtotal}`);
-    console.log(`  Tax: ₹${tax}`);
-    console.log(`  Total: ₹${total}`);
 
     // ⚡ PERFORMANCE OPTIMIZATION: Use batch operations instead of loops
     console.time('⏱️ DB-TRANSACTION');
@@ -352,7 +339,6 @@ export async function POST(request: Request) {
       }
     };
 
-    console.log(`[Bill Creation] ✅ Bill created with ${allItems.length} total items from ${finalTableOrders.length} orders`);
 
     console.timeEnd('⏱️ TOTAL-BILL-GENERATION');
     return NextResponse.json(enhancedBill, { status: 201 });
@@ -364,4 +350,4 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
-}
+}, '/api/bills');

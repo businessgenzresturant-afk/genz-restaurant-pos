@@ -80,7 +80,6 @@ export async function POST(
           where: { id: existingBill.id },
           data: { tableId: newTableId }
         });
-        console.log(`✅ Bill ${existingBill.id} transferred to Table ${newTable.number}`);
       }
 
       // Update new table status to OCCUPIED
@@ -105,14 +104,11 @@ export async function POST(
             where: { id: oldTableId },
             data: { status: 'AVAILABLE' }
           });
-          console.log(`✅ Table ${order.table?.number} marked as AVAILABLE (no remaining orders)`);
         } else {
-          console.log(`ℹ️ Table ${order.table?.number} still has ${remainingOrders} active order(s)`);
         }
       }
     });
 
-    console.log(`✅ Order ${order.id} transferred: Table ${order.table?.number} → Table ${newTable.number}`);
 
     return NextResponse.json({ 
       success: true, 

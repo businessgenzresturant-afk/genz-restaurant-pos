@@ -27,13 +27,6 @@ export async function GET(request: Request) {
     const startDate = startDateStr ? new Date(startDateStr) : new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
     const endDate = endDateStr ? new Date(endDateStr) : new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
     
-    console.log('[Reports API] Date range:', {
-      start: startDate.toISOString(),
-      end: endDate.toISOString(),
-      startStr: startDateStr,
-      endStr: endDateStr
-    });
-    
     // Get completed orders within date range
     const restaurantId = (auth.session.user as any).restaurantId;
     
@@ -75,11 +68,6 @@ export async function GET(request: Request) {
           }
         }
       }
-    });
-
-    console.log('[Reports API] Found bills:', {
-      count: bills.length,
-      total: bills.reduce((sum, b) => sum + b.total, 0)
     });
 
     // Calculate daily sales total from actual collected amounts (bill.total includes GST, discounts, points)

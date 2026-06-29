@@ -3,13 +3,14 @@ import { NextResponse } from 'next/server';
 import { checkAuth } from '@/lib/api-auth';
 import { checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib/rateLimit';
 import { sanitizeSpecialInstructions, sanitizeCustomerInput } from '@/lib/sanitize';
+import { withTiming } from '@/lib/api-logger';
 
 // Force dynamic route to prevent caching
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 export const fetchCache = 'force-no-store';
 
-export async function GET(request: Request) {
+export const GET = withTiming(async (request: Request) => {
   const rateLimit = checkRateLimit(request, RateLimitPresets.API);
   if (!rateLimit.success) {
     return createRateLimitResponse(rateLimit.resetAt);
@@ -67,9 +68,9 @@ export async function GET(request: Request) {
     console.error('Error fetching orders:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-}
+}, '/api/orders');
 
-export async function POST(request: Request) {
+export const POST = withTiming(async (request: Request) => {
   console.time('⏱️ TOTAL-ORDER-CREATION');
   
   const rateLimit = checkRateLimit(request, RateLimitPresets.API);
@@ -266,9 +267,6 @@ export async function POST(request: Request) {
           orderBy: { createdAt: 'desc' }
         }) : null;
 
-        console.log('[Order Creation] Table status:', currentTable?.status);
-        console.log('[Order Creation] Active order found:', !!activeOrder);
-        console.log('[Order Creation] Active order status:', activeOrder?.status);
 
         // 🔧 BUGFIX: Append to ANY active order (PENDING/PREPARING/READY/SERVED) - supports running tables
         // Only create new order if table has NO active order or order is COMPLETED
@@ -423,4 +421,4 @@ export async function POST(request: Request) {
     console.error('Order creation error:', error);
     return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });
   }
-}
+}, '/api/orders');
