@@ -1,0 +1,32 @@
+{
+  "bugs": [
+    {
+      "label": "API /api/settings",
+      "detail": "HTTP 404"
+    }
+  ],
+  "passes": [
+    "Admin Login",
+    "API /api/tables → 200",
+    "API /api/orders → 200",
+    "API /api/menu → 200",
+    "API /api/bills → 200",
+    "API /api/reports → 200",
+    "Reports API returns valid data: [\"dailySalesTotal\",\"ordersCount\",\"topItems\",\"breakdown\",\"dateRange\"]",
+    "Bills page loaded correctly",
+    "Bills page: No error state shown",
+    "KDS shows order cards after interaction",
+    "Tables API: 10 total, 4 occupied, 6 available",
+    "Table T10 status: OCCUPIED",
+    "Orders API: total=108, pending=2, preparing=0, completed=106",
+    "Menu API: 181 items",
+    "Menu item structure valid: name=\"Boondi Raita\", price=60",
+    "KDS Orders API: 2 orders",
+    "Bills API: 99 bills",
+    "Settings page: Restaurant Information section visible",
+    "Settings page: Tax/GST section visible",
+    "Reports page: Content loaded",
+    "Reports: Generate Report clicked successfully",
+    "Orders page: Content loaded"
+  ]
+}

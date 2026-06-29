@@ -11,12 +11,22 @@ model Restaurant {
   id               String     @id @default(dbgenerated("(gen_random_uuid())::text"))
   name             String
   address          String
+  phone            String?
+  gstNumber        String?
+  taxRate          Float      @default(18)
+  currency         String     @default("INR")
+  timeZone         String     @default("Asia/Kolkata")
+  serviceChargeRate Float     @default(0)
+  enableDelivery   Boolean    @default(true)
+  minOrderAmount   Float      @default(300)
+  deliveryCharge   Float      @default(0)
   kdsDisplayToken  String?    @unique
   createdAt        DateTime   @default(now())
   menuItems        MenuItem[]
   tables           Table[]
   users            User[]
 }
+
 
 model Table {
   id           String      @id @default(dbgenerated("(gen_random_uuid())::text"))

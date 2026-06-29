@@ -1,0 +1,691 @@
+{
+  "admin": {
+    "errors": [
+      {
+        "type": "Console Error",
+        "page": "/dashboard",
+        "text": "[Dashboard] Error fetching dashboard data: TypeError: Failed to fetch\n    at https://pos.gen-z.online/_next/static/chunks/app/(pos)/dashboard/page-b088b50054b0d758.js:1:93332\n    at https://pos.gen-z.online/_next/static/chunks/app/(pos)/dashboard/page-b088b50054b0d758.js:1:95058\n    at o1 (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:88952)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104844)\n    at ux (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104728)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104889)\n    at ux (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104728)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104889)\n    at ux (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104728)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104824)"
+      },
+      {
+        "type": "Console Error",
+        "page": "/dashboard",
+        "text": "[Dashboard] Error fetching dashboard data: TypeError: Failed to fetch\n    at https://pos.gen-z.online/_next/static/chunks/app/(pos)/dashboard/page-b088b50054b0d758.js:1:93450\n    at https://pos.gen-z.online/_next/static/chunks/app/(pos)/dashboard/page-b088b50054b0d758.js:1:95058\n    at o1 (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:88952)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104844)\n    at ux (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104728)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104889)\n    at ux (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104728)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104889)\n    at ux (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104728)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104824)"
+      },
+      {
+        "type": "Console Error",
+        "page": "/dashboard",
+        "text": "[Dashboard] Error fetching dashboard data: TypeError: Failed to fetch\n    at https://pos.gen-z.online/_next/static/chunks/app/(pos)/dashboard/page-b088b50054b0d758.js:1:93372\n    at https://pos.gen-z.online/_next/static/chunks/app/(pos)/dashboard/page-b088b50054b0d758.js:1:95058\n    at o1 (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:88952)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104844)\n    at ux (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104728)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104889)\n    at ux (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104728)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104889)\n    at ux (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104728)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104824)"
+      },
+      {
+        "type": "Console Error",
+        "page": "/bills",
+        "text": "Error fetching data: TypeError: Failed to fetch\n    at et (https://pos.gen-z.online/_next/static/chunks/app/(pos)/bills/page-62c7c5e9f41f8730.js:1:20646)\n    at https://pos.gen-z.online/_next/static/chunks/app/(pos)/bills/page-62c7c5e9f41f8730.js:1:20212\n    at o1 (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:88952)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104844)\n    at ux (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104728)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104824)\n    at ux (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104728)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104889)\n    at ux (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104728)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104889)"
+      }
+    ],
+    "network": [
+      {
+        "url": "/api/tables",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "/api/menu",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "/api/reports",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "/_next/image?url=%2Fimages%2FGen-z-logo.jpg&w=48&q=75",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "/api/orders?status=PENDING,PREPARING,READY,SERVED",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "/dashboard?_rsc=MGPQgqK9E9SQEEIL",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "/api/tables",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "/api/reports",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "/api/tables",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "/api/menu",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "/api/orders?status=PENDING,PREPARING,READY,SERVED",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "/api/orders?status=PENDING,PREPARING,READY,SERVED",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "/api/menu",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "/api/orders?status=COMPLETED",
+        "error": "net::ERR_ABORTED"
+      }
+    ],
+    "warnings": [],
+    "console": [
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Starting data fetch..."
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Loading complete"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Starting data fetch..."
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Starting data fetch..."
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Loading complete"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Loading complete"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎬 Component function called - restaurantId: 00000000-0000-0000-0000-000000000001"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 📦 Initializing orders state"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] ℹ️ No cached orders, starting with empty array"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 📦 Initializing loading state"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] ⏳ No cache, loading = true"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🏁 All state initialized - hasInteracted: false loading: true"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎨 Render - hasInteracted: false loading: true orders: 0"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎨 Rendering interaction gate"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] ⏰ Clock useEffect mounted"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🔊 Audio preload useEffect mounted"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🔊 Creating audio elements"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🔊 Audio elements created and loading"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🚀 Main useEffect mounted - starting initial fetch"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🌐 fetchOrders called - restaurantId: 00000000-0000-0000-0000-000000000001"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🌐 Starting fetch to /api/kds-orders?restaurantId=00000000-0000-0000-0000-000000000001&status=PENDING,PREPARING"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 📡 Setting up event listeners"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] ⏲️ Setting up 5-second polling interval for TV"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎬 Component function called - restaurantId: 00000000-0000-0000-0000-000000000001"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🏁 All state initialized - hasInteracted: false loading: true"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎨 Render - hasInteracted: false loading: true orders: 0"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎨 Rendering interaction gate"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎬 Component function called - restaurantId: 00000000-0000-0000-0000-000000000001"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🏁 All state initialized - hasInteracted: false loading: true"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎨 Render - hasInteracted: false loading: true orders: 0"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎨 Rendering interaction gate"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] ✅ Fetch response received - status: 200"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 📄 Parsing JSON response"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] ✅ JSON parsed successfully - type: object isArray: true"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 📦 Final orders count: 1"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] ✅ Valid orders count: 1"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "📊 Initial load - no sound played"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 📝 Updated previousOrdersRef"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 📝 Called setOrders with 1 orders"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 💾 Saved to cache"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🏁 fetchOrders finally - setting loading = false"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎬 Component function called - restaurantId: 00000000-0000-0000-0000-000000000001"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🏁 All state initialized - hasInteracted: false loading: false"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎨 Render - hasInteracted: false loading: false orders: 1"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎨 Rendering interaction gate"
+      }
+    ]
+  },
+  "staff": {
+    "errors": [
+      {
+        "type": "Console Error",
+        "page": "/dashboard",
+        "text": "[Dashboard] Error fetching dashboard data: TypeError: Failed to fetch\n    at https://pos.gen-z.online/_next/static/chunks/app/(pos)/dashboard/page-b088b50054b0d758.js:1:93372\n    at https://pos.gen-z.online/_next/static/chunks/app/(pos)/dashboard/page-b088b50054b0d758.js:1:95058\n    at o1 (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:88952)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104844)\n    at ux (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104728)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104889)\n    at ux (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104728)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104889)\n    at ux (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104728)\n    at uE (https://pos.gen-z.online/_next/static/chunks/4bd1b696-f785427dddbba9fb.js:1:104824)"
+      }
+    ],
+    "network": [
+      {
+        "url": "/api/orders?status=PENDING,PREPARING,READY,SERVED",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "/api/menu",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "/_next/image?url=%2Fimages%2FGen-z-logo.jpg&w=48&q=75",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "/api/tables",
+        "error": "net::ERR_ABORTED"
+      },
+      {
+        "url": "/dashboard?_rsc=MGPQgqK9E9SQEEIL",
+        "error": "net::ERR_ABORTED"
+      }
+    ],
+    "warnings": [],
+    "console": [
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Starting data fetch..."
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Loading complete"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Starting data fetch..."
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] API responses: {tables: 200, orders: 200, reports: skipped (staff), menu: 200}"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Parsed data: {tablesCount: 10, ordersCount: 1, menuCount: 181, revenue: 0}"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Updating state with: {tables: 10, orders: 1, menu: 181}"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] State updated successfully"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Loading complete"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[MenuDrawer] First 3 filtered items: [Object, Object, Object]"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Starting data fetch..."
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] API responses: {tables: 200, orders: 200, reports: skipped (staff), menu: 200}"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Parsed data: {tablesCount: 10, ordersCount: 1, menuCount: 181, revenue: 0}"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Updating state with: {tables: 10, orders: 1, menu: 181}"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] State updated successfully"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Loading complete"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[MenuDrawer] First 3 filtered items: [Object, Object, Object]"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎬 Component function called - restaurantId: 00000000-0000-0000-0000-000000000001"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 📦 Initializing orders state"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] ℹ️ No cached orders, starting with empty array"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 📦 Initializing loading state"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] ⏳ No cache, loading = true"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🏁 All state initialized - hasInteracted: false loading: true"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎨 Render - hasInteracted: false loading: true orders: 0"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎨 Rendering interaction gate"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] ⏰ Clock useEffect mounted"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🔊 Audio preload useEffect mounted"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🔊 Creating audio elements"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🔊 Audio elements created and loading"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🚀 Main useEffect mounted - starting initial fetch"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🌐 fetchOrders called - restaurantId: 00000000-0000-0000-0000-000000000001"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🌐 Starting fetch to /api/kds-orders?restaurantId=00000000-0000-0000-0000-000000000001&status=PENDING,PREPARING"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 📡 Setting up event listeners"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] ⏲️ Setting up 5-second polling interval for TV"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎬 Component function called - restaurantId: 00000000-0000-0000-0000-000000000001"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🏁 All state initialized - hasInteracted: false loading: true"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎨 Render - hasInteracted: false loading: true orders: 0"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎨 Rendering interaction gate"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎬 Component function called - restaurantId: 00000000-0000-0000-0000-000000000001"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🏁 All state initialized - hasInteracted: false loading: true"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎨 Render - hasInteracted: false loading: true orders: 0"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎨 Rendering interaction gate"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] ✅ Fetch response received - status: 200"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 📄 Parsing JSON response"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] ✅ JSON parsed successfully - type: object isArray: true"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 📦 Final orders count: 1"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] ✅ Valid orders count: 1"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "📊 Initial load - no sound played"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 📝 Updated previousOrdersRef"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 📝 Called setOrders with 1 orders"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 💾 Saved to cache"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🏁 fetchOrders finally - setting loading = false"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎬 Component function called - restaurantId: 00000000-0000-0000-0000-000000000001"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🏁 All state initialized - hasInteracted: false loading: false"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎨 Render - hasInteracted: false loading: false orders: 1"
+      },
+      {
+        "type": "Log",
+        "page": "/kds",
+        "text": "[KDS] 🎨 Rendering interaction gate"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Starting data fetch..."
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] API responses: {tables: 200, orders: 200, reports: skipped (staff), menu: 200}"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Parsed data: {tablesCount: 10, ordersCount: 1, menuCount: 181, revenue: 0}"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Updating state with: {tables: 10, orders: 1, menu: 181}"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] State updated successfully"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Loading complete"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[MenuDrawer] First 3 filtered items: [Object, Object, Object]"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Starting data fetch..."
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] API responses: {tables: 200, orders: 200, reports: skipped (staff), menu: 200}"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Parsed data: {tablesCount: 10, ordersCount: 1, menuCount: 181, revenue: 0}"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Updating state with: {tables: 10, orders: 1, menu: 181}"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] State updated successfully"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[Dashboard] Loading complete"
+      },
+      {
+        "type": "Log",
+        "page": "/dashboard",
+        "text": "[MenuDrawer] First 3 filtered items: [Object, Object, Object]"
+      }
+    ]
+  }
+}

@@ -44,29 +44,44 @@ export default function SettingsPage() {
   const [showGST, setShowGST] = useState(true);
   const [printKOTAuto, setPrintKOTAuto] = useState(false);
 
-  // Fetch KDS token on mount
+  // Fetch restaurant settings and KDS token on mount
   useEffect(() => {
-    async function fetchKDSToken() {
+    async function fetchSettings() {
       try {
-        const response = await fetch('/api/settings/kds-token');
-        if (response.ok) {
-          const data = await response.json();
+        const [settingsRes, kdsRes] = await Promise.all([
+          fetch('/api/settings'),
+          fetch('/api/settings/kds-token'),
+        ]);
+
+        if (settingsRes.ok) {
+          const s = await settingsRes.json();
+          if (s.name) setRestaurantName(s.name);
+          if (s.address) setRestaurantAddress(s.address);
+          if (s.phone) setPhoneNumber(s.phone);
+          if (s.gstNumber) setGstNumber(s.gstNumber);
+          if (s.taxRate !== undefined) setTaxRate(String(s.taxRate));
+          if (s.currency) setCurrency(s.currency);
+          if (s.timeZone) setTimeZone(s.timeZone);
+          if (s.minOrderAmount !== undefined) setMinOrderAmount(String(s.minOrderAmount));
+          if (s.deliveryCharge !== undefined) setDeliveryCharge(String(s.deliveryCharge));
+          if (s.enableDelivery !== undefined) setEnableDelivery(s.enableDelivery);
+        }
+
+        if (kdsRes.ok) {
+          const data = await kdsRes.json();
           setKdsToken(data.token);
-          if (data.token) {
-            toast.success('✅ KDS Display Token loaded successfully!');
-          }
         } else {
-          toast.error('Failed to load KDS token');
+          console.error('Failed to load KDS token');
         }
       } catch (error) {
-        console.error('Failed to fetch KDS token:', error);
-        toast.error('Failed to load KDS token');
+        console.error('Failed to fetch settings:', error);
+        toast.error('Failed to load settings');
       }
     }
 
     // Only fetch if user is ADMIN
     if (session?.user && (session.user as any).role === 'ADMIN') {
-      fetchKDSToken();
+      fetchSettings();
     }
   }, [session]);
 
@@ -169,9 +184,28 @@ export default function SettingsPage() {
   const handleSaveSettings = async () => {
     setLoading(true);
     try {
-      // Simulate save - In real app, this would call API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success('Settings saved successfully! ✅');
+      const response = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: restaurantName,
+          address: restaurantAddress,
+          phone: phoneNumber,
+          gstNumber,
+          taxRate,
+          currency,
+          timeZone,
+          enableDelivery,
+          minOrderAmount,
+          deliveryCharge,
+        }),
+      });
+      if (response.ok) {
+        toast.success('Settings saved successfully! ✅');
+      } else {
+        const err = await response.json();
+        toast.error(err.error || 'Failed to save settings');
+      }
     } catch (error) {
       toast.error('Failed to save settings');
       console.error(error);
