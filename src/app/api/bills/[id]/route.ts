@@ -5,6 +5,8 @@ import { checkAuth } from '@/lib/api-auth';
 import { updateBillSchema } from '@/lib/validations';
 import { checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib/rateLimit';
 import { sanitizeCustomerInput } from '@/lib/sanitize';
+import { LOYALTY } from '@/lib/constants';
+import { calculatePointsEarned, calculatePointsValue } from '@/lib/billUtils';
 
 // GET single bill by ID
 export async function GET(
@@ -138,10 +140,6 @@ export async function PATCH(
       return NextResponse.json({ error: 'Bill not found' }, { status: 404 });
     }
 
-    // Constants for loyalty program (documented for easy adjustment)
-    const POINTS_EARNING_RATE = 10; // 10 points per ₹100 spent
-    const POINTS_REDEMPTION_VALUE = 1; // 1 point = ₹1
-
     // Update bill and handle customer loyalty in a transaction if payment is confirmed
     const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       let customerId = null;
@@ -196,7 +194,7 @@ export async function PATCH(
           }
 
           pointsRedeemed = pointsToRedeem;
-          finalTotal -= pointsRedeemed * POINTS_REDEMPTION_VALUE;
+          finalTotal -= pointsRedeemed * LOYALTY.REDEMPTION_VALUE_PER_POINT;
 
           // Create redemption transaction
           await tx.pointTransaction.create({
@@ -217,8 +215,8 @@ export async function PATCH(
           });
         }
 
-        // Calculate points earned on final amount
-        pointsEarned = Math.floor((finalTotal / 100) * POINTS_EARNING_RATE);
+        // Calculate points earned on final amount using centralized utility
+        pointsEarned = calculatePointsEarned(finalTotal);
 
         // Create earning transaction
         if (pointsEarned > 0) {

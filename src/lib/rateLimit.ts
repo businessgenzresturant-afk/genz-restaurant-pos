@@ -9,6 +9,8 @@
  * - Use Upstash Redis or similar service
  */
 
+import { RATE_LIMIT } from './constants';
+
 interface RateLimitEntry {
   count: number;
   resetAt: number;
@@ -110,17 +112,17 @@ function getClientIdentifier(request: Request): string {
  * Preset configurations for common rate limit scenarios
  */
 export const RateLimitPresets = {
-  /** Strict limit for authentication endpoints (5 requests per minute) */
-  AUTH: { maxRequests: 5, windowMs: 60 * 1000 } as RateLimitConfig,
+  /** Strict limit for authentication endpoints */
+  AUTH: RATE_LIMIT.AUTH as RateLimitConfig,
   
-  /** Standard limit for API endpoints (100 requests per minute) */
-  API: { maxRequests: 100, windowMs: 60 * 1000 } as RateLimitConfig,
+  /** Standard limit for API endpoints */
+  API: RATE_LIMIT.API as RateLimitConfig,
   
-  /** Generous limit for read-only endpoints (200 requests per minute) */
-  READ: { maxRequests: 200, windowMs: 60 * 1000 } as RateLimitConfig,
+  /** Generous limit for read-only endpoints */
+  READ: RATE_LIMIT.READ as RateLimitConfig,
   
-  /** Very generous limit for public KDS displays (300 requests per minute) */
-  PUBLIC: { maxRequests: 300, windowMs: 60 * 1000 } as RateLimitConfig,
+  /** Very generous limit for public KDS displays */
+  PUBLIC: RATE_LIMIT.PUBLIC as RateLimitConfig,
 };
 
 /**

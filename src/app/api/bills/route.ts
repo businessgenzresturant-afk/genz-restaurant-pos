@@ -4,6 +4,8 @@ import { checkAuth } from '@/lib/api-auth';
 import { createBillSchema } from '@/lib/validations';
 import { checkRateLimit, RateLimitPresets, createRateLimitResponse } from '@/lib/rateLimit';
 import { withTiming } from '@/lib/api-logger';
+import { calculateBill } from '@/lib/billUtils';
+import { TAX } from '@/lib/constants';
 
 // Force dynamic route to prevent caching
 export const dynamic = 'force-dynamic';
@@ -276,10 +278,16 @@ export const POST = withTiming(async (request: Request) => {
       );
     }
     
-    const taxRate = process.env.TAX_RATE ? parseFloat(process.env.TAX_RATE) : 0.18;
-    const tax = subtotal * taxRate;
-    const discount = 0;
-    const total = subtotal + tax - discount;
+    // Use centralized bill calculation
+    const taxRate = process.env.TAX_RATE ? parseFloat(process.env.TAX_RATE) : TAX.GST_RATE;
+    const billCalc = calculateBill({
+      subtotal,
+      applyGST: true,
+      taxRate,
+      applyServiceCharge: false,
+      discountPercent: 0,
+      pointsToRedeem: 0,
+    });
 
 
     // ⚡ PERFORMANCE OPTIMIZATION: Use batch operations instead of loops
@@ -300,10 +308,10 @@ export const POST = withTiming(async (request: Request) => {
         data: {
           orderId: primaryOrder.id,
           tableId: order.tableId,
-          subtotal,
-          tax,
-          discount,
-          total,
+          subtotal: billCalc.subtotal,
+          tax: billCalc.tax,
+          discount: billCalc.discount,
+          total: billCalc.total,
           status: 'PENDING'
         },
         include: {

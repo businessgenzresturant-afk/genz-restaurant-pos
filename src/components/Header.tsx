@@ -18,13 +18,8 @@ import {
   Plus,
   Search,
   ToggleLeft,
-  Eye,
   ClipboardList,
-  Clock,
-  Pause,
-  Bell,
-  HelpCircle,
-  Phone
+  Clock
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Portal } from '@/components/ui/portal';
@@ -33,6 +28,7 @@ import ManageMenuModal from '@/components/modals/ManageMenuModal';
 import RestaurantSettingsModal from '@/components/modals/RestaurantSettingsModal';
 import ManageStaffModal from '@/components/modals/ManageStaffModal';
 import TaxPricingModal from '@/components/modals/TaxPricingModal';
+import { useRouter } from 'next/navigation';
 
 const ActionButton = ({ icon, label, badge, onClick }: { icon: React.ReactNode, label: string, badge?: string, onClick?: () => void }) => (
   <button 
@@ -51,8 +47,13 @@ const ActionButton = ({ icon, label, badge, onClick }: { icon: React.ReactNode, 
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const { data: session } = useSession();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
+  
+  // Search states
+  const [billSearch, setBillSearch] = useState('');
+  const [kotSearch, setKotSearch] = useState('');
   
   // Modal states
   const [showTablesModal, setShowTablesModal] = useState(false);
@@ -67,6 +68,18 @@ export default function Header() {
   const userRole = (session?.user as any)?.role || 'STAFF';
   const userInitial = userName.charAt(0).toUpperCase();
   const isAdmin = userRole === 'ADMIN';
+
+  const handleBillSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && billSearch.trim()) {
+      router.push(`/orders?search=${encodeURIComponent(billSearch.trim())}`);
+    }
+  };
+
+  const handleKotSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && kotSearch.trim()) {
+      router.push(`/orders?search=${encodeURIComponent(kotSearch.trim())}`);
+    }
+  };
 
   return (
     <header className="w-full bg-background/95 backdrop-blur-md border-b border-border/50 h-[72px] flex-shrink-0 flex flex-col justify-center z-30 sticky top-0 shadow-sm">
@@ -93,6 +106,9 @@ export default function Header() {
             <input 
               type="text" 
               placeholder="Bill No" 
+              value={billSearch}
+              onChange={(e) => setBillSearch(e.target.value)}
+              onKeyDown={handleBillSearch}
               className="pl-9 pr-3 py-2 h-10 bg-muted/40 border border-border/60 hover:border-border rounded-xl text-sm w-32 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium placeholder:text-muted-foreground/70" 
             />
           </div>
@@ -101,6 +117,9 @@ export default function Header() {
             <input 
               type="text" 
               placeholder="KOT No" 
+              value={kotSearch}
+              onChange={(e) => setKotSearch(e.target.value)}
+              onKeyDown={handleKotSearch}
               className="pl-9 pr-3 py-2 h-10 bg-muted/40 border border-border/60 hover:border-border rounded-xl text-sm w-32 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium placeholder:text-muted-foreground/70" 
             />
           </div>
@@ -108,16 +127,11 @@ export default function Header() {
 
         {/* Right Side: Action Icons & Profile */}
         <div className="flex items-center gap-1 flex-shrink-0">
-          <ActionButton icon={<ToggleLeft className="w-5 h-5" />} label="Item On/Off" />
-          <ActionButton icon={<Store className="w-5 h-5" />} label="Store" />
-          <ActionButton icon={<Eye className="w-5 h-5" />} label="Live View" />
+          {isAdmin && <ActionButton icon={<ToggleLeft className="w-5 h-5" />} label="Menu Item" onClick={() => setShowMenuModal(true)} />}
           <Link href="/orders">
             <ActionButton icon={<ClipboardList className="w-5 h-5" />} label="Orders" />
           </Link>
-          <ActionButton icon={<Clock className="w-5 h-5" />} label="Recent" />
-          <ActionButton icon={<Pause className="w-5 h-5" />} label="Hold" />
-          <ActionButton icon={<Bell className="w-5 h-5" />} label="Alerts" badge="21" />
-          <ActionButton icon={<HelpCircle className="w-5 h-5" />} label="Zomato Help" />
+          <ActionButton icon={<Clock className="w-5 h-5" />} label="Recent" onClick={() => router.push('/orders')} />
           <ActionButton 
             icon={<LogOut className="w-5 h-5 text-red-500/80" />} 
             label="Logout" 
@@ -126,16 +140,6 @@ export default function Header() {
           
           <div className="w-px h-8 bg-border/60 mx-2 hidden xl:block" />
           
-          {/* Phone / Support */}
-          <div className="flex-col items-end justify-center mr-4 hidden xl:flex">
-            <span className="text-sm font-black flex items-center gap-1.5 text-foreground tracking-tight">
-              07969 223344
-            </span>
-            <span className="text-[10px] font-bold text-primary cursor-pointer hover:underline uppercase tracking-wider">
-              Request Support &gt;
-            </span>
-          </div>
-
           <ThemeToggle />
           
           {/* Profile Dropdown Toggle */}

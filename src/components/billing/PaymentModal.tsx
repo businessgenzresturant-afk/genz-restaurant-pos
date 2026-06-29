@@ -1,4 +1,4 @@
-'use client';
+import { SERVICE_CHARGE } from '@/lib/constants';
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
@@ -53,7 +53,6 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
   // Service charge state
   const [serviceChargeApplied, setServiceChargeApplied] = useState(false);
   const [serviceChargeAmount, setServiceChargeAmount] = useState(0);
-  const SERVICE_CHARGE_RATE = 0.10; // 10%
   
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -392,7 +391,7 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
                     <div>
                       <span className="text-sm font-semibold text-foreground">Apply Service Charge (10%)</span>
                       <div className="text-xs text-muted-foreground mt-0.5">
-                        ₹{(bill.subtotal * SERVICE_CHARGE_RATE).toFixed(2)}
+                        ₹{(bill.subtotal * SERVICE_CHARGE.DEFAULT_RATE).toFixed(2)}
                       </div>
                     </div>
                     <div className="relative">
@@ -402,7 +401,7 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
                         onChange={(e) => {
                           const newValue = e.target.checked;
                           setServiceChargeApplied(newValue);
-                          const newServiceCharge = newValue ? bill.subtotal * SERVICE_CHARGE_RATE : 0;
+                          const newServiceCharge = newValue ? bill.subtotal * SERVICE_CHARGE.DEFAULT_RATE : 0;
                           setServiceChargeAmount(newServiceCharge);
                         }}
                         className="sr-only peer"
