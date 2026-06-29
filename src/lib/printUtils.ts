@@ -134,101 +134,115 @@ ${merged.map(item => `<div class="item">
 <meta charset="UTF-8">
 <title>Receipt ${billNo}</title>
 <style>
-  @page { margin: 0; size: 80mm auto; }
+  @page { margin: 0; size: 58mm auto; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   
   body {
     font-family: 'Courier New', monospace;
-    font-size: 14px;
+    font-size: 11px;
     font-weight: bold;
-    line-height: 1.4;
+    line-height: 1.2;
     color: #000;
     background: #fff;
-    width: 100%;
-    max-width: 80mm;
-    padding: 3mm;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+    width: 58mm;
+    padding: 2mm 1mm;
+    position: relative;
   }
   
-  .center { text-align: center; }
-  .right { text-align: right; }
-  .bold { font-weight: 900; }
-  .upper { text-transform: uppercase; }
+  body::before {
+    content: '';
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 45mm;
+    height: 45mm;
+    background-image: url('${logoUrl}');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    opacity: 0.08;
+    z-index: 0;
+    pointer-events: none;
+  }
   
-  .hr { border: none; border-top: 2px solid #000; margin: 3px 0; }
-  .dash { border: none; border-top: 1px dashed #000; margin: 2px 0; }
+  body > * {
+    position: relative;
+    z-index: 1;
+  }
   
-  .logo { width: 50px; height: 50px; object-fit: contain; margin: 0 auto 3px; display: block; }
-  .rest-name { font-size: 20px; font-weight: 900; letter-spacing: 1px; }
-  .rest-info { font-size: 12px; line-height: 1.3; }
+  .c { text-align: center; }
+  .r { text-align: right; }
+  .b { font-weight: 900; }
   
-  .row { display: flex; justify-content: space-between; margin: 1px 0; font-size: 13px; }
-  .row-label { font-weight: bold; }
+  .hr { border-top: 1px solid #000; margin: 1mm 0; }
+  .dash { border-top: 1px dashed #000; margin: 1mm 0; }
   
-  table { width: 100%; border-collapse: collapse; margin: 2px 0; }
-  th { font-size: 13px; font-weight: bold; text-align: left; border-bottom: 1px solid #000; padding: 2px 0; }
-  th:nth-child(2) { text-align: center; width: 35px; }
-  th:nth-child(3) { text-align: right; width: 55px; }
-  th:nth-child(4) { text-align: right; width: 60px; }
+  .rn { font-size: 14px; font-weight: 900; }
+  .ri { font-size: 9px; line-height: 1.1; }
   
-  td { font-size: 14px; font-weight: bold; padding: 2px 0; vertical-align: top; }
-  td:nth-child(1) { text-align: left; }
-  td:nth-child(2) { text-align: center; width: 35px; }
-  td:nth-child(3) { text-align: right; width: 55px; }
-  td:nth-child(4) { text-align: right; width: 60px; }
+  .row { display: flex; justify-content: space-between; font-size: 10px; }
   
-  .item-note { font-size: 12px; padding-left: 4px; font-style: italic; color: #333; }
+  table { width: 100%; border-collapse: collapse; font-size: 11px; }
+  th { font-weight: bold; border-bottom: 1px solid #000; padding: 1px 0; }
+  th:nth-child(1) { text-align: left; }
+  th:nth-child(2) { text-align: center; width: 22px; }
+  th:nth-child(3) { text-align: right; width: 40px; }
+  th:nth-child(4) { text-align: right; width: 45px; }
   
-  .total-row { display: flex; justify-content: space-between; font-size: 14px; margin: 1px 0; }
-  .total-label { flex: 1; }
-  .total-val { text-align: right; white-space: nowrap; min-width: 70px; }
+  td { font-weight: bold; padding: 1px 0; }
+  td:nth-child(1) { text-align: left; font-size: 11px; }
+  td:nth-child(2) { text-align: center; width: 22px; }
+  td:nth-child(3) { text-align: right; width: 40px; }
+  td:nth-child(4) { text-align: right; width: 45px; }
   
-  .grand { font-size: 18px; font-weight: 900; margin: 3px 0; }
+  .tr { display: flex; justify-content: space-between; font-size: 11px; }
+  .tl { flex: 1; }
+  .tv { min-width: 50px; text-align: right; }
   
-  .footer { font-size: 13px; line-height: 1.5; margin-top: 4px; }
+  .gt { font-size: 14px; font-weight: 900; }
   
   @media print {
-    body { padding: 2mm; }
+    body { padding: 1mm; }
+    body::before { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   }
 </style>
 </head>
 <body onload="window.print(); window.onfocus = function() { setTimeout(function() { window.close(); }, 100); }">
 
 <!-- HEADER -->
-<div class="center">
-  <img class="logo" src="${logoUrl}" alt="Logo" onerror="this.style.display='none'">
-  <div class="rest-name upper">Gen-Z Restaurant</div>
-  <div class="rest-info">
+<div class="c">
+  <div class="rn">GEN-Z RESTAURANT</div>
+  <div class="ri">
     29 Main Street, New Delhi-110001<br>
     GST: 07AABCG1234A1Z5<br>
     Contact: +91 98765-43210
   </div>
-  <div style="font-size:13px; font-weight:bold; margin:2px 0; letter-spacing:1px;" class="upper">
-    Retail Invoice
+  <div style="font-size:10px; font-weight:bold; margin:1mm 0;">
+    RETAIL INVOICE
   </div>
 </div>
 
 <div class="hr"></div>
 
 <!-- CUSTOMER INFO -->
-<div style="font-size:13px; margin:2px 0;">
-  <span class="bold">Name: </span>${customerName || 'Walk-in Customer'}
+<div style="font-size:10px;">
+  <b>Name:</b> ${customerName || 'Walk-in Customer'}
 </div>
-${customerPhone ? `<div style="font-size:13px;"><span class="bold">Phone: </span>${customerPhone}</div>` : ''}
+${customerPhone ? `<div style="font-size:10px;"><b>Phone:</b> ${customerPhone}</div>` : ''}
 
 <!-- BILL META -->
 <div class="row">
-  <span><span class="row-label">Date:</span> ${fmtDate(oTime)}</span>
-  <span><span class="row-label">Time:</span> ${fmtTime(oTime)}</span>
+  <span><b>Date:</b> ${fmtDate(oTime)}</span>
+  <span><b>Time:</b> ${fmtTime(oTime)}</span>
 </div>
 <div class="row">
-  <span><span class="row-label">Bill No:</span> ${billNo}</span>
-  <span><span class="row-label">Table:</span> ${tableNum ?? '-'}</span>
+  <span><b>Bill:</b> ${billNo}</span>
+  <span><b>Table:</b> ${tableNum ?? '-'}</span>
 </div>
 <div class="row">
-  <span><span class="row-label">Cashier:</span> admin</span>
-  ${tokenNo ? `<span><span class="row-label">Token:</span> ${tokenNo}</span>` : '<span></span>'}
+  <span><b>Cashier:</b> admin</span>
+  ${tokenNo ? `<span><b>Token:</b> ${tokenNo}</span>` : '<span></span>'}
 </div>
 
 <div class="hr"></div>
@@ -252,8 +266,7 @@ ${merged.map((item: any) => {
       <td>${item.quantity}</td>
       <td>${fmt(unitPrice)}</td>
       <td>${fmt(lineTotal)}</td>
-    </tr>
-${item.cleanInstr ? `    <tr><td colspan="4" class="item-note">  ↳ ${item.cleanInstr}</td></tr>` : ''}`;
+    </tr>`;
 }).join('\n')}
   </tbody>
 </table>
@@ -261,74 +274,74 @@ ${item.cleanInstr ? `    <tr><td colspan="4" class="item-note">  ↳ ${item.clea
 <div class="hr"></div>
 
 <!-- TOTALS -->
-<div class="total-row">
-  <span class="total-label">Qty: ${totalQty}</span>
-  <span class="total-label" style="text-align:right;">Subtotal</span>
-  <span class="total-val">₹${fmt(subtotal)}</span>
+<div class="tr">
+  <span class="tl">Qty: ${totalQty}</span>
+  <span class="tl r">Subtotal</span>
+  <span class="tv">₹${fmt(subtotal)}</span>
 </div>
 
-${svcCharge > 0 ? `<div class="total-row">
-  <span class="total-label"></span>
-  <span class="total-label" style="text-align:right;">Service Charge</span>
-  <span class="total-val">₹${fmt(svcCharge)}</span>
+${svcCharge > 0 ? `<div class="tr">
+  <span class="tl"></span>
+  <span class="tl r">Service</span>
+  <span class="tv">₹${fmt(svcCharge)}</span>
 </div>` : ''}
 
-${showGST ? `<div class="total-row">
-  <span class="total-label"></span>
-  <span class="total-label" style="text-align:right;">CGST (9%)</span>
-  <span class="total-val">₹${fmt(tax / 2)}</span>
+${showGST ? `<div class="tr">
+  <span class="tl"></span>
+  <span class="tl r">CGST (9%)</span>
+  <span class="tv">₹${fmt(tax / 2)}</span>
 </div>
-<div class="total-row">
-  <span class="total-label"></span>
-  <span class="total-label" style="text-align:right;">SGST (9%)</span>
-  <span class="total-val">₹${fmt(tax / 2)}</span>
+<div class="tr">
+  <span class="tl"></span>
+  <span class="tl r">SGST (9%)</span>
+  <span class="tv">₹${fmt(tax / 2)}</span>
 </div>` : ''}
 
-${discAmt > 0 ? `<div class="total-row">
-  <span class="total-label"></span>
-  <span class="total-label" style="text-align:right;">Discount (${discPct}%)</span>
-  <span class="total-val">-₹${fmt(discAmt)}</span>
+${discAmt > 0 ? `<div class="tr">
+  <span class="tl"></span>
+  <span class="tl r">Disc (${discPct}%)</span>
+  <span class="tv">-₹${fmt(discAmt)}</span>
 </div>` : ''}
 
-${pointsRed > 0 ? `<div class="total-row">
-  <span class="total-label"></span>
-  <span class="total-label" style="text-align:right;">Points Redeemed</span>
-  <span class="total-val">-₹${fmt(pointsRed)}</span>
+${pointsRed > 0 ? `<div class="tr">
+  <span class="tl"></span>
+  <span class="tl r">Points</span>
+  <span class="tv">-₹${fmt(pointsRed)}</span>
 </div>` : ''}
 
 <div class="hr"></div>
 
 <!-- GRAND TOTAL -->
-<div class="total-row grand">
-  <span class="bold">Grand Total</span>
-  <span class="bold">₹${fmt(total)}</span>
+<div class="tr gt">
+  <span class="b">Grand Total</span>
+  <span class="b">₹${fmt(total)}</span>
 </div>
 
 <div class="hr"></div>
 
 <!-- PAYMENT -->
-${bill.status === 'PAID' ? `<div class="total-row" style="font-weight:900;">
+${bill.status === 'PAID' ? `<div class="tr b">
   <span>Payment: ${bill.paymentMethod ?? 'CASH'}</span>
   <span>PAID ✓</span>
 </div>` : ''}
 
-${bill.paymentMethod === 'SPLIT' ? `<div class="total-row">
+${bill.paymentMethod === 'SPLIT' ? `<div class="tr">
   <span>Cash</span><span>₹${fmt(bill.cashAmount ?? 0)}</span>
 </div>
-<div class="total-row">
+<div class="tr">
   <span>Online</span><span>₹${fmt(bill.onlineAmount ?? 0)}</span>
 </div>` : ''}
 
 <!-- FOOTER -->
-<div class="dash" style="margin-top:4px;"></div>
-<div class="footer center">
-  <div class="bold">Thank you for ordering</div>
-  <div>Please visit us again 🙏</div>
-  <div style="font-size:11px; margin-top:2px;">www.gen-z.online</div>
+<div class="dash"></div>
+<div class="c" style="font-size:10px; line-height:1.3;">
+  <div class="b">Thank you for ordering</div>
+  <div>Please visit again 🙏</div>
+  <div style="font-size:9px;">www.gen-z.online</div>
 </div>
 
-<!-- Cutter clearance -->
-<div style="height:10mm;"></div>
+<!-- Cutter space -->
+<div style="height:8mm;"></div>
 
 </body>
 </html>`;
