@@ -38,34 +38,41 @@ export const printReceipt = (bill: any, type: 'receipt' | 'kot' = 'receipt') => 
 <meta charset="UTF-8">
 <title>KOT</title>
 <style>
-  @page { margin: 0; size: auto; }
+  @page { margin: 0; size: 78mm auto; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Courier New', monospace; font-size: 20px; font-weight: normal; color: #000; width: 100%; padding: 0; margin: 0; }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    color: #000;
+    width: 76mm;
+    padding: 2mm 1mm;
+    margin: 0 auto;
+  }
   .c { text-align: center; }
-  .hr { border-top: 2px dashed #000; margin: 3mm 0; }
-  .row { display: flex; justify-content: space-between; align-items: flex-start; font-size: 20px; margin-bottom: 2mm; width: 100%; }
-  .item-name { flex: 1; text-align: left; padding-right: 2mm; font-size: 22px; }
-  .item-qty { font-size: 24px; min-width: 15mm; text-align: right; }
+  .hr { border-top: 1px dashed #000; margin: 3px 0; }
+  .row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px; width: 100%; }
+  .item-name { flex: 1; text-align: left; padding-right: 2mm; font-size: 16px; font-weight: bold; }
+  .item-qty { font-size: 18px; font-weight: bold; min-width: 15mm; text-align: right; }
 </style>
 </head>
 <body onload="window.print(); setTimeout(function(){ window.close(); }, ${PRINTER.AUTO_PRINT_DELAY});">
-<div class="c" style="font-size:32px; letter-spacing: 2px;">KOT</div>
-<div class="c" style="font-size:18px;">Kitchen Order Ticket</div>
+<div class="c" style="font-size:24px; font-weight:bold; letter-spacing: 1px;">KOT</div>
+<div class="c" style="font-size:14px; margin-bottom: 3px;">Kitchen Order Ticket</div>
 <div class="hr"></div>
-<div class="row"><span>Table:</span><span style="font-size:26px;">T-${bill.order?.table?.number ?? bill.table?.number ?? '?'}</span></div>
+<div class="row"><span>Table:</span><span style="font-size:18px; font-weight:bold;">T-${bill.order?.table?.number ?? bill.table?.number ?? '?'}</span></div>
 <div class="row"><span>Time:</span><span>${fmtTime(oTime)}</span></div>
 <div class="hr"></div>
-<div class="row" style="font-size:20px;"><span class="item-name">ITEM</span><span class="item-qty">QTY</span></div>
+<div class="row" style="font-size:14px; font-weight:bold;"><span class="item-name" style="font-size:14px;">ITEM</span><span class="item-qty" style="font-size:14px;">QTY</span></div>
 <div class="hr"></div>
 ${merged.map(item => `
 <div class="row">
   <span class="item-name">${item.menuItem?.name ?? 'Item'}</span>
   <span class="item-qty">x${item.quantity}</span>
 </div>
-${item.cleanInstr ? `<div style="font-size:16px; font-style:italic; padding-left:4mm; margin-top:-1mm; margin-bottom:2mm;">* ${item.cleanInstr}</div>` : ''}
+${item.cleanInstr ? `<div style="font-size:12px; font-style:italic; padding-left:2mm; margin-top:-1px; margin-bottom:2px;">* ${item.cleanInstr}</div>` : ''}
 `).join('')}
 <div class="hr"></div>
-<div style="height:10mm;"></div>
+<div style="height:5mm;"></div>
 </body>
 </html>`;
     printWindow.document.write(kotHTML);
@@ -96,57 +103,57 @@ ${item.cleanInstr ? `<div style="font-size:16px; font-style:italic; padding-left
 <meta charset="UTF-8">
 <title>Bill ${billNo}</title>
 <style>
-@page { margin: 0; size: auto; }
+@page { margin: 0; size: 78mm auto; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-  font-family: 'Courier New', monospace;
-  font-size: 18px;
-  font-weight: normal;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12px;
   color: #000;
-  width: 100%;
-  padding: 0;
-  margin: 0;
+  width: 76mm;
+  padding: 2mm 1mm;
+  margin: 0 auto;
 }
 .c { text-align: center; }
 .r { text-align: right; }
-.hr { border-top: 1.5px dashed #000; margin: 2.5mm 0; }
-.dash { border-top: 1px dashed #000; margin: 1.5mm 0; }
+.b { font-weight: bold; }
+.hr { border-top: 1px dashed #000; margin: 3px 0; }
+.dash { border-top: 1px dashed #000; margin: 3px 0; }
 table { width: 100%; border-collapse: collapse; }
-th { border-bottom: 1.5px dashed #000; padding: 1.5mm 0; font-size: 18px; font-weight: normal; }
-td { padding: 1.5mm 0; font-size: 18px; }
+th { border-bottom: 1px dashed #000; padding: 2px 0; font-size: 12px; font-weight: bold; }
+td { padding: 2px 0; font-size: 12px; }
 th:nth-child(1), td:nth-child(1) { text-align: left; }
 th:nth-child(2), td:nth-child(2) { text-align: center; width: 15%; }
-th:nth-child(3), td:nth-child(3) { text-align: right; width: 25%; }
-th:nth-child(4), td:nth-child(4) { text-align: right; width: 30%; }
-.row { display: flex; justify-content: space-between; font-size: 18px; line-height: 1.4; margin-bottom: 1mm; width: 100%; }
+th:nth-child(3), td:nth-child(3) { text-align: right; width: 22%; }
+th:nth-child(4), td:nth-child(4) { text-align: right; width: 28%; }
+.row { display: flex; justify-content: space-between; font-size: 12px; line-height: 1.3; margin-bottom: 2px; width: 100%; }
 </style>
 </head>
 <body onload="window.print(); setTimeout(function(){ window.close(); }, ${PRINTER.AUTO_PRINT_DELAY});">
 
 <div class="c">
-<div style="font-size:24px; letter-spacing:1px;">${RESTAURANT_INFO.NAME.toUpperCase()}</div>
-<div style="font-size:14px; line-height:1.3;">
+<div class="b" style="font-size:18px; margin-bottom:2px;">${RESTAURANT_INFO.NAME.toUpperCase()}</div>
+<div style="font-size:11px; line-height:1.3;">
 ${RESTAURANT_INFO.ADDRESS}<br>
 GST: ${RESTAURANT_INFO.GST_NUMBER}<br>
 Contact: ${RESTAURANT_INFO.PHONE}
 </div>
-<div style="font-size:16px; margin:1mm 0;">RETAIL INVOICE</div>
+<div class="b" style="font-size:12px; margin:3px 0;">RETAIL INVOICE</div>
 </div>
 
 <div class="hr"></div>
 
-<div style="font-size:16px;">Name: ${customerName || 'Walk-in Customer'}</div>
+<div style="font-size:12px;"><b>Name:</b> ${customerName || 'Walk-in Customer'}</div>
 <div class="row">
-<span>Date: ${fmtDate(oTime)}</span>
-<span>Time: ${fmtTime(oTime)}</span>
+<span><b>Date:</b> ${fmtDate(oTime)}</span>
+<span><b>Time:</b> ${fmtTime(oTime)}</span>
 </div>
 <div class="row">
-<span>Bill No: ${billNo}</span>
-<span>Table: ${tableNum ?? '-'}</span>
+<span><b>Bill No:</b> ${billNo}</span>
+<span><b>Table:</b> ${tableNum ?? '-'}</span>
 </div>
 <div class="row">
-<span>Cashier: admin</span>
-${tokenNo ? `<span>Token: ${tokenNo}</span>` : '<span></span>'}
+<span><b>Cashier:</b> admin</span>
+${tokenNo ? `<span><b>Token:</b> ${tokenNo}</span>` : '<span></span>'}
 </div>
 
 <div class="hr"></div>
@@ -157,7 +164,7 @@ ${tokenNo ? `<span>Token: ${tokenNo}</span>` : '<span></span>'}
 ${merged.map((item: any) => {
   const price = item.menuItem?.price ?? item.price ?? 0;
   const amt = item.quantity * price;
-  return `<tr><td>${item.menuItem?.name ?? 'Item'}</td><td>${item.quantity}</td><td>${fmt(price)}</td><td>${fmt(amt)}</td></tr>`;
+  return `<tr><td>${item.menuItem?.name ?? 'Item'}</td><td class="b">${item.quantity}</td><td>${fmt(price)}</td><td class="b">${fmt(amt)}</td></tr>`;
 }).join('\n')}
 </tbody>
 </table>
@@ -171,20 +178,20 @@ ${discAmt > 0 ? `<div class="row"><span></span><span>Discount (${discPct}%)</spa
 
 <div class="hr"></div>
 
-<div class="row" style="font-size:24px;"><span>Grand Total</span><span>₹${fmt(total)}</span></div>
+<div class="row b" style="font-size:16px;"><span>Grand Total</span><span>₹${fmt(total)}</span></div>
 
 <div class="hr"></div>
 
-${bill.status === 'PAID' ? `<div class="row" style="font-size:20px;"><span>Paid via: ${bill.paymentMethod ?? 'CASH'}</span><span>PAID ✓</span></div>` : ''}
+${bill.status === 'PAID' ? `<div class="row b" style="font-size:14px;"><span>Paid via: ${bill.paymentMethod ?? 'CASH'}</span><span>PAID ✓</span></div>` : ''}
 
 <div class="dash"></div>
-<div class="c" style="font-size:16px; line-height:1.4;">
-<div>Thank you for ordering</div>
+<div class="c" style="font-size:11px; line-height:1.3;">
+<div class="b">Thank you for ordering</div>
 <div>Please visit again 🙏</div>
-<div style="font-size:14px;">${RESTAURANT_INFO.WEBSITE}</div>
+<div style="font-size:10px;">${RESTAURANT_INFO.WEBSITE}</div>
 </div>
 
-<div style="height:10mm;"></div>
+<div style="height:5mm;"></div>
 </body>
 </html>`;
 
