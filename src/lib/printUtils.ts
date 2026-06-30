@@ -38,32 +38,31 @@ export const printReceipt = (bill: any, type: 'receipt' | 'kot' = 'receipt') => 
 <meta charset="UTF-8">
 <title>KOT</title>
 <style>
-  @page { margin: 0; size: ${PRINTER.THERMAL_WIDTH_MM}mm auto; }
+  @page { margin: 0; size: auto; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Courier New', monospace; font-size: 16px; font-weight: bold; color: #000; width: 100%; max-width: ${PRINTER.THERMAL_WIDTH_MM}mm; padding: 3mm; margin: 0 auto; }
+  body { font-family: 'Courier New', monospace; font-size: 20px; font-weight: normal; color: #000; width: 100%; padding: 0; margin: 0; }
   .c { text-align: center; }
-  .b { font-weight: 900; }
   .hr { border-top: 2px dashed #000; margin: 3mm 0; }
-  .row { display: flex; justify-content: space-between; align-items: flex-start; font-size: 16px; margin-bottom: 2mm; }
-  .item-name { flex: 1; text-align: left; padding-right: 4mm; font-size: 18px; }
-  .item-qty { font-size: 20px; font-weight: 900; min-width: 15mm; text-align: right; }
+  .row { display: flex; justify-content: space-between; align-items: flex-start; font-size: 20px; margin-bottom: 2mm; width: 100%; }
+  .item-name { flex: 1; text-align: left; padding-right: 2mm; font-size: 22px; }
+  .item-qty { font-size: 24px; min-width: 15mm; text-align: right; }
 </style>
 </head>
 <body onload="window.print(); setTimeout(function(){ window.close(); }, ${PRINTER.AUTO_PRINT_DELAY});">
-<div class="c b" style="font-size:24px; letter-spacing: 2px;">KOT</div>
-<div class="c" style="font-size:14px;">Kitchen Order Ticket</div>
+<div class="c" style="font-size:32px; letter-spacing: 2px;">KOT</div>
+<div class="c" style="font-size:18px;">Kitchen Order Ticket</div>
 <div class="hr"></div>
-<div class="row"><span>Table:</span><span class="b" style="font-size:20px;">T-${bill.order?.table?.number ?? bill.table?.number ?? '?'}</span></div>
+<div class="row"><span>Table:</span><span style="font-size:26px;">T-${bill.order?.table?.number ?? bill.table?.number ?? '?'}</span></div>
 <div class="row"><span>Time:</span><span>${fmtTime(oTime)}</span></div>
 <div class="hr"></div>
-<div class="row b" style="font-size:14px;"><span class="item-name">ITEM</span><span class="item-qty">QTY</span></div>
+<div class="row" style="font-size:20px;"><span class="item-name">ITEM</span><span class="item-qty">QTY</span></div>
 <div class="hr"></div>
 ${merged.map(item => `
 <div class="row">
   <span class="item-name">${item.menuItem?.name ?? 'Item'}</span>
   <span class="item-qty">x${item.quantity}</span>
 </div>
-${item.cleanInstr ? `<div style="font-size:14px; font-style:italic; padding-left:4mm; margin-top:-1mm; margin-bottom:2mm;">* ${item.cleanInstr}</div>` : ''}
+${item.cleanInstr ? `<div style="font-size:16px; font-style:italic; padding-left:4mm; margin-top:-1mm; margin-bottom:2mm;">* ${item.cleanInstr}</div>` : ''}
 `).join('')}
 <div class="hr"></div>
 <div style="height:10mm;"></div>
@@ -90,7 +89,6 @@ ${item.cleanInstr ? `<div style="font-size:14px; font-style:italic; padding-left
   const billNo = (bill.id ?? '').slice(-6).toUpperCase();
   const tokenNo = bill.order?.id ? bill.order.id.slice(-3).toUpperCase() : null;
   const totalQty = merged.reduce((s: number, i: any) => s + i.quantity, 0);
-  const logoUrl = `${origin}/images/Gen-z-logo.jpg`;
 
   const receiptHTML = `<!DOCTYPE html>
 <html>
@@ -98,64 +96,57 @@ ${item.cleanInstr ? `<div style="font-size:14px; font-style:italic; padding-left
 <meta charset="UTF-8">
 <title>Bill ${billNo}</title>
 <style>
-@page { margin: 0; size: ${PRINTER.THERMAL_WIDTH_MM}mm auto; }
+@page { margin: 0; size: auto; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   font-family: 'Courier New', monospace;
-  font-size: 14px;
-  font-weight: bold;
+  font-size: 18px;
+  font-weight: normal;
   color: #000;
-  background: #fff url('${logoUrl}') no-repeat center center fixed;
-  background-size: ${PRINTER.LOGO_SIZE_MM}mm ${PRINTER.LOGO_SIZE_MM}mm;
-  background-blend-mode: lighten;
-  opacity: 1;
   width: 100%;
-  max-width: ${PRINTER.THERMAL_WIDTH_MM}mm;
-  padding: 3mm;
-  margin: 0 auto;
+  padding: 0;
+  margin: 0;
 }
 .c { text-align: center; }
 .r { text-align: right; }
-.b { font-weight: 900; }
 .hr { border-top: 1.5px dashed #000; margin: 2.5mm 0; }
 .dash { border-top: 1px dashed #000; margin: 1.5mm 0; }
 table { width: 100%; border-collapse: collapse; }
-th { font-weight: bold; border-bottom: 1.5px dashed #000; padding: 1.5mm 0; font-size: 13px; }
-td { padding: 1.5mm 0; font-size: 14px; }
+th { border-bottom: 1.5px dashed #000; padding: 1.5mm 0; font-size: 18px; font-weight: normal; }
+td { padding: 1.5mm 0; font-size: 18px; }
 th:nth-child(1), td:nth-child(1) { text-align: left; }
-th:nth-child(2), td:nth-child(2) { text-align: center; width: 15mm; }
-th:nth-child(3), td:nth-child(3) { text-align: right; width: 18mm; }
-th:nth-child(4), td:nth-child(4) { text-align: right; width: 22mm; }
-.row { display: flex; justify-content: space-between; font-size: 13px; line-height: 1.4; margin-bottom: 1mm; }
-@media print { body { background-size: ${PRINTER.LOGO_SIZE_MM}mm ${PRINTER.LOGO_SIZE_MM}mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+th:nth-child(2), td:nth-child(2) { text-align: center; width: 15%; }
+th:nth-child(3), td:nth-child(3) { text-align: right; width: 25%; }
+th:nth-child(4), td:nth-child(4) { text-align: right; width: 30%; }
+.row { display: flex; justify-content: space-between; font-size: 18px; line-height: 1.4; margin-bottom: 1mm; width: 100%; }
 </style>
 </head>
 <body onload="window.print(); setTimeout(function(){ window.close(); }, ${PRINTER.AUTO_PRINT_DELAY});">
 
 <div class="c">
-<div class="b" style="font-size:16px; letter-spacing:1px;">${RESTAURANT_INFO.NAME.toUpperCase()}</div>
-<div style="font-size:10px; line-height:1.3;">
+<div style="font-size:24px; letter-spacing:1px;">${RESTAURANT_INFO.NAME.toUpperCase()}</div>
+<div style="font-size:14px; line-height:1.3;">
 ${RESTAURANT_INFO.ADDRESS}<br>
 GST: ${RESTAURANT_INFO.GST_NUMBER}<br>
 Contact: ${RESTAURANT_INFO.PHONE}
 </div>
-<div class="b" style="font-size:11px; margin:1mm 0;">RETAIL INVOICE</div>
+<div style="font-size:16px; margin:1mm 0;">RETAIL INVOICE</div>
 </div>
 
 <div class="hr"></div>
 
-<div style="font-size:11px;"><b>Name:</b> ${customerName || 'Walk-in Customer'}</div>
+<div style="font-size:16px;">Name: ${customerName || 'Walk-in Customer'}</div>
 <div class="row">
-<span><b>Date:</b> ${fmtDate(oTime)}</span>
-<span><b>Time:</b> ${fmtTime(oTime)}</span>
+<span>Date: ${fmtDate(oTime)}</span>
+<span>Time: ${fmtTime(oTime)}</span>
 </div>
 <div class="row">
-<span><b>Bill No:</b> ${billNo}</span>
-<span><b>Table:</b> ${tableNum ?? '-'}</span>
+<span>Bill No: ${billNo}</span>
+<span>Table: ${tableNum ?? '-'}</span>
 </div>
 <div class="row">
-<span><b>Cashier:</b> admin</span>
-${tokenNo ? `<span><b>Token:</b> ${tokenNo}</span>` : '<span></span>'}
+<span>Cashier: admin</span>
+${tokenNo ? `<span>Token: ${tokenNo}</span>` : '<span></span>'}
 </div>
 
 <div class="hr"></div>
@@ -173,24 +164,24 @@ ${merged.map((item: any) => {
 
 <div class="hr"></div>
 
-<div class="row"><span>Qty: ${totalQty}</span><span>Subtotal</span><span class="r" style="width:22mm;">₹${fmt(subtotal)}</span></div>
-${svcCharge > 0 ? `<div class="row"><span></span><span>Service</span><span class="r" style="width:22mm;">₹${fmt(svcCharge)}</span></div>` : ''}
-${showGST ? `<div class="row"><span></span><span>CGST (9%)</span><span class="r" style="width:22mm;">₹${fmt(tax/2)}</span></div><div class="row"><span></span><span>SGST (9%)</span><span class="r" style="width:22mm;">₹${fmt(tax/2)}</span></div>` : ''}
-${discAmt > 0 ? `<div class="row"><span></span><span>Discount (${discPct}%)</span><span class="r" style="width:22mm;">-₹${fmt(discAmt)}</span></div>` : ''}
+<div class="row"><span>Qty: ${totalQty}</span><span>Subtotal</span><span class="r">₹${fmt(subtotal)}</span></div>
+${svcCharge > 0 ? `<div class="row"><span></span><span>Service</span><span class="r">₹${fmt(svcCharge)}</span></div>` : ''}
+${showGST ? `<div class="row"><span></span><span>CGST (9%)</span><span class="r">₹${fmt(tax/2)}</span></div><div class="row"><span></span><span>SGST (9%)</span><span class="r">₹${fmt(tax/2)}</span></div>` : ''}
+${discAmt > 0 ? `<div class="row"><span></span><span>Discount (${discPct}%)</span><span class="r">-₹${fmt(discAmt)}</span></div>` : ''}
 
 <div class="hr"></div>
 
-<div class="row b" style="font-size:18px;"><span>Grand Total</span><span>₹${fmt(total)}</span></div>
+<div class="row" style="font-size:24px;"><span>Grand Total</span><span>₹${fmt(total)}</span></div>
 
 <div class="hr"></div>
 
-${bill.status === 'PAID' ? `<div class="row b" style="font-size:15px;"><span>Paid via: ${bill.paymentMethod ?? 'CASH'}</span><span>PAID ✓</span></div>` : ''}
+${bill.status === 'PAID' ? `<div class="row" style="font-size:20px;"><span>Paid via: ${bill.paymentMethod ?? 'CASH'}</span><span>PAID ✓</span></div>` : ''}
 
 <div class="dash"></div>
-<div class="c" style="font-size:11px; line-height:1.4;">
-<div class="b">Thank you for ordering</div>
+<div class="c" style="font-size:16px; line-height:1.4;">
+<div>Thank you for ordering</div>
 <div>Please visit again 🙏</div>
-<div style="font-size:10px;">${RESTAURANT_INFO.WEBSITE}</div>
+<div style="font-size:14px;">${RESTAURANT_INFO.WEBSITE}</div>
 </div>
 
 <div style="height:10mm;"></div>
