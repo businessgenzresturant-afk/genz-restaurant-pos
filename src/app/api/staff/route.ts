@@ -55,9 +55,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
     }
 
+    const sanitizedEmail = email.toLowerCase().trim();
+
     // Check if user exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email }
+    const existingUser = await prisma.user.findFirst({
+      where: { 
+        email: {
+          equals: sanitizedEmail,
+          mode: 'insensitive'
+        }
+      }
     });
 
     if (existingUser) {
@@ -69,7 +76,7 @@ export async function POST(request: Request) {
     const newStaff = await prisma.user.create({
       data: {
         name,
-        email,
+        email: sanitizedEmail,
         password: hashedPassword,
         role: role || 'STAFF',
         active: true,

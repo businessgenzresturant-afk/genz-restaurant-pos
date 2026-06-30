@@ -51,11 +51,25 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
-          const user = await prisma.user.findUnique({ where: { email: credentials.email } });
+          const sanitizedEmail = credentials.email.toLowerCase().trim();
+
+          const user = await prisma.user.findFirst({ 
+            where: { 
+              email: {
+                equals: sanitizedEmail,
+                mode: 'insensitive'
+              } 
+            } 
+          });
 
           if (!user) {
-            console.warn(`Login attempt for non-existent user: ${credentials.email}`);
+            console.warn(`Login attempt for non-existent user: ${sanitizedEmail}`);
             return null;
+          }
+
+          if (user.active === false) {
+            console.warn(`Login attempt for inactive user: ${sanitizedEmail}`);
+            throw new Error('Your account has been deactivated. Please contact the administrator.');
           }
 
           const isValid = await compare(credentials.password, user.password);
