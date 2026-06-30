@@ -92,8 +92,7 @@ export function Dashboard() {
 
   const fetchMenuData = useCallback(async () => {
     try {
-      const ts = Date.now();
-      const menuRes = await fetch(`/api/menu?_t=${ts}`, { cache: 'no-store' });
+      const menuRes = await fetch('/api/menu', { cache: 'no-store' });
       if (menuRes.ok) {
         const m = await menuRes.json();
         const validMenu = Array.isArray(m) ? m : [];
@@ -110,8 +109,7 @@ export function Dashboard() {
   const fetchReportsData = useCallback(async () => {
     if (!isAdmin) return;
     try {
-      const ts = Date.now();
-      const reportsRes = await fetch(`/api/reports?_t=${ts}`, { cache: 'no-store' });
+      const reportsRes = await fetch('/api/reports', { cache: 'no-store' });
       if (reportsRes.ok) {
         const r = await reportsRes.json();
         setRevenue(r.dailySalesTotal || 0);
@@ -128,10 +126,9 @@ export function Dashboard() {
 
   const fetchCoreData = useCallback(async () => {
     try {
-      const ts = Date.now();
       const fetchPromises: Promise<Response>[] = [
-        fetch(`/api/tables?_t=${ts}`, { cache: 'no-store' }),
-        fetch(`/api/orders?status=PENDING,PREPARING,READY,SERVED&_t=${ts}`, { cache: 'no-store' })
+        fetch('/api/tables', { cache: 'no-store' }),
+        fetch('/api/orders?status=PENDING,PREPARING,READY,SERVED', { cache: 'no-store' })
       ];
 
       const responses = await Promise.all(fetchPromises);

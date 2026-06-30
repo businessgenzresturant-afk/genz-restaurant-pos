@@ -39,21 +39,40 @@ export const GET = withTiming(async (request: Request) => {
     }
 
     const bills = await prisma.bill.findMany({
-      where: whereClause,
+      where: {
+        order: {
+          items: {
+            some: { menuItem: { restaurantId } }
+          }
+        },
+        ...(statusParam ? { status: statusParam.toUpperCase() as any } : {})
+      },
       take: limit,
+      orderBy: { createdAt: 'desc' },
       include: {
         order: {
-          include: {
+          select: {
+            id: true,
+            orderType: true,
+            customerName: true,
+            customerPhone: true,
+            status: true,
+            createdAt: true,
+            table: { select: { id: true, number: true } },
             items: {
-              include: {
-                menuItem: true
+              select: {
+                id: true,
+                quantity: true,
+                price: true,
+                portionType: true,
+                specialInstructions: true,
+                status: true,
+                menuItem: { select: { id: true, name: true, category: true } }
               }
-            },
-            table: true
+            }
           }
         }
-      },
-      orderBy: { createdAt: 'desc' }
+      }
     });
 
     return NextResponse.json(bills);
@@ -202,14 +221,7 @@ export const POST = withTiming(async (request: Request) => {
       );
     }
 
-    // Auto-mark orders as SERVED before billing if they're READY
-    // This ensures proper workflow tracking
-    if (order.status === 'READY') {
-      await prisma.order.update({
-        where: { id: orderId },
-        data: { status: 'SERVED' }
-      });
-    }
+    // (READY→SERVED update is handled inside the transaction below)
 
     // CRITICAL FIX: Get ALL orders for this table (not billed yet)
     // This ensures full table bill includes all orders
@@ -221,18 +233,8 @@ export const POST = withTiming(async (request: Request) => {
       // CRITICAL FIX: Only include orders that have at least 1 ACTIVE item
       finalTableOrders = allTableOrders.filter(o => {
         if (o.tableId !== order.tableId) return false;
-        
-        // Count active items
         const activeItemCount = o.items.filter((item: any) => item.status === 'ACTIVE').length;
-        if (activeItemCount === 0) {
-          return false;
-        }
-        
-        return true;
-      });
-
-      finalTableOrders.forEach((o, idx) => {
-        const activeItems = o.items.filter((item: any) => item.status === 'ACTIVE').length;
+        return activeItemCount > 0;
       });
     } else {
       // No table (takeaway/delivery), use the already-fetched order with items
@@ -240,7 +242,6 @@ export const POST = withTiming(async (request: Request) => {
       const activeItemCount = order.items.filter((item: any) => item.status === 'ACTIVE').length;
       if (activeItemCount > 0) {
         finalTableOrders = [order];
-      } else {
       }
     }
 
@@ -315,28 +316,32 @@ export const POST = withTiming(async (request: Request) => {
         });
       }
 
-      // Mark primary order as COMPLETED
+      // Mark primary order as COMPLETED (handles READY→SERVED→COMPLETED in one shot)
       await tx.order.update({
         where: { id: primaryOrder.id },
         data: { status: 'COMPLETED' }
       });
       
-      // CRITICAL FIX: Handle double-clicks by checking if bill already exists in this transaction
+      // Handle double-clicks: check if bill already exists inside transaction
       const existingTxBill = await tx.bill.findUnique({
         where: { orderId: primaryOrder.id },
-        include: {
-          order: {
-            include: {
-              items: { include: { menuItem: true } },
-              table: true
-            }
-          },
-          table: true
-        }
+        select: { id: true, orderId: true, tableId: true, subtotal: true, tax: true, discount: true, total: true, status: true, createdAt: true }
       });
       
       if (existingTxBill) {
-        return existingTxBill;
+        // Re-fetch with full relations for response
+        return tx.bill.findUnique({
+          where: { id: existingTxBill.id },
+          include: {
+            order: {
+              include: {
+                items: { include: { menuItem: true } },
+                table: true
+              }
+            },
+            table: true
+          }
+        });
       }
       
       return tx.bill.create({
@@ -368,12 +373,16 @@ export const POST = withTiming(async (request: Request) => {
 
     // IMPORTANT: Manually fetch and attach ALL orders' items to the bill response
     // So frontend gets complete picture
+    if (!bill) {
+      return NextResponse.json({ error: 'Bill creation failed unexpectedly.' }, { status: 500 });
+    }
+
     const allItems = finalTableOrders.flatMap(o => o.items);
     
     const enhancedBill = {
       ...bill,
       order: {
-        ...bill.order,
+        ...(bill as any).order,
         items: allItems // Replace with ALL items from all orders
       },
       _meta: {

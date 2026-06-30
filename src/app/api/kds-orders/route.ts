@@ -32,25 +32,9 @@ export const GET = withTiming(async (request: Request) => {
       );
     }
 
-    // Validate restaurant exists
-    const restaurant = await prisma.restaurant.findUnique({
-      where: { id: restaurantId },
-      select: { id: true }
-    });
-
-    if (!restaurant) {
-      return NextResponse.json(
-        { error: 'Invalid restaurant ID' },
-        { status: 404 }
-      );
-    }
-
-    // Build where clause
+    // Build where clause - use direct items filter (faster than OR)
     let whereClause: any = {
-      OR: [
-        { table: { restaurantId } },
-        { items: { some: { menuItem: { restaurantId } } } }
-      ]
+      items: { some: { menuItem: { restaurantId } } }
     };
     
     // Handle multiple statuses (comma-separated)
@@ -66,10 +50,10 @@ export const GET = withTiming(async (request: Request) => {
     const orders = await prisma.order.findMany({
       where: whereClause,
       include: {
-        table: true,
+        table: { select: { id: true, number: true, status: true } },
         items: {
           include: {
-            menuItem: true
+            menuItem: { select: { id: true, name: true, category: true, dietType: true } }
           }
         }
       },

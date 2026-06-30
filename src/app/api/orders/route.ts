@@ -28,10 +28,7 @@ export const GET = withTiming(async (request: Request) => {
 
     const restaurantId = (auth.session.user as any).restaurantId;
     let whereClause: any = {
-      OR: [
-        { table: { restaurantId } },
-        { items: { some: { menuItem: { restaurantId } } } }
-      ]
+      items: { some: { menuItem: { restaurantId } } }
     };
     
     // Handle multiple statuses (comma-separated)
@@ -49,15 +46,15 @@ export const GET = withTiming(async (request: Request) => {
     const orders = await prisma.order.findMany({
       where: whereClause,
       take: limit,
+      orderBy: { createdAt: 'desc' },
       include: {
-        table: true,
+        table: { select: { id: true, number: true, status: true } },
         items: {
           include: {
-            menuItem: true
+            menuItem: { select: { id: true, name: true, category: true, price: true, priceHalf: true, hasHalfFullOption: true, dietType: true } }
           }
         }
-      },
-      orderBy: { createdAt: 'desc' }
+      }
     });
     
     return NextResponse.json(orders, {

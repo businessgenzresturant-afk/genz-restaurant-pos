@@ -26,8 +26,7 @@ export async function GET(request: Request) {
 
     const tables = await prisma.table.findMany({
       where: { restaurantId: user.restaurantId },
-      orderBy: { number: 'asc' },
-      include: { restaurant: true }
+      orderBy: { number: 'asc' }
     });
     
     
