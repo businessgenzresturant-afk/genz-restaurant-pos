@@ -694,23 +694,33 @@ export default function SettingsPage() {
               <Button
                 variant="destructive"
                 onClick={async () => {
-                  if (confirm('Are you ABSOLUTELY sure? This will delete all orders and bills permanently.')) {
-                    try {
-                      const res = await fetch('/api/admin/production-cleanup', { method: 'POST' });
-                      const data = await res.json();
-                      if (res.ok) {
-                        toast.success('Database cleaned successfully!');
-                        setTimeout(() => window.location.reload(), 2000);
-                      } else {
-                        toast.error(data.error || 'Failed to clean database');
+                  if (!confirm('Are you ABSOLUTELY sure? This will permanently delete ALL orders, bills, and order data. This cannot be undone.')) return;
+                  if (!confirm('FINAL WARNING: Click OK to delete all orders and bills.')) return;
+                  try {
+                    const toastId = toast.loading('🗑️ Deleting all data...');
+                    const res = await fetch('/api/admin/production-cleanup', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin,
                       }
-                    } catch (e) {
-                      toast.error('Network error occurred');
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.success) {
+                      toast.success(
+                        `✅ Done! Deleted ${data.stats?.orders ?? 0} orders, ${data.stats?.bills ?? 0} bills, ${data.stats?.orderItems ?? 0} items. Tables reset.`,
+                        { id: toastId, duration: 5000 }
+                      );
+                      setTimeout(() => window.location.reload(), 2500);
+                    } else {
+                      toast.error(data.error || 'Failed to clean database', { id: toastId });
                     }
+                  } catch (e) {
+                    toast.error('Network error — check connection and retry');
                   }
                 }}
               >
-                Reset Database
+                🗑️ Reset Database
               </Button>
             </div>
           </div>

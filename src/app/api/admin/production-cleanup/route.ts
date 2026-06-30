@@ -4,56 +4,41 @@ import { prisma } from '@/lib/prisma';
 
 /**
  * Production Cleanup Endpoint
- * Clears all testing/demo data while preserving core configuration
- * Only accessible by ADMIN users
+ * Clears all orders, bills, order items. Preserves menu, tables, users, restaurant config.
+ * ADMIN only — accessible from Settings > Danger Zone
  */
 export async function POST(req: Request) {
   try {
-    const { error, session } = await checkAuth();
+    const { error, session } = await checkAuth(req);
     if (error || !session?.user || (session.user as any).role !== 'ADMIN') {
       return NextResponse.json({ error: 'Unauthorized - Admin access required' }, { status: 401 });
     }
 
-    // Execute cleanup in a transaction for data integrity
-    const result = await prisma.$transaction(async (tx) => {
-      // 1. Delete all transactional data (order matters for foreign keys)
-      const deletedPointTransactions = await tx.pointTransaction.deleteMany({});
-      const deletedOrderItems = await tx.orderItem.deleteMany({});
-      const deletedBills = await tx.bill.deleteMany({});
-      const deletedOrders = await tx.order.deleteMany({});
-      
-      // 2. Reset customer data (optional - keep customer history or wipe)
-      const deletedCustomers = await tx.customer.deleteMany({});
-      
-      // 3. Reset all tables to AVAILABLE
-      const updatedTables = await tx.table.updateMany({
-        data: {
-          status: 'AVAILABLE'
-        }
-      });
-
-      return {
-        deletedPointTransactions: deletedPointTransactions.count,
-        deletedOrderItems: deletedOrderItems.count,
-        deletedBills: deletedBills.count,
-        deletedOrders: deletedOrders.count,
-        deletedCustomers: deletedCustomers.count,
-        resetTables: updatedTables.count
-      };
+    // Delete in strict FK order (no transactions needed - sequential deletes handle constraints)
+    const deletedPT = await prisma.pointTransaction.deleteMany({});
+    const deletedOI = await prisma.orderItem.deleteMany({});
+    const deletedBills = await prisma.bill.deleteMany({});
+    const deletedOrders = await prisma.order.deleteMany({});
+    const resetTables = await prisma.table.updateMany({
+      data: { status: 'AVAILABLE' }
     });
 
-    return NextResponse.json({ 
-      success: true, 
-      message: 'Production database successfully cleaned. All test data removed, tables reset.',
-      stats: result
+    return NextResponse.json({
+      success: true,
+      message: 'All order data deleted. Tables reset to available.',
+      stats: {
+        pointTransactions: deletedPT.count,
+        orderItems: deletedOI.count,
+        bills: deletedBills.count,
+        orders: deletedOrders.count,
+        tablesReset: resetTables.count,
+      }
     });
   } catch (error: any) {
-    if (process.env.NODE_ENV === 'development') {
-      console.error('Production cleanup error:', error);
-    }
-    return NextResponse.json({ 
-      error: 'Failed to clean database', 
-      detail: error?.message 
+    console.error('Cleanup error:', error?.message);
+    return NextResponse.json({
+      error: 'Failed to clean database',
+      detail: error?.message
     }, { status: 500 });
   }
 }
