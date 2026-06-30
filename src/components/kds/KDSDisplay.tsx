@@ -50,9 +50,8 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
     return true;
   });
   const [now, setNow] = useState(new Date());
-
-  const [soundEnabled, setSoundEnabled] = useState(!autoStart); // Disable sound in TV mode
-  const [hasInteracted, setHasInteracted] = useState(autoStart); // Skip interaction in TV mode
+  const [soundEnabled, setSoundEnabled] = useState(true); // Default to true, catch errors if browser blocks autoplay
+  const [hasInteracted, setHasInteracted] = useState(autoStart); // Skip interaction requirement overlay in TV mode
   const [isReconnecting, setIsReconnecting] = useState(false);
   const [selectedOrderSummary, setSelectedOrderSummary] = useState<any | null>(null);
   // 🔧 BUG-07 FIX: Use ref instead of state for failureCount.
@@ -165,13 +164,20 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
 
   const fetchOrders = useCallback(async () => {
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s max (was 30s)
+      let signal;
+      let timeoutId;
+      
+      // Fallback for old TV browsers that don't support AbortController
+      if (typeof AbortController !== 'undefined') {
+        const controller = new AbortController();
+        signal = controller.signal;
+        timeoutId = setTimeout(() => controller.abort(), 8000); // 8s max
+      }
       
       const url = `/api/kds-orders?restaurantId=${restaurantId}&status=PENDING,PREPARING&_t=${Date.now()}`;
       
       const response = await fetch(url, {
-        signal: controller.signal,
+        signal,
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -181,7 +187,7 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
         credentials: 'omit'
       });
       
-      clearTimeout(timeoutId);
+      if (timeoutId) clearTimeout(timeoutId);
       
       if (!response.ok) {
         if (process.env.NODE_ENV === 'development') {
