@@ -117,15 +117,6 @@ export const PATCH = withTiming(async (
           }
         });
 
-        // 🔧 BUG-03 FIX: Apply table→RUNNING transition here too, not just in the regular path.
-        // When order is marked SERVED via optimistic-lock path, table must become RUNNING.
-        if (status === 'SERVED' && order?.tableId) {
-          await prisma.table.update({
-            where: { id: order.tableId },
-            data: { status: 'RUNNING' }
-          });
-        }
-
         return NextResponse.json(order);
       } catch (error) {
         throw error;
@@ -150,15 +141,6 @@ export const PATCH = withTiming(async (
           }
         }
       });
-
-      // 🔧 RUNNING TABLE FIX: When order status changes to SERVED, set table to RUNNING
-      // This indicates food has been served and customers are eating (might order more)
-      if (status === 'SERVED' && updatedOrder.tableId) {
-        await tx.table.update({
-          where: { id: updatedOrder.tableId },
-          data: { status: 'RUNNING' }
-        });
-      }
 
       return updatedOrder;
     });

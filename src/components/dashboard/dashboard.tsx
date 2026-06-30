@@ -354,14 +354,9 @@ export function Dashboard() {
   };
 
   const handleGenerateBill = async (orderId: string) => {
-    const toastId = toast.loading('🧾 Processing payment...', { duration: Infinity });
+    const toastId = toast.loading('🧾 Generating bill...', { duration: Infinity });
     
     try {
-      // UX stage 2
-      setTimeout(() => {
-        toast.loading('🖨️ Generating bill...', { id: toastId, duration: Infinity });
-      }, 400);
-
       // Mark as served first
       const markResponse = await fetch(`/api/orders/${orderId}`, {
         method: 'PATCH',
