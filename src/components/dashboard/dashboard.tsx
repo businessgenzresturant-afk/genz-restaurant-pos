@@ -13,7 +13,8 @@ import {
   Bike,
   Loader2,
   Receipt,
-  BarChart3
+  BarChart3,
+  Lock
 } from 'lucide-react';
 import { TableDrawer } from './TableDrawer';
 import { MenuDrawer } from './MenuDrawer';
@@ -32,7 +33,7 @@ import { useAuth } from '@/lib/useAuth';
 
 export function Dashboard() {
   const router = useRouter();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isManager, isChef } = useAuth();
   
   const [tables, setTables] = useState<any[]>(() => {
     if (typeof window !== 'undefined' && (window as any).__pos_cache?.tables) {
@@ -548,14 +549,30 @@ export function Dashboard() {
           <Card 
             role="button"
             tabIndex={0}
-            onClick={() => setTodayRevenueModalOpen(true)}
-            className="p-6 bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/20 shadow-md shadow-emerald-500/5 cursor-pointer hover:scale-[1.02] hover:border-emerald-500/40 transition-all select-none group active:scale-[0.99]"
+            onClick={() => {
+              if (isAdmin || isManager) {
+                setTodayRevenueModalOpen(true);
+              } else {
+                toast.error("Can't access, only admin access", { icon: <Lock className="w-4 h-4 text-red-500" /> });
+              }
+            }}
+            className={`p-6 bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/20 shadow-md shadow-emerald-500/5 transition-all select-none group relative ${
+              isAdmin || isManager 
+                ? 'cursor-pointer hover:scale-[1.02] hover:border-emerald-500/40 active:scale-[0.99]' 
+                : 'opacity-70'
+            }`}
           >
             <div className="flex items-center justify-between">
               <p className="text-sm font-bold text-emerald-700 dark:text-emerald-400 opacity-90 uppercase tracking-wider group-hover:text-emerald-500 transition-colors">Today&apos;s Revenue</p>
-              <span className="text-xl font-black text-emerald-500 group-hover:scale-110 transition-transform">₹</span>
+              {!(isAdmin || isManager) ? (
+                <Lock className="w-5 h-5 text-muted-foreground/60" />
+              ) : (
+                <span className="text-xl font-black text-emerald-500 group-hover:scale-110 transition-transform">₹</span>
+              )}
             </div>
-            <p className="text-4xl font-black text-emerald-900 dark:text-emerald-300 mt-2">₹{revenue.toLocaleString()}</p>
+            <p className="text-4xl font-black text-emerald-900 dark:text-emerald-300 mt-2">
+              {!(isAdmin || isManager) ? '---' : `₹${revenue.toLocaleString()}`}
+            </p>
           </Card>
         </div>
 
@@ -671,8 +688,18 @@ export function Dashboard() {
 
             {/* Bills Card */}
             <Link 
-              href="/bills"
-              className="relative overflow-hidden p-5 rounded-3xl border border-border/60 bg-gradient-to-br from-indigo-950 to-black flex flex-col justify-between items-start cursor-pointer hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all group min-h-[160px]"
+              href={isAdmin || isManager ? "/bills" : "#"}
+              onClick={(e) => {
+                if (!isAdmin && !isManager) {
+                  e.preventDefault();
+                  toast.error("Can't access, only admin access", { icon: <Lock className="w-4 h-4 text-red-500" /> });
+                }
+              }}
+              className={`relative overflow-hidden p-5 rounded-3xl border border-border/60 flex flex-col justify-between items-start transition-all group min-h-[160px] ${
+                isAdmin || isManager 
+                  ? 'bg-gradient-to-br from-indigo-950 to-black cursor-pointer hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/10' 
+                  : 'bg-zinc-900/50 opacity-60 cursor-not-allowed'
+              }`}
             >
               <div className="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 opacity-80 group-hover:scale-110 group-hover:opacity-100 group-hover:-translate-x-1 transition-all duration-500 mix-blend-screen pointer-events-none">
                 <img src="/images/dashboard/bills.png" alt="Bills" className="w-full h-full object-contain" />
@@ -682,7 +709,10 @@ export function Dashboard() {
                   <Receipt className="w-5 h-5" />
                 </div>
                 <div className="mt-6 w-[70%]">
-                  <h3 className="font-black text-xl text-white drop-shadow-md">Bills & Receipts</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-black text-xl text-white drop-shadow-md">Bills & Receipts</h3>
+                    {!(isAdmin || isManager) && <Lock className="w-4 h-4 text-muted-foreground/60" />}
+                  </div>
                   <p className="text-xs text-gray-400 font-medium mt-1 leading-relaxed">Generate guest invoices</p>
                 </div>
               </div>
@@ -709,8 +739,18 @@ export function Dashboard() {
 
             {/* Reports Card */}
             <Link 
-              href="/reports"
-              className="relative overflow-hidden p-5 rounded-3xl border border-border/60 bg-gradient-to-br from-emerald-950 to-black flex flex-col justify-between items-start cursor-pointer hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-500/10 transition-all group min-h-[160px]"
+              href={isAdmin || isManager ? "/reports" : "#"}
+              onClick={(e) => {
+                if (!isAdmin && !isManager) {
+                  e.preventDefault();
+                  toast.error("Can't access, only admin access", { icon: <Lock className="w-4 h-4 text-red-500" /> });
+                }
+              }}
+              className={`relative overflow-hidden p-5 rounded-3xl border border-border/60 flex flex-col justify-between items-start transition-all group min-h-[160px] ${
+                isAdmin || isManager 
+                  ? 'bg-gradient-to-br from-emerald-950 to-black cursor-pointer hover:border-emerald-500/50 hover:shadow-2xl hover:shadow-emerald-500/10' 
+                  : 'bg-zinc-900/50 opacity-60 cursor-not-allowed'
+              }`}
             >
               <div className="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-32 opacity-80 group-hover:scale-110 group-hover:opacity-100 group-hover:-translate-x-1 transition-all duration-500 mix-blend-screen pointer-events-none">
                 <img src="/images/dashboard/reports.png" alt="Reports" className="w-full h-full object-contain" />
@@ -720,7 +760,10 @@ export function Dashboard() {
                   <BarChart3 className="w-5 h-5" />
                 </div>
                 <div className="mt-6 w-[70%]">
-                  <h3 className="font-black text-xl text-white drop-shadow-md">Reports</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-black text-xl text-white drop-shadow-md">Reports</h3>
+                    {!(isAdmin || isManager) && <Lock className="w-4 h-4 text-muted-foreground/60" />}
+                  </div>
                   <p className="text-xs text-gray-400 font-medium mt-1 leading-relaxed">Analyze performance</p>
                 </div>
               </div>

@@ -102,26 +102,10 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
       const soundClone = audio.cloneNode() as HTMLAudioElement;
       soundClone.volume = 0.7;
       
-      if (type === 'urgent') {
-        // Play 3 quick beeps for urgent
-        soundClone.play().catch((e) => {
-          if (process.env.NODE_ENV === 'development') console.error('Sound play error:', e);
-        });
-        setTimeout(() => {
-          const beep2 = audio.cloneNode() as HTMLAudioElement;
-          beep2.volume = 0.7;
-          beep2.play().catch(() => {});
-        }, 300);
-        setTimeout(() => {
-          const beep3 = audio.cloneNode() as HTMLAudioElement;
-          beep3.volume = 0.7;
-          beep3.play().catch(() => {});
-        }, 600);
-      } else {
-        soundClone.play().catch((e) => {
-          if (process.env.NODE_ENV === 'development') console.error('Sound play error:', e);
-        });
-      }
+      // Play exactly once for both new and urgent, per user request
+      soundClone.play().catch((e) => {
+        if (process.env.NODE_ENV === 'development') console.error('Sound play error:', e);
+      });
     } catch (e) {
       if (process.env.NODE_ENV === 'development') {
         console.error('Error playing sound:', e);
@@ -137,18 +121,6 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
 
   // Acknowledge all sounds
   const acknowledgeAllSounds = useCallback(() => {
-    // Clear all timers
-    soundTimersRef.current.forEach((timer) => {
-      clearInterval(timer);
-    });
-    soundTimersRef.current.clear();
-    
-    // Clear timers
-    soundTimersRef.current.forEach((timer) => {
-      clearInterval(timer);
-    });
-    soundTimersRef.current.clear();
-    
     toast.success('All notifications acknowledged');
   }, []);
 
@@ -234,6 +206,15 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
           }
           return false;
         }
+        
+        // 🔧 Filter out items that are already marked as served
+        order.items = order.items.filter((item: any) => !item.specialInstructions?.includes('[SERVED]'));
+        
+        // Only show order if it still has unserved items
+        if (order.items.length === 0) {
+          return false;
+        }
+        
         return true;
       });
       

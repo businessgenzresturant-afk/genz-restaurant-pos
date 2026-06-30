@@ -11,23 +11,34 @@ import {
   ChefHat, 
   Receipt, 
   BarChart3, 
-  Settings 
+  Settings,
+  Lock
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { useAuth } from '@/lib/useAuth';
+import { toast } from 'sonner';
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { isAdmin, isManager, isChef } = useAuth();
 
   const navItems = [
-    { href: '/', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
-    { href: '/tables', label: 'Tables', icon: <UtensilsCrossed size={20} /> },
-    { href: '/menu', label: 'Menu', icon: <MenuSquare size={20} /> },
-    { href: '/orders', label: 'Orders', icon: <ClipboardList size={20} /> },
-    { href: '/kot', label: 'KOT', icon: <ChefHat size={20} /> },
-    { href: '/bills', label: 'Bills', icon: <Receipt size={20} /> },
-    { href: '/reports', label: 'Reports', icon: <BarChart3 size={20} /> },
-    { href: '/settings', label: 'Settings', icon: <Settings size={20} /> },
+    { href: '/', label: 'Dashboard', icon: <LayoutDashboard size={20} />, restrict: isChef }, // Chef doesn't need dashboard
+    { href: '/tables', label: 'Tables', icon: <UtensilsCrossed size={20} />, restrict: isChef },
+    { href: '/menu', label: 'Menu', icon: <MenuSquare size={20} />, restrict: isChef },
+    { href: '/orders', label: 'Orders', icon: <ClipboardList size={20} />, restrict: isChef },
+    { href: '/kot', label: 'KOT', icon: <ChefHat size={20} />, restrict: false },
+    { href: '/bills', label: 'Bills', icon: <Receipt size={20} />, restrict: !isAdmin && !isManager },
+    { href: '/reports', label: 'Reports', icon: <BarChart3 size={20} />, restrict: !isAdmin && !isManager },
+    { href: '/settings', label: 'Settings', icon: <Settings size={20} />, restrict: !isAdmin },
   ];
+
+  const handleRestrictedClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    toast.error("Can't access, only admin access", {
+      icon: <Lock className="w-4 h-4 text-red-500" />
+    });
+  };
 
   return (
     <aside className="w-72 h-screen flex-shrink-0 bg-background/80 backdrop-blur-2xl border-r border-border shadow-sm flex flex-col z-20 sticky top-0">
@@ -46,24 +57,32 @@ export default function Sidebar() {
       <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
+          const isRestricted = item.restrict;
+          
           return (
             <Link
               key={item.href}
-              href={item.href}
+              href={isRestricted ? '#' : item.href}
+              onClick={isRestricted ? handleRestrictedClick : undefined}
               className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl text-sm font-bold transition-all duration-200 group relative overflow-hidden will-change-transform ${
-                isActive
+                isRestricted 
+                  ? 'opacity-50 cursor-not-allowed hover:bg-muted/50 text-muted-foreground'
+                  : isActive
                   ? 'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25 scale-[1.02]'
                   : 'text-muted-foreground hover:bg-muted/80 hover:text-foreground hover:scale-[1.01]'
               }`}
             >
-              {isActive && (
+              {!isRestricted && isActive && (
                 <div className="absolute inset-0 bg-white/20 blur-md translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out dark:bg-black/20" />
               )}
-              <span className={`transition-transform duration-300 ${isActive ? 'scale-110 drop-shadow-md' : 'group-hover:scale-110'}`}>
+              <span className={`transition-transform duration-300 ${!isRestricted && isActive ? 'scale-110 drop-shadow-md' : 'group-hover:scale-110'}`}>
                 {item.icon}
               </span>
-              <span className="relative z-10">{item.label}</span>
-              {isActive && (
+              <span className="relative z-10 flex-1">{item.label}</span>
+              {isRestricted && (
+                <Lock className="w-4 h-4 ml-auto text-muted-foreground/60" />
+              )}
+              {!isRestricted && isActive && (
                 <span className="ml-auto w-2 h-2 bg-primary-foreground rounded-full animate-pulse-glow shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
               )}
             </Link>

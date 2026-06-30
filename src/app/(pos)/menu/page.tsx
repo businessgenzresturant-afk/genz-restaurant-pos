@@ -217,7 +217,7 @@ export default function MenuPage() {
     
     try {
       const response = await fetch(`/api/menu/${itemToEdit.id}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name,

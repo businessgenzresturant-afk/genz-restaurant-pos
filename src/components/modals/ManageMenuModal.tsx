@@ -59,8 +59,15 @@ export default function ManageMenuModal({ isOpen, onClose }: ManageMenuModalProp
     try {
       if (showLoader) setLoading(true);
       const response = await fetch('/api/menu');
+      if (!response.ok) {
+        throw new Error('Failed to fetch menu items');
+      }
       const data = await response.json();
-      setMenuItems(data);
+      if (Array.isArray(data)) {
+        setMenuItems(data);
+      } else {
+        setMenuItems([]);
+      }
     } catch (error) {
       console.error('Failed to fetch menu items:', error);
     } finally {

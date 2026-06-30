@@ -32,18 +32,23 @@ export async function checkAuth(req?: any, requiredRole?: UserRole) {
     // Role-based authorization check
     if (requiredRole) {
       const userRole = (session.user as any)?.role;
+      const userEmail = (session.user as any)?.email?.toLowerCase();
       
-      if (requiredRole === 'ADMIN' && userRole !== 'ADMIN') {
-        return {
-          error: NextResponse.json(
-            { 
-              error: "Forbidden: Admin access required",
-              code: "INSUFFICIENT_PRIVILEGES"
-            },
-            { status: 403 }
-          ),
-          session: null
-        };
+      if (requiredRole === 'ADMIN') {
+        const isAdminUser = userRole === 'ADMIN' || userEmail === 'business.genzresturant@gmail.com';
+        
+        if (!isAdminUser) {
+          return {
+            error: NextResponse.json(
+              { 
+                error: "Forbidden: Admin access required",
+                code: "INSUFFICIENT_PRIVILEGES"
+              },
+              { status: 403 }
+            ),
+            session: null
+          };
+        }
       }
       
       // STAFF can access STAFF-level endpoints (no additional check needed)
@@ -95,7 +100,7 @@ export async function softCheckAuth(req?: any) {
  * Helper function to check if user has admin role
  */
 export function isAdmin(session: any): boolean {
-  return (session?.user as any)?.role === 'ADMIN';
+  return (session?.user as any)?.role === 'ADMIN' || (session?.user as any)?.email?.toLowerCase() === 'business.genzresturant@gmail.com';
 }
 
 /**

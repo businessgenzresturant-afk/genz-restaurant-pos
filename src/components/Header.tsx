@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { signOut, useSession } from 'next-auth/react';
+import { toast } from 'sonner';
 import { 
   Settings, 
   LogOut,
@@ -19,7 +20,8 @@ import {
   Search,
   ToggleLeft,
   ClipboardList,
-  Clock
+  Clock,
+  Lock
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Portal } from '@/components/ui/portal';
@@ -67,7 +69,18 @@ export default function Header() {
   const userEmail = session?.user?.email || 'user@example.com';
   const userRole = (session?.user as any)?.role || 'STAFF';
   const userInitial = userName.charAt(0).toUpperCase();
-  const isAdmin = userRole === 'ADMIN';
+  const isAdmin = userRole === 'ADMIN' || userEmail === 'business.genzresturant@gmail.com';
+
+  const handleRestrictedAction = (action: () => void) => {
+    if (!isAdmin) {
+      toast.error("Can't access, only admin access", {
+        icon: <Lock className="w-4 h-4 text-red-500" />
+      });
+      setDropdownOpen(false);
+      return;
+    }
+    action();
+  };
 
   const handleBillSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && billSearch.trim()) {
@@ -171,70 +184,98 @@ export default function Header() {
                   
                   {/* Management Options */}
                   <button 
-                    onClick={() => {
+                    onClick={() => handleRestrictedAction(() => {
                       setDropdownOpen(false);
                       setShowTablesModal(true);
-                    }}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-muted text-foreground"
+                    })}
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-colors w-full text-left ${isAdmin ? 'hover:bg-muted text-foreground' : 'text-muted-foreground/60 hover:bg-muted/50'}`}
                   >
-                    <LayoutGrid className="w-4 h-4 text-muted-foreground" />
-                    Manage Tables
+                    <div className="flex items-center gap-2.5">
+                      <LayoutGrid className="w-4 h-4" />
+                      Manage Tables
+                    </div>
+                    {!isAdmin && <Lock className="w-3.5 h-3.5" />}
                   </button>
                   
                   <button 
-                    onClick={() => {
+                    onClick={() => handleRestrictedAction(() => {
                       setDropdownOpen(false);
                       setShowMenuModal(true);
-                    }}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-muted text-foreground"
+                    })}
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-colors w-full text-left ${isAdmin ? 'hover:bg-muted text-foreground' : 'text-muted-foreground/60 hover:bg-muted/50'}`}
                   >
-                    <Utensils className="w-4 h-4 text-muted-foreground" />
-                    Manage Menu
+                    <div className="flex items-center gap-2.5">
+                      <Utensils className="w-4 h-4" />
+                      Manage Menu
+                    </div>
+                    {!isAdmin && <Lock className="w-3.5 h-3.5" />}
                   </button>
                   
                   <button 
-                    onClick={() => {
+                    onClick={() => handleRestrictedAction(() => {
                       setDropdownOpen(false);
                       setShowRestaurantSettingsModal(true);
-                    }}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-muted text-foreground"
+                    })}
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-colors w-full text-left ${isAdmin ? 'hover:bg-muted text-foreground' : 'text-muted-foreground/60 hover:bg-muted/50'}`}
                   >
-                    <Store className="w-4 h-4 text-muted-foreground" />
-                    Restaurant Settings
+                    <div className="flex items-center gap-2.5">
+                      <Store className="w-4 h-4" />
+                      Restaurant Settings
+                    </div>
+                    {!isAdmin && <Lock className="w-3.5 h-3.5" />}
                   </button>
                   
                   <button 
-                    onClick={() => {
+                    onClick={() => handleRestrictedAction(() => {
                       setDropdownOpen(false);
                       setShowStaffModal(true);
-                    }}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-muted text-foreground"
+                    })}
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-colors w-full text-left ${isAdmin ? 'hover:bg-muted text-foreground' : 'text-muted-foreground/60 hover:bg-muted/50'}`}
                   >
-                    <Users className="w-4 h-4 text-muted-foreground" />
-                    Manage Staff
+                    <div className="flex items-center gap-2.5">
+                      <Users className="w-4 h-4" />
+                      Manage Staff
+                    </div>
+                    {!isAdmin && <Lock className="w-3.5 h-3.5" />}
                   </button>
                   
                   <button 
-                    onClick={() => {
+                    onClick={() => handleRestrictedAction(() => {
                       setDropdownOpen(false);
                       setShowTaxPricingModal(true);
-                    }}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors hover:bg-muted text-foreground"
+                    })}
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-colors w-full text-left ${isAdmin ? 'hover:bg-muted text-foreground' : 'text-muted-foreground/60 hover:bg-muted/50'}`}
                   >
-                    <ReceiptIcon className="w-4 h-4 text-muted-foreground" />
-                    Tax & Pricing
+                    <div className="flex items-center gap-2.5">
+                      <ReceiptIcon className="w-4 h-4" />
+                      Tax & Pricing
+                    </div>
+                    {!isAdmin && <Lock className="w-3.5 h-3.5" />}
                   </button>
                   
-                  <Link 
-                    href="/settings" 
-                    onClick={() => setDropdownOpen(false)} 
-                    className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors ${
-                      pathname === '/settings' ? 'bg-primary/10 text-primary' : 'hover:bg-muted text-foreground'
-                    }`}
-                  >
-                    <Settings className="w-4 h-4 text-muted-foreground" />
-                    System Settings
-                  </Link>
+                  {isAdmin ? (
+                    <Link 
+                      href="/settings" 
+                      onClick={() => setDropdownOpen(false)} 
+                      className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold transition-colors w-full text-left ${
+                        pathname === '/settings' ? 'bg-primary/10 text-primary' : 'hover:bg-muted text-foreground'
+                      }`}
+                    >
+                      <Settings className="w-4 h-4 text-muted-foreground" />
+                      System Settings
+                    </Link>
+                  ) : (
+                    <button 
+                      onClick={() => handleRestrictedAction(() => {})}
+                      className="flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-colors w-full text-left text-muted-foreground/60 hover:bg-muted/50"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <Settings className="w-4 h-4" />
+                        System Settings
+                      </div>
+                      <Lock className="w-3.5 h-3.5" />
+                    </button>
+                  )}
                   
                   <div className="border-t border-border/50 my-1" />
                   
