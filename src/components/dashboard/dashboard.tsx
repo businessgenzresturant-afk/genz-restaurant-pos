@@ -90,130 +90,111 @@ export function Dashboard() {
   // Removed dashboard click sound - sounds should ONLY play on KDS page
   // when actual new orders arrive, not on dashboard button clicks
 
-  const fetchData = useCallback(async () => {
+  const fetchMenuData = useCallback(async () => {
     try {
-      console.log('[Dashboard] Starting data fetch...');
-      
-      // Only fetch reports for admin users - staff gets 403 on /api/reports
+      const ts = Date.now();
+      const menuRes = await fetch(`/api/menu?_t=${ts}`, { cache: 'no-store' });
+      if (menuRes.ok) {
+        const m = await menuRes.json();
+        const validMenu = Array.isArray(m) ? m : [];
+        setMenuItems(validMenu);
+        if (typeof window !== 'undefined') {
+          (window as any).__pos_cache = { ...(window as any).__pos_cache, menuItems: validMenu };
+        }
+      }
+    } catch (error) {
+      console.error('[Dashboard] Error fetching menu data:', error);
+    }
+  }, []);
+
+  const fetchReportsData = useCallback(async () => {
+    if (!isAdmin) return;
+    try {
+      const ts = Date.now();
+      const reportsRes = await fetch(`/api/reports?_t=${ts}`, { cache: 'no-store' });
+      if (reportsRes.ok) {
+        const r = await reportsRes.json();
+        setRevenue(r.dailySalesTotal || 0);
+        if (typeof window !== 'undefined') {
+          (window as any).__pos_cache = { ...(window as any).__pos_cache, revenue: r.dailySalesTotal || 0 };
+        }
+      } else if (reportsRes.status === 401) {
+        window.location.href = '/login';
+      }
+    } catch (error) {
+      console.error('[Dashboard] Error fetching reports data:', error);
+    }
+  }, [isAdmin]);
+
+  const fetchCoreData = useCallback(async () => {
+    try {
       const ts = Date.now();
       const fetchPromises: Promise<Response>[] = [
         fetch(`/api/tables?_t=${ts}`, { cache: 'no-store' }),
-        fetch(`/api/orders?status=PENDING,PREPARING,READY,SERVED&_t=${ts}`, { cache: 'no-store' }),
-        fetch(`/api/menu?_t=${ts}`, { cache: 'no-store' }),
+        fetch(`/api/orders?status=PENDING,PREPARING,READY,SERVED&_t=${ts}`, { cache: 'no-store' })
       ];
-      if (isAdmin) {
-        fetchPromises.push(fetch(`/api/reports?_t=${ts}`, { cache: 'no-store' }));
-      }
 
       const responses = await Promise.all(fetchPromises);
-      const [tablesRes, ordersRes, menuRes] = responses;
-      const reportsRes = isAdmin ? responses[3] : null;
+      const [tablesRes, ordersRes] = responses;
 
-      console.log('[Dashboard] API responses:', {
-        tables: tablesRes.status,
-        orders: ordersRes.status,
-        reports: reportsRes?.status ?? 'skipped (staff)',
-        menu: menuRes.status
-      });
-
-      // Handle auth errors gracefully - redirect to login
-      if (tablesRes.status === 401 || ordersRes.status === 401 || (reportsRes && reportsRes.status === 401) || menuRes.status === 401) {
-        console.error('[Dashboard] Authentication error detected - session expired or invalid');
-        
-        // Check if it's an invalid session token error
-        try {
-          const errorData = await tablesRes.json().catch(() => ({}));
-          if (errorData.code === 'INVALID_SESSION_TOKEN' || errorData.error?.includes('Session expired')) {
-            console.error('[Dashboard] Invalid session token - forcing logout and redirect');
-            // Clear any cached data
-            if (typeof window !== 'undefined') {
-              delete (window as any).__pos_cache;
-            }
-            // Redirect to login page
-            window.location.href = '/login';
-            return;
-          }
-        } catch (e) {
-          console.error('[Dashboard] Error parsing auth error:', e);
-        }
-        
-        // Generic auth error - still redirect
+      if (tablesRes.status === 401 || ordersRes.status === 401) {
         window.location.href = '/login';
         return;
       }
 
-      // Parse responses with error handling
       const t = tablesRes.ok ? await tablesRes.json() : [];
       const o = ordersRes.ok ? await ordersRes.json() : [];
-      const m = menuRes.ok ? await menuRes.json() : [];
-      let rev = 0;
-      if (reportsRes && reportsRes.ok) {
-        const r = await reportsRes.json();
-        rev = r.dailySalesTotal || 0;
-      }
 
-      console.log('[Dashboard] Parsed data:', {
-        tablesCount: Array.isArray(t) ? t.length : 0,
-        ordersCount: Array.isArray(o) ? o.length : 0,
-        menuCount: Array.isArray(m) ? m.length : 0,
-        revenue: rev
-      });
-
-      // Validate data before updating state
       const validTables = Array.isArray(t) ? t : [];
       const validOrders = Array.isArray(o) ? o : [];
-      const validMenu = Array.isArray(m) ? m : [];
 
-      // ALWAYS update state - even if data is empty (fresh restaurant)
-      console.log('[Dashboard] Updating state with:', {
-        tables: validTables.length,
-        orders: validOrders.length,
-        menu: validMenu.length
-      });
-      
       setTables(validTables);
       setActiveOrders(validOrders);
-      setRevenue(rev);
-      setMenuItems(validMenu);
 
-      // Cache globally on window
       if (typeof window !== 'undefined') {
         (window as any).__pos_cache = {
+          ...(window as any).__pos_cache,
           tables: validTables,
-          activeOrders: validOrders,
-          revenue: rev,
-          menuItems: validMenu
+          activeOrders: validOrders
         };
       }
-      
-      console.log('[Dashboard] State updated successfully');
     } catch (error) {
-      console.error('[Dashboard] Error fetching dashboard data:', error);
-      // Don't clear state on error - keep showing last known good data
+      console.error('[Dashboard] Error fetching core data:', error);
     } finally {
       setLoading(false);
-      console.log('[Dashboard] Loading complete');
     }
-  }, [isAdmin]);
+  }, []);
+
+  const fetchData = useCallback(async () => {
+    await Promise.all([
+      fetchCoreData(),
+      fetchReportsData(),
+      menuItems.length === 0 ? fetchMenuData() : Promise.resolve()
+    ]);
+  }, [fetchCoreData, fetchReportsData, fetchMenuData, menuItems.length]);
 
   useEffect(() => {
     fetchData();
-    // Poll every 5 seconds for near-realtime updates
-    const interval = setInterval(fetchData, 5000);
+    // Core operational data every 10 seconds
+    const coreInterval = setInterval(fetchCoreData, 10000);
+    // Reports every 60 seconds
+    const reportsInterval = setInterval(fetchReportsData, 60000);
     
-    // Also refetch when the tab becomes visible (e.g., user switches back from kitchen screen)
+    // Also refetch when the tab becomes visible
     const handleVisibility = () => {
       if (document.visibilityState === 'visible') {
-        fetchData();
+        fetchCoreData();
+        fetchReportsData();
       }
     };
     document.addEventListener('visibilitychange', handleVisibility);
     
     return () => {
-      clearInterval(interval);
+      clearInterval(coreInterval);
+      clearInterval(reportsInterval);
       document.removeEventListener('visibilitychange', handleVisibility);
     };
-  }, [fetchData]);
+  }, [fetchData, fetchCoreData, fetchReportsData]);
 
   // Removed dashboard click sound preloading
 

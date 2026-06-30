@@ -24,6 +24,8 @@ export const GET = withTiming(async (request: Request) => {
   try {
     const { searchParams } = new URL(request.url);
     const statusParam = searchParams.get('status');
+    const limitParam = searchParams.get('limit');
+    const limit = limitParam === 'all' ? undefined : (limitParam ? parseInt(limitParam) : 100);
 
     const restaurantId = (auth.session.user as any).restaurantId;
     let whereClause: any = {
@@ -38,6 +40,7 @@ export const GET = withTiming(async (request: Request) => {
 
     const bills = await prisma.bill.findMany({
       where: whereClause,
+      take: limit,
       include: {
         order: {
           include: {

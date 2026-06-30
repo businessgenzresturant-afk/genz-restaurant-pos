@@ -57,12 +57,21 @@ export async function GET(request: Request) {
           ]
         }
       },
-      include: {
+      select: {
+        total: true,
+        paymentMethod: true,
         order: {
-          include: {
+          select: {
             items: {
-              include: {
-                menuItem: true
+              select: {
+                quantity: true,
+                menuItem: {
+                  select: {
+                    id: true,
+                    name: true,
+                    price: true
+                  }
+                }
               }
             }
           }
