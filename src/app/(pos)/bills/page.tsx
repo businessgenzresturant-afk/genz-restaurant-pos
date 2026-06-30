@@ -67,6 +67,9 @@ export default function BillsPage() {
   // GST toggle state
   const [gstApplied, setGstApplied] = useState(true);
 
+  // Search state
+  const [searchQuery, setSearchQuery] = useState('');
+
   useEffect(() => {
     fetchBills();
   }, []);
@@ -515,15 +518,43 @@ export default function BillsPage() {
 
       {/* Bills List */}
       <Card className="p-6 border-border/60">
-        <h2 className="text-xl font-semibold mb-4 text-foreground">Bill History</h2>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+          <h2 className="text-xl font-semibold text-foreground">Bill History</h2>
+          <div className="relative w-full sm:w-72">
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <Input
+              id="bill-search"
+              type="text"
+              placeholder="Search Bill # or KOT/Order #..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 h-9 text-sm"
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            )}
+          </div>
+        </div>
 
-        {bills.length === 0 ? (
+        {(() => {
+          const q = searchQuery.trim().toUpperCase();
+          const filtered = q
+            ? bills.filter((bill: any) =>
+                bill.id.slice(-8).toUpperCase().includes(q) ||
+                (bill.order?.id || '').slice(-8).toUpperCase().includes(q) ||
+                (bill.order?.kotNumber?.toString() || '').includes(q) ||
+                (bill.billNumber?.toString() || '').includes(q)
+              )
+            : bills;
+          return filtered.length === 0 ? (
           <p className="text-center py-8 text-muted-foreground">
-            No bills generated yet. Complete some orders to generate bills.
+            {q ? `No bills found for "${searchQuery}"` : 'No bills generated yet. Complete some orders to generate bills.'}
           </p>
         ) : (
           <div className="space-y-4">
-            {bills.map((bill) => (
+            {filtered.map((bill: any) => (
               <div key={bill.id} className="border border-border bg-card rounded-lg p-4 transition-all duration-200 hover:border-primary/40 hover:shadow-md">
                 <div className="flex justify-between items-start mb-3">
                   <div className="flex-1">
@@ -561,7 +592,8 @@ export default function BillsPage() {
               </div>
             ))}
           </div>
-        )}
+        );
+        })()}
       </Card>
     </div>
   );
