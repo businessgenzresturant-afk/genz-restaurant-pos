@@ -321,6 +321,24 @@ export const POST = withTiming(async (request: Request) => {
         data: { status: 'COMPLETED' }
       });
       
+      // CRITICAL FIX: Handle double-clicks by checking if bill already exists in this transaction
+      const existingTxBill = await tx.bill.findUnique({
+        where: { orderId: primaryOrder.id },
+        include: {
+          order: {
+            include: {
+              items: { include: { menuItem: true } },
+              table: true
+            }
+          },
+          table: true
+        }
+      });
+      
+      if (existingTxBill) {
+        return existingTxBill;
+      }
+      
       return tx.bill.create({
         data: {
           orderId: primaryOrder.id,
@@ -371,7 +389,7 @@ export const POST = withTiming(async (request: Request) => {
     console.timeEnd('⏱️ TOTAL-BILL-GENERATION');
     console.error('[Bill Creation] Error:', error);
     return NextResponse.json(
-      { error: 'Failed to create bill. Please try again.' },
+      { error: `Failed to create bill: ${error instanceof Error ? error.message : 'Unknown error'}` },
       { status: 500 }
     );
   }

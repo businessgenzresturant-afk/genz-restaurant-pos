@@ -357,18 +357,6 @@ export function Dashboard() {
     const toastId = toast.loading('🧾 Generating bill...', { duration: Infinity });
     
     try {
-      // Mark as served first
-      const markResponse = await fetch(`/api/orders/${orderId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'SERVED' })
-      });
-      
-      if (!markResponse.ok) {
-        const markData = await markResponse.json().catch(() => ({}));
-        console.log('Mark as served response:', markData);
-      }
-
       const response = await fetch('/api/bills', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

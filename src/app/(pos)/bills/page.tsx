@@ -151,24 +151,14 @@ export default function BillsPage() {
         throw new Error('Failed to generate bill');
       }
 
+      const newBill = await response.json();
       setShowGenerateModal(false);
       toast.success('Bill generated successfully!');
-      await fetchBills();
+      setSelectedBill(newBill);
+      setShowBillModal(true);
       
-      // Auto-open the newly generated bill by finding it from the updated list
-      // Since fetchBills might take time, let's wait a bit and then find the bill
-      setTimeout(async () => {
-        const updatedBillsRes = await fetch('/api/bills');
-        const updatedBillsJson = await updatedBillsRes.json();
-        const updatedBills = updatedBillsJson.data ?? updatedBillsJson;
-        if (Array.isArray(updatedBills)) {
-          const newBill = updatedBills.find((b: any) => b.orderId === orderId);
-          if (newBill) {
-            setSelectedBill(newBill);
-            setShowBillModal(true);
-          }
-        }
-      }, 500);
+      // Fetch in background so UI isn't blocked
+      fetchBills();
     } catch (err) {
       setError('Failed to generate bill. Please try again.');
       console.error('Error generating bill:', err);
