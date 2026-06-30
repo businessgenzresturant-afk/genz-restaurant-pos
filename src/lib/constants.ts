@@ -107,7 +107,7 @@ export const RESTAURANT_INFO = {
   NAME: 'Gen-Z Restaurant',
   ADDRESS: 'Gali No 7, L-97, near Labour Chowk, K-Block, Mahipalpur Village, New Delhi - 110037',
   GST_NUMBER: '07AABCG1234A1Z5',
-  PHONE: '+91 98765-43210',
+  PHONE: '+91 8800480778',
   WEBSITE: 'gen-z.online',
   CURRENCY: '₹',
 } as const;

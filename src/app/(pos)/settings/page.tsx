@@ -27,7 +27,7 @@ export default function SettingsPage() {
   const [restaurantName, setRestaurantName] = useState('Gen-Z Restaurant');
   const [restaurantAddress, setRestaurantAddress] = useState('Gali No 7, L-97, near Labour Chowk, K-Block, Mahipalpur Village, New Delhi - 110037');
   const [gstNumber, setGstNumber] = useState('07AABCG1234A1Z5');
-  const [phoneNumber, setPhoneNumber] = useState('+91 98765 43210');
+  const [phoneNumber, setPhoneNumber] = useState('+91 8800480778');
   
   // System settings
   const [taxRate, setTaxRate] = useState('18');
