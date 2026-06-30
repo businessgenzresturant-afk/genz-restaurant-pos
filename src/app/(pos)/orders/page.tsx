@@ -454,9 +454,9 @@ export default function OrdersPage() {
                                 {item.portionType} PORTION
                               </span>
                             )}
-                            {item.specialInstructions && (
+                            {item.specialInstructions && item.specialInstructions.replace(/\[URGENT ADDITION\]/g, '').replace(/\[SERVED\]/g, '').trim() && (
                               <p className="text-sm text-muted-foreground mt-1.5 flex items-start gap-1">
-                                <span className="opacity-60 mt-0.5">↳</span> {item.specialInstructions}
+                                <span className="opacity-60 mt-0.5">↳</span> {item.specialInstructions.replace(/\[URGENT ADDITION\]/g, '').replace(/\[SERVED\]/g, '').trim()}
                               </p>
                             )}
                             <p className="text-sm font-bold text-muted-foreground mt-1.5">

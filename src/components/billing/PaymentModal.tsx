@@ -213,9 +213,9 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
                           {item.portionType}
                         </span>
                       )}
-                      {item.specialInstructions && (
-                        <p className="text-sm text-muted-foreground mt-1">
-                          📝 {item.specialInstructions}
+                      {item.specialInstructions && item.specialInstructions.replace(/\[URGENT ADDITION\]/g, '').replace(/\[SERVED\]/g, '').trim() && (
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          📝 {item.specialInstructions.replace(/\[URGENT ADDITION\]/g, '').replace(/\[SERVED\]/g, '').trim()}
                         </p>
                       )}
                     </div>

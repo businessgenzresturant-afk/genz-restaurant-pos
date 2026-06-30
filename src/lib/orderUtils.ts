@@ -19,7 +19,8 @@ export function mergeOrderItems(items: any[]): any[] {
   items.forEach((item: any) => {
     // Clean special instructions
     const cleanInstr = (item.specialInstructions || '')
-      .replace('[URGENT ADDITION]', '')
+      .replace(/\[URGENT ADDITION\]/g, '')
+      .replace(/\[SERVED\]/g, '')
       .trim();
     
     // Find existing item with same menuItemId and instructions

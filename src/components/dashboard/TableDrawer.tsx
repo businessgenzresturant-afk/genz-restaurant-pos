@@ -185,7 +185,7 @@ export function TableDrawer({ isOpen, onClose, table, activeOrder, onAddItem, on
               {(() => {
                 // Auto-merge logic for clean display
                 const mergedItems = activeOrder.items.reduce((acc: any[], item: any) => {
-                  const cleanInstr = (item.specialInstructions || '').replace('[URGENT ADDITION]', '').trim();
+                  const cleanInstr = (item.specialInstructions || '').replace(/\[URGENT ADDITION\]/g, '').replace(/\[SERVED\]/g, '').trim();
                   const existing = acc.find(i => i.menuItem?.id === item.menuItem?.id && i.cleanInstr === cleanInstr);
                   if (existing) {
                     existing.quantity += item.quantity;

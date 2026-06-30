@@ -55,20 +55,25 @@ export default function ManageMenuModal({ isOpen, onClose }: ManageMenuModalProp
     }
   };
 
-  const fetchMenuItems = async () => {
+  const fetchMenuItems = async (showLoader = true) => {
     try {
-      setLoading(true);
+      if (showLoader) setLoading(true);
       const response = await fetch('/api/menu');
       const data = await response.json();
       setMenuItems(data);
     } catch (error) {
       console.error('Failed to fetch menu items:', error);
     } finally {
-      setLoading(false);
+      if (showLoader) setLoading(false);
     }
   };
 
   const handleToggleAvailability = async (id: string, currentStatus: boolean) => {
+    // Optimistic UI update for smoothness
+    setMenuItems(prev => prev.map(item => 
+      item.id === id ? { ...item, available: !currentStatus } : item
+    ));
+
     const toastId = toast.loading(currentStatus ? '⏸️ Marking unavailable...' : '✅ Marking available...');
     try {
       const response = await fetch(`/api/menu/${id}`, {
@@ -79,11 +84,20 @@ export default function ManageMenuModal({ isOpen, onClose }: ManageMenuModalProp
       
       if (response.ok) {
         toast.success(currentStatus ? '⏸️ Marked as unavailable!' : '✅ Marked as available!', { id: toastId });
-        fetchMenuItems();
+        // Background fetch to ensure consistency
+        fetchMenuItems(false);
       } else {
+        // Revert on failure
+        setMenuItems(prev => prev.map(item => 
+          item.id === id ? { ...item, available: currentStatus } : item
+        ));
         toast.error('❌ Failed to update', { id: toastId });
       }
     } catch (error) {
+      // Revert on failure
+      setMenuItems(prev => prev.map(item => 
+        item.id === id ? { ...item, available: currentStatus } : item
+      ));
       console.error('Failed to update availability:', error);
       toast.error('❌ Error updating item', { id: toastId });
     }
@@ -117,7 +131,7 @@ export default function ManageMenuModal({ isOpen, onClose }: ManageMenuModalProp
         toast.success('✅ Item added successfully!', { id: toastId });
         setNewItem({ name: '', category: '', price: '', dietType: 'VEG', hasHalfFullOption: false, priceHalf: '' });
         setShowAddForm(false);
-        fetchMenuItems();
+        fetchMenuItems(false);
       } else {
         const error = await response.json();
         toast.error(`❌ ${error.error || 'Failed to add item'}`, { id: toastId });
@@ -136,7 +150,7 @@ export default function ManageMenuModal({ isOpen, onClose }: ManageMenuModalProp
       const response = await fetch(`/api/menu/${id}`, { method: 'DELETE' });
       if (response.ok) {
         toast.success('✅ Item deleted successfully!', { id: toastId });
-        fetchMenuItems();
+        fetchMenuItems(false);
       } else {
         const error = await response.json();
         toast.error(`❌ ${error.error || 'Failed to delete item'}`, { id: toastId });
@@ -178,7 +192,7 @@ export default function ManageMenuModal({ isOpen, onClose }: ManageMenuModalProp
         toast.success('✅ Item updated successfully!', { id: toastId });
         setShowEditForm(false);
         setEditingItem(null);
-        fetchMenuItems();
+        fetchMenuItems(false);
       } else {
         const error = await response.json();
         toast.error(`❌ ${error.error || 'Failed to update item'}`, { id: toastId });

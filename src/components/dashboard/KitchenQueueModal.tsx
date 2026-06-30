@@ -160,15 +160,15 @@ export function KitchenQueueModal({ isOpen, onClose, activeOrders, onManageOrder
                     <div className="bg-muted/30 rounded-xl p-3 border border-border/50 space-y-2">
                       <p className="font-semibold text-muted-foreground uppercase tracking-widest text-[10px]">Kitchen Ticket Items</p>
                       <div className="space-y-1">
-                        {order.items.map((item: any, idx: number) => (
+                        {order.items.filter((i: any) => !i.specialInstructions?.includes('[SERVED]')).map((item: any, idx: number) => (
                           <div key={idx} className="flex justify-between items-start text-xs">
                             <span className="font-bold text-foreground">
                               <span className="text-primary mr-2">{item.quantity}×</span>
                               {item.menuItem?.name || 'Item'}
                             </span>
-                            {item.specialInstructions && (
+                            {item.specialInstructions && item.specialInstructions.replace(/\[URGENT ADDITION\]/g, '').replace(/\[SERVED\]/g, '').trim() && (
                               <span className="text-red-500 text-xs italic ml-2">
-                                📝 {item.specialInstructions}
+                                📝 {item.specialInstructions.replace(/\[URGENT ADDITION\]/g, '').replace(/\[SERVED\]/g, '').trim()}
                               </span>
                             )}
                           </div>

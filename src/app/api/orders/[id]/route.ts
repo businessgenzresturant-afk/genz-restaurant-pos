@@ -99,6 +99,23 @@ export const PATCH = withTiming(async (
           );
         }
 
+        // 🔧 BUGFIX: Tag all current items as [SERVED] so they don't reappear in KDS when new items are added
+        if (status === 'SERVED') {
+          const itemsToUpdate = await prisma.orderItem.findMany({
+            where: { orderId: id }
+          });
+          
+          await Promise.all(itemsToUpdate.map(async (item) => {
+            if (!item.specialInstructions?.includes('[SERVED]')) {
+              const newInstr = item.specialInstructions ? `${item.specialInstructions} [SERVED]` : '[SERVED]';
+              await prisma.orderItem.update({
+                where: { id: item.id },
+                data: { specialInstructions: newInstr }
+              });
+            }
+          }));
+        }
+
         // Fetch the updated order with relations
         const order = await prisma.order.findUnique({
           where: { id },
@@ -136,6 +153,23 @@ export const PATCH = withTiming(async (
           }
         }
       });
+
+      // 🔧 BUGFIX: Tag all current items as [SERVED] so they don't reappear in KDS when new items are added
+      if (status === 'SERVED') {
+        const itemsToUpdate = await tx.orderItem.findMany({
+          where: { orderId: id }
+        });
+        
+        for (const item of itemsToUpdate) {
+          if (!item.specialInstructions?.includes('[SERVED]')) {
+            const newInstr = item.specialInstructions ? `${item.specialInstructions} [SERVED]` : '[SERVED]';
+            await tx.orderItem.update({
+              where: { id: item.id },
+              data: { specialInstructions: newInstr }
+            });
+          }
+        }
+      }
 
       return updatedOrder;
     });

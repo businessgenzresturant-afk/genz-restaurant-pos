@@ -403,6 +403,9 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
         return;
       }
       
+      const isServed = item.specialInstructions && item.specialInstructions.includes('[SERVED]');
+      if (isServed) return; // 🔧 BUGFIX: Hide items that were already served
+
       const isNewAddition = prevOrder !== undefined && !prevItemIds.has(item.id);
       const isUrgentInstruction = item.specialInstructions && item.specialInstructions.includes('[URGENT ADDITION]');
       const isUrgent = isNewAddition || isUrgentInstruction;
@@ -555,7 +558,7 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
                         {item.portionType}
                       </span>
                     )}
-                    {item.specialInstructions && item.specialInstructions.replace('[URGENT ADDITION]', '').trim() && (
+                    {item.specialInstructions && item.specialInstructions.replace(/\[URGENT ADDITION\]/g, '').replace(/\[SERVED\]/g, '').trim() && (
                       <p className={`text-sm mt-1 font-medium ${
                         isCancelled 
                           ? 'text-red-400' 
@@ -563,7 +566,7 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
                             ? 'text-red-300' 
                             : 'text-muted-foreground'
                       }`}>
-                        📝 {item.specialInstructions.replace('[URGENT ADDITION]', '').trim()}
+                        📝 {item.specialInstructions.replace(/\[URGENT ADDITION\]/g, '').replace(/\[SERVED\]/g, '').trim()}
                       </p>
                     )}
                   </div>
@@ -800,8 +803,8 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
                   {item.portionType && (
                     <span className="text-xs text-primary/70 font-semibold">{item.portionType}</span>
                   )}
-                  {item.specialInstructions && item.specialInstructions.replace('[URGENT ADDITION]', '').trim() && (
-                    <p className="text-xs text-muted-foreground mt-0.5">📝 {item.specialInstructions.replace('[URGENT ADDITION]', '').trim()}</p>
+                  {item.specialInstructions && item.specialInstructions.replace(/\[URGENT ADDITION\]/g, '').replace(/\[SERVED\]/g, '').trim() && (
+                    <p className="text-xs text-muted-foreground mt-0.5">📝 {item.specialInstructions.replace(/\[URGENT ADDITION\]/g, '').replace(/\[SERVED\]/g, '').trim()}</p>
                   )}
                 </div>
               </div>

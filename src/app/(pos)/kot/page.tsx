@@ -244,16 +244,16 @@ export default function KOTPage() {
 
                     {/* Scrollable Items List */}
                     <div className="space-y-2 pl-4 pr-2 overflow-y-auto custom-scrollbar flex-1 pb-2">
-                      {order.items.map((item: any, index: number) => (
+                      {order.items.filter((i: any) => !i.specialInstructions?.includes('[SERVED]')).map((item: any, index: number) => (
                         <div key={index} className="flex gap-3 items-start p-2 rounded-lg bg-muted/50 group-hover:bg-muted transition-colors">
                           <div className="bg-primary/10 text-primary font-black px-2 py-1 rounded text-base min-w-[2rem] text-center border border-primary/20 shadow-sm">
                             {item.quantity}
                           </div>
                           <div className="flex-1 pt-0.5">
                             <p className="font-bold text-foreground leading-tight text-sm">{item.menuItem.name}</p>
-                            {item.specialInstructions && (
+                            {item.specialInstructions && item.specialInstructions.replace(/\[URGENT ADDITION\]/g, '').replace(/\[SERVED\]/g, '').trim() && (
                               <p className="text-xs font-medium text-destructive mt-1 bg-destructive/10 p-1 rounded border border-destructive/20 inline-block">
-                                ⚠️ {item.specialInstructions}
+                                ⚠️ {item.specialInstructions.replace(/\[URGENT ADDITION\]/g, '').replace(/\[SERVED\]/g, '').trim()}
                               </p>
                             )}
                           </div>
