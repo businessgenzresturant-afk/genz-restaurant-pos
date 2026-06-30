@@ -585,7 +585,7 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
                         {item.portionType}
                       </span>
                     )}
-                    {item.specialInstructions && (
+                    {item.specialInstructions && item.specialInstructions.replace('[URGENT ADDITION]', '').trim() && (
                       <p className={`text-sm mt-1 font-medium ${
                         isCancelled 
                           ? 'text-red-400' 
@@ -593,7 +593,7 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
                             ? 'text-red-300' 
                             : 'text-muted-foreground'
                       }`}>
-                        📝 {item.specialInstructions}
+                        📝 {item.specialInstructions.replace('[URGENT ADDITION]', '').trim()}
                       </p>
                     )}
                   </div>
@@ -840,8 +840,8 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
                   {item.portionType && (
                     <span className="text-xs text-primary/70 font-semibold">{item.portionType}</span>
                   )}
-                  {item.specialInstructions && (
-                    <p className="text-xs text-muted-foreground mt-0.5">📝 {item.specialInstructions}</p>
+                  {item.specialInstructions && item.specialInstructions.replace('[URGENT ADDITION]', '').trim() && (
+                    <p className="text-xs text-muted-foreground mt-0.5">📝 {item.specialInstructions.replace('[URGENT ADDITION]', '').trim()}</p>
                   )}
                 </div>
               </div>

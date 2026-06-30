@@ -269,11 +269,16 @@ export const POST = withTiming(async (request: Request) => {
         // Only create new order if table has NO active order or order is COMPLETED
         if (currentTable && ['OCCUPIED', 'RUNNING'].includes(currentTable.status) && activeOrder && ['PENDING', 'PREPARING', 'READY', 'SERVED'].includes(activeOrder.status)) {
           // Create new order items
+          // 🔧 BUGFIX: Append [URGENT ADDITION] to running table items so KDS flags them permanently
           await tx.orderItem.createMany({
-            data: orderItemsData.map(item => ({ 
-              ...item, 
-              orderId: activeOrder.id
-            }))
+            data: orderItemsData.map(item => {
+              const instr = item.specialInstructions ? `${item.specialInstructions} [URGENT ADDITION]` : '[URGENT ADDITION]';
+              return { 
+                ...item, 
+                specialInstructions: instr,
+                orderId: activeOrder.id
+              };
+            })
           });
 
           // Decrement stock for items that are stock-tracked (PARALLEL)
