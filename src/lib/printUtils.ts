@@ -38,41 +38,40 @@ export const printReceipt = (bill: any, type: 'receipt' | 'kot' = 'receipt') => 
 <meta charset="UTF-8">
 <title>KOT</title>
 <style>
-  @page { margin: 0; }
+  @page { margin: 0; size: 80mm auto; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 16px;
+    font-size: 18px;
     color: #000;
     width: 100%;
-    padding: 2mm 4mm; /* even margins left and right */
-    margin: 0 auto;
+    max-width: 78mm;
+    padding: 2mm 2mm 2mm 4mm; /* slightly more padding on left to balance right gap */
+    margin: 0;
   }
-  /* Custom bold that doesn't trigger thermal printer double-strike */
-  .b { -webkit-text-stroke: 0.5px black; }
   
   .c { text-align: center; }
   .hr { border-top: 1.5px dashed #000; margin: 3px 0; }
   .row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px; width: 100%; }
-  .item-name { flex: 1; text-align: left; padding-right: 2mm; font-size: 18px; }
-  .item-qty { font-size: 20px; min-width: 15mm; text-align: right; }
+  .item-name { flex: 1; text-align: left; padding-right: 2mm; font-size: 20px; }
+  .item-qty { font-size: 22px; min-width: 15mm; text-align: right; }
 </style>
 </head>
 <body onload="window.print(); setTimeout(function(){ window.close(); }, ${PRINTER.AUTO_PRINT_DELAY});">
-<div class="c b" style="font-size:26px; letter-spacing: 1px;">KOT</div>
-<div class="c" style="font-size:16px; margin-bottom: 4px;">Kitchen Order Ticket</div>
+<div class="c" style="font-size:28px; letter-spacing: 1px;">KOT</div>
+<div class="c" style="font-size:18px; margin-bottom: 4px;">Kitchen Order Ticket</div>
 <div class="hr"></div>
-<div class="row"><span>Table:</span><span class="b" style="font-size:20px;">T-${bill.order?.table?.number ?? bill.table?.number ?? '?'}</span></div>
+<div class="row"><span>Table:</span><span style="font-size:22px;">T-${bill.order?.table?.number ?? bill.table?.number ?? '?'}</span></div>
 <div class="row"><span>Time:</span><span>${fmtTime(oTime)}</span></div>
 <div class="hr"></div>
-<div class="row b" style="font-size:16px;"><span class="item-name b" style="font-size:16px;">ITEM</span><span class="item-qty b" style="font-size:16px;">QTY</span></div>
+<div class="row" style="font-size:18px;"><span class="item-name" style="font-size:18px;">ITEM</span><span class="item-qty" style="font-size:18px;">QTY</span></div>
 <div class="hr"></div>
 ${merged.map(item => `
 <div class="row">
   <span class="item-name">${item.menuItem?.name ?? 'Item'}</span>
   <span class="item-qty">x${item.quantity}</span>
 </div>
-${item.cleanInstr ? `<div style="font-size:14px; font-style:italic; padding-left:2mm; margin-top:-1px; margin-bottom:2px;">* ${item.cleanInstr}</div>` : ''}
+${item.cleanInstr ? `<div style="font-size:16px; font-style:italic; padding-left:2mm; margin-top:-1px; margin-bottom:2px;">* ${item.cleanInstr}</div>` : ''}
 `).join('')}
 <div class="hr"></div>
 <div style="height:5mm;"></div>
@@ -106,70 +105,69 @@ ${item.cleanInstr ? `<div style="font-size:14px; font-style:italic; padding-left
 <meta charset="UTF-8">
 <title>Bill ${billNo}</title>
 <style>
-@page { margin: 0; }
+@page { margin: 0; size: 80mm auto; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   color: #000;
   width: 100%;
-  padding: 2mm 4mm; /* even margins left and right */
-  margin: 0 auto;
+  max-width: 78mm;
+  padding: 2mm 2mm 2mm 4mm; /* pushing text a bit more to the right side by reducing right padding and increasing left padding slightly if needed, wait, if we want to shift right, we increase left margin/padding. Let's just use 2mm right padding */
+  margin: 0;
 }
-/* Custom bold that doesn't trigger thermal printer double-strike */
-.b { -webkit-text-stroke: 0.5px black; }
 
 .c { text-align: center; }
 .r { text-align: right; }
 .hr { border-top: 1px dashed #000; margin: 3px 0; }
 .dash { border-top: 1px dashed #000; margin: 3px 0; }
 table { width: 100%; border-collapse: collapse; }
-th { border-bottom: 1px dashed #000; padding: 3px 0; font-size: 14px; }
-td { padding: 3px 0; font-size: 14px; }
+th { border-bottom: 1px dashed #000; padding: 3px 0; font-size: 16px; }
+td { padding: 3px 0; font-size: 16px; }
 th:nth-child(1), td:nth-child(1) { text-align: left; }
 th:nth-child(2), td:nth-child(2) { text-align: center; width: 15%; }
 th:nth-child(3), td:nth-child(3) { text-align: right; width: 22%; }
 th:nth-child(4), td:nth-child(4) { text-align: right; width: 28%; }
-.row { display: flex; justify-content: space-between; font-size: 14px; line-height: 1.3; margin-bottom: 2px; width: 100%; }
+.row { display: flex; justify-content: space-between; font-size: 16px; line-height: 1.3; margin-bottom: 2px; width: 100%; }
 </style>
 </head>
 <body onload="window.print(); setTimeout(function(){ window.close(); }, ${PRINTER.AUTO_PRINT_DELAY});">
 
 <div class="c">
-<div class="b" style="font-size:20px; margin-bottom:2px;">${RESTAURANT_INFO.NAME.toUpperCase()}</div>
-<div style="font-size:12px; line-height:1.3;">
+<div style="font-size:22px; margin-bottom:2px; text-transform: uppercase;">${RESTAURANT_INFO.NAME}</div>
+<div style="font-size:14px; line-height:1.3;">
 ${RESTAURANT_INFO.ADDRESS}<br>
 GST: ${RESTAURANT_INFO.GST_NUMBER}<br>
 Contact: ${RESTAURANT_INFO.PHONE}
 </div>
-<div class="b" style="font-size:14px; margin:3px 0;">RETAIL INVOICE</div>
+<div style="font-size:16px; margin:3px 0;">RETAIL INVOICE</div>
 </div>
 
 <div class="hr"></div>
 
-<div style="font-size:14px;"><span class="b">Name:</span> ${customerName || 'Walk-in Customer'}</div>
+<div style="font-size:16px;">Name: ${customerName || 'Walk-in Customer'}</div>
 <div class="row">
-<span><span class="b">Date:</span> ${fmtDate(oTime)}</span>
-<span><span class="b">Time:</span> ${fmtTime(oTime)}</span>
+<span>Date: ${fmtDate(oTime)}</span>
+<span>Time: ${fmtTime(oTime)}</span>
 </div>
 <div class="row">
-<span><span class="b">Bill No:</span> ${billNo}</span>
-<span><span class="b">Table:</span> ${tableNum ?? '-'}</span>
+<span>Bill No: ${billNo}</span>
+<span>Table: ${tableNum ?? '-'}</span>
 </div>
 <div class="row">
-<span><span class="b">Cashier:</span> admin</span>
-${tokenNo ? `<span><span class="b">Token:</span> ${tokenNo}</span>` : '<span></span>'}
+<span>Cashier: admin</span>
+${tokenNo ? `<span>Token: ${tokenNo}</span>` : '<span></span>'}
 </div>
 
 <div class="hr"></div>
 
 <table>
-<thead><tr><th class="b">Item</th><th class="b">Qty</th><th class="b">Rate</th><th class="b">Amt</th></tr></thead>
+<thead><tr><th>Item</th><th>Qty</th><th>Rate</th><th>Amt</th></tr></thead>
 <tbody>
 ${merged.map((item: any) => {
   const price = item.menuItem?.price ?? item.price ?? 0;
   const amt = item.quantity * price;
-  return `<tr><td>${item.menuItem?.name ?? 'Item'}</td><td class="b">${item.quantity}</td><td>${fmt(price)}</td><td class="b">${fmt(amt)}</td></tr>`;
+  return `<tr><td>${item.menuItem?.name ?? 'Item'}</td><td>${item.quantity}</td><td>${fmt(price)}</td><td>${fmt(amt)}</td></tr>`;
 }).join('\n')}
 </tbody>
 </table>
@@ -183,17 +181,17 @@ ${discAmt > 0 ? `<div class="row"><span></span><span>Discount (${discPct}%)</spa
 
 <div class="hr"></div>
 
-<div class="row b" style="font-size:18px;"><span>Grand Total</span><span>₹${fmt(total)}</span></div>
+<div class="row" style="font-size:20px;"><span>Grand Total</span><span>₹${fmt(total)}</span></div>
 
 <div class="hr"></div>
 
-${bill.status === 'PAID' ? `<div class="row b" style="font-size:16px;"><span>Paid via: ${bill.paymentMethod ?? 'CASH'}</span><span>PAID ✓</span></div>` : ''}
+${bill.status === 'PAID' ? `<div class="row" style="font-size:18px;"><span>Paid via: ${bill.paymentMethod ?? 'CASH'}</span><span>PAID ✓</span></div>` : ''}
 
 <div class="dash"></div>
-<div class="c" style="font-size:12px; line-height:1.3;">
-<div class="b">Thank you for ordering</div>
+<div class="c" style="font-size:14px; line-height:1.3;">
+<div>Thank you for ordering</div>
 <div>Please visit again 🙏</div>
-<div style="font-size:10px;">${RESTAURANT_INFO.WEBSITE}</div>
+<div style="font-size:12px;">${RESTAURANT_INFO.WEBSITE}</div>
 </div>
 
 <div style="height:5mm;"></div>
