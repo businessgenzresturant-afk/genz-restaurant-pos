@@ -369,7 +369,7 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
               <span className="font-black text-3xl text-primary">₹{totalAmount.toFixed(2)}</span>
             </div>
             {submitState === 'IDLE' ? (
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 <Button 
                   className="w-full h-12 text-xs font-bold shadow-md shadow-blue-500/20 bg-blue-500 hover:bg-blue-600 active:scale-[0.97] transition-transform flex flex-col items-center justify-center px-1"
                   disabled={cart.length === 0}
@@ -383,13 +383,6 @@ export function MenuDrawer({ isOpen, onClose, onBack, menuItems, tableId, onPlac
                   onClick={() => handleSubmit('SAVE_PRINT')}
                 >
                   <Printer className="w-4 h-4 mb-0.5" /> Save & Print
-                </Button>
-                <Button 
-                  className="w-full h-12 text-xs font-bold shadow-md shadow-green-500/20 bg-green-500 hover:bg-green-600 active:scale-[0.97] transition-transform flex flex-col items-center justify-center px-1"
-                  disabled={cart.length === 0}
-                  onClick={() => handleSubmit('SAVE_EBILL')}
-                >
-                  <Phone className="w-4 h-4 mb-0.5" /> eBill
                 </Button>
               </div>
             ) : (

@@ -7,7 +7,7 @@ import { Portal } from '@/components/ui/portal';
 import { QRCodeSVG } from 'qrcode.react';
 import { useAuth } from '@/lib/useAuth';
 import { toast } from 'sonner';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Phone } from 'lucide-react';
 
 interface PaymentModalProps {
   bill: any;
@@ -84,29 +84,26 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
     return () => clearTimeout(timeoutId);
   }, [customerPhone]);
 
-  const handlePayAndPrint = async () => {
-    if (!paymentConfirmed || isProcessing) return;
-
+  const handlePayAndPrint = async (sendEbill: boolean = false) => {
+    if (!paymentConfirmed && !isSplitPayment) {
+      toast.error('Please select a payment method');
+      return;
+    }
+    
+    const discount = discountPercent ? parseFloat(discountPercent) : 0;
+    
     // Validate split payment amounts
     if (isSplitPayment) {
+      const finalTotal = calculateFinalTotal(bill, discount, pointsToRedeem ? parseInt(pointsToRedeem) : 0, gstApplied, serviceChargeAmount);
       const cash = cashAmount ? parseFloat(cashAmount) : 0;
       const online = onlineAmount ? parseFloat(onlineAmount) : 0;
-      const finalTotal = calculateFinalTotal(
-        bill,
-        discountPercent ? parseFloat(discountPercent) : 0,
-        pointsToRedeem ? parseInt(pointsToRedeem) : 0,
-        gstApplied,
-        serviceChargeAmount
-      );
       
-      if (Math.abs(cash + online - finalTotal) > 0.01) {
-        toast.error('Split payment amounts must match the bill total');
+      if (Math.abs((cash + online) - finalTotal) > 0.01) {
+        toast.error('Split payment amounts must equal the total bill amount');
         return;
       }
     }
 
-    // Validate staff discount limit
-    const discount = discountPercent ? parseFloat(discountPercent) : 0;
     if (isStaff && discount > 15) {
       toast.error('Staff discount limit is 15%. Please contact admin.');
       return;
@@ -141,6 +138,20 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
       const updatedBill = await updateResponse.json();
       
       toast.success('Payment collected successfully! 💰');
+      
+      if (sendEbill) {
+        const phone = customerPhone || bill.order?.customerPhone;
+        const ebillUrl = `${window.location.origin}/ebill/${bill.orderId}`;
+        const name = customerName || bill.order?.customerName || '';
+        const whatsappMsg = `Hi ${name}, here is your bill from Gen-Z Restaurant: ${ebillUrl}`;
+        window.open(`https://wa.me/91${phone}?text=${encodeURIComponent(whatsappMsg)}`, '_blank');
+      } else {
+        // Trigger print with proper receipt content
+        setTimeout(() => {
+          printReceipt(updatedBill);
+        }, 300);
+      }
+      
       onPaymentSuccess();
     } catch (error) {
       console.error('Payment error:', error);
@@ -597,14 +608,21 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
               </div>
 
               {/* Fixed Pay Button at bottom */}
-              <div className="p-6 border-t border-border bg-card">
+              <div className="p-6 border-t border-border bg-card flex flex-col gap-3">
                 <Button
-                  onClick={handlePayAndPrint}
+                  onClick={() => handlePayAndPrint(false)}
                   variant="gradient"
                   className="w-full h-14 text-lg font-bold"
                   disabled={!paymentConfirmed || isProcessing}
                 >
                   {isProcessing ? (<><svg className="animate-spin h-5 w-5 mr-2 inline" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>Processing...</>) : '💳 Pay & Print Receipt'}
+                </Button>
+                <Button
+                  onClick={() => handlePayAndPrint(true)}
+                  className="w-full h-14 text-lg font-bold bg-[#25D366] hover:bg-[#128C7E] text-white shadow-lg shadow-green-500/20"
+                  disabled={!paymentConfirmed || isProcessing || !customerPhone || customerPhone.length < 10}
+                >
+                  <Phone className="w-5 h-5 mr-2" /> Pay & Send eBill (WhatsApp)
                 </Button>
               </div>
             </div>
