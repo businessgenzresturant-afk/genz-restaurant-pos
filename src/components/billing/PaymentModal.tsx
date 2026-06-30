@@ -141,12 +141,6 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
       const updatedBill = await updateResponse.json();
       
       toast.success('Payment collected successfully! 💰');
-      
-      // Trigger print with proper receipt content
-      setTimeout(() => {
-        printReceipt(updatedBill);
-      }, 300);
-
       onPaymentSuccess();
     } catch (error) {
       console.error('Payment error:', error);

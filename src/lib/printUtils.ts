@@ -40,23 +40,31 @@ export const printReceipt = (bill: any, type: 'receipt' | 'kot' = 'receipt') => 
 <style>
   @page { margin: 0; size: ${PRINTER.THERMAL_WIDTH_MM}mm auto; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Courier New', monospace; font-size: 14px; font-weight: bold; color: #000; width: ${PRINTER.THERMAL_WIDTH_MM}mm; padding: 3mm; }
+  body { font-family: 'Courier New', monospace; font-size: 16px; font-weight: bold; color: #000; width: 100%; max-width: ${PRINTER.THERMAL_WIDTH_MM}mm; padding: 3mm; margin: 0 auto; }
   .c { text-align: center; }
   .b { font-weight: 900; }
-  .hr { border-top: 1.5px solid #000; margin: 2mm 0; }
-  .row { display: flex; justify-content: space-between; font-size: 13px; }
+  .hr { border-top: 2px dashed #000; margin: 3mm 0; }
+  .row { display: flex; justify-content: space-between; align-items: flex-start; font-size: 16px; margin-bottom: 2mm; }
+  .item-name { flex: 1; text-align: left; padding-right: 4mm; font-size: 18px; }
+  .item-qty { font-size: 20px; font-weight: 900; min-width: 15mm; text-align: right; }
 </style>
 </head>
 <body onload="window.print(); setTimeout(function(){ window.close(); }, ${PRINTER.AUTO_PRINT_DELAY});">
-<div class="c b" style="font-size:18px;">KOT</div>
-<div class="c" style="font-size:11px;">Kitchen Order Ticket</div>
+<div class="c b" style="font-size:24px; letter-spacing: 2px;">KOT</div>
+<div class="c" style="font-size:14px;">Kitchen Order Ticket</div>
 <div class="hr"></div>
-<div class="row"><span>Table:</span><span class="b">T-${bill.order?.table?.number ?? bill.table?.number ?? '?'}</span></div>
+<div class="row"><span>Table:</span><span class="b" style="font-size:20px;">T-${bill.order?.table?.number ?? bill.table?.number ?? '?'}</span></div>
 <div class="row"><span>Time:</span><span>${fmtTime(oTime)}</span></div>
 <div class="hr"></div>
-<div class="row b"><span>ITEM</span><span>QTY</span></div>
+<div class="row b" style="font-size:14px;"><span class="item-name">ITEM</span><span class="item-qty">QTY</span></div>
 <div class="hr"></div>
-${merged.map(item => `<div class="row" style="margin:2mm 0;"><span class="b">${item.menuItem?.name ?? 'Item'}</span><span class="b">x${item.quantity}</span></div>`).join('')}
+${merged.map(item => `
+<div class="row">
+  <span class="item-name">${item.menuItem?.name ?? 'Item'}</span>
+  <span class="item-qty">x${item.quantity}</span>
+</div>
+${item.cleanInstr ? `<div style="font-size:14px; font-style:italic; padding-left:4mm; margin-top:-1mm; margin-bottom:2mm;">* ${item.cleanInstr}</div>` : ''}
+`).join('')}
 <div class="hr"></div>
 <div style="height:10mm;"></div>
 </body>
@@ -94,29 +102,31 @@ ${merged.map(item => `<div class="row" style="margin:2mm 0;"><span class="b">${i
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
   font-family: 'Courier New', monospace;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
   color: #000;
   background: #fff url('${logoUrl}') no-repeat center center fixed;
   background-size: ${PRINTER.LOGO_SIZE_MM}mm ${PRINTER.LOGO_SIZE_MM}mm;
   background-blend-mode: lighten;
   opacity: 1;
-  width: ${PRINTER.THERMAL_WIDTH_MM}mm;
+  width: 100%;
+  max-width: ${PRINTER.THERMAL_WIDTH_MM}mm;
   padding: 3mm;
+  margin: 0 auto;
 }
 .c { text-align: center; }
 .r { text-align: right; }
 .b { font-weight: 900; }
-.hr { border-top: 1.5px solid #000; margin: 2mm 0; }
+.hr { border-top: 1.5px dashed #000; margin: 2.5mm 0; }
 .dash { border-top: 1px dashed #000; margin: 1.5mm 0; }
 table { width: 100%; border-collapse: collapse; }
-th { font-weight: bold; border-bottom: 1px solid #000; padding: 1mm 0; font-size: 11px; }
-td { padding: 1mm 0; font-size: 12px; }
+th { font-weight: bold; border-bottom: 1.5px dashed #000; padding: 1.5mm 0; font-size: 13px; }
+td { padding: 1.5mm 0; font-size: 14px; }
 th:nth-child(1), td:nth-child(1) { text-align: left; }
-th:nth-child(2), td:nth-child(2) { text-align: center; width: 25mm; }
-th:nth-child(3), td:nth-child(3) { text-align: right; width: 20mm; }
+th:nth-child(2), td:nth-child(2) { text-align: center; width: 15mm; }
+th:nth-child(3), td:nth-child(3) { text-align: right; width: 18mm; }
 th:nth-child(4), td:nth-child(4) { text-align: right; width: 22mm; }
-.row { display: flex; justify-content: space-between; font-size: 11px; line-height: 1.4; }
+.row { display: flex; justify-content: space-between; font-size: 13px; line-height: 1.4; margin-bottom: 1mm; }
 @media print { body { background-size: ${PRINTER.LOGO_SIZE_MM}mm ${PRINTER.LOGO_SIZE_MM}mm; -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
 </style>
 </head>
@@ -170,11 +180,11 @@ ${discAmt > 0 ? `<div class="row"><span></span><span>Discount (${discPct}%)</spa
 
 <div class="hr"></div>
 
-<div class="row b" style="font-size:15px;"><span>Grand Total</span><span>₹${fmt(total)}</span></div>
+<div class="row b" style="font-size:18px;"><span>Grand Total</span><span>₹${fmt(total)}</span></div>
 
 <div class="hr"></div>
 
-${bill.status === 'PAID' ? `<div class="row b"><span>Payment: ${bill.paymentMethod ?? 'CASH'}</span><span>PAID ✓</span></div>` : ''}
+${bill.status === 'PAID' ? `<div class="row b" style="font-size:15px;"><span>Paid via: ${bill.paymentMethod ?? 'CASH'}</span><span>PAID ✓</span></div>` : ''}
 
 <div class="dash"></div>
 <div class="c" style="font-size:11px; line-height:1.4;">

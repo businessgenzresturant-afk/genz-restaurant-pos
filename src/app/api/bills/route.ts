@@ -296,16 +296,30 @@ export const POST = withTiming(async (request: Request) => {
     // ⚡ PERFORMANCE OPTIMIZATION: Use batch operations instead of loops
     console.time('⏱️ DB-TRANSACTION');
     const bill = await prisma.$transaction(async (tx) => {
-      // Mark ALL orders as COMPLETED in a single batch operation
-      // Orders in any status (PENDING, PREPARING, READY, SERVED) should become COMPLETED when billed
-      await tx.order.updateMany({
-        where: { id: { in: finalTableOrders.map(o => o.id) } },
+      const primaryOrder = finalTableOrders[0];
+      const otherOrders = finalTableOrders.slice(1);
+
+      // If there are multiple orders, merge all their items into the primary order
+      if (otherOrders.length > 0) {
+        const otherOrderIds = otherOrders.map(o => o.id);
+        
+        // Move all items to primary order
+        await tx.orderItem.updateMany({
+          where: { orderId: { in: otherOrderIds } },
+          data: { orderId: primaryOrder.id }
+        });
+
+        // Delete the other orders to avoid ghost/dangling completed orders
+        await tx.order.deleteMany({
+          where: { id: { in: otherOrderIds } }
+        });
+      }
+
+      // Mark primary order as COMPLETED
+      await tx.order.update({
+        where: { id: primaryOrder.id },
         data: { status: 'COMPLETED' }
       });
-
-      // Create bill linked to PRIMARY order (first one chronologically)
-      // But include reference to all order IDs in metadata
-      const primaryOrder = finalTableOrders[0];
       
       return tx.bill.create({
         data: {
