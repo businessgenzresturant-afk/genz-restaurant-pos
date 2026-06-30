@@ -390,9 +390,6 @@ export const POST = withTiming(async (request: Request) => {
         if (process.env.NODE_ENV === 'development') console.timeEnd('⏱️ STOCK-UPDATES');
 
         return { type: 'CREATE', order: newOrder };
-      }, {
-        isolationLevel: 'ReadCommitted',  // Replaced Serializable with ReadCommitted to prevent lock timeouts
-        timeout: 10000
       });
       if (process.env.NODE_ENV === 'development') console.timeEnd('⏱️ TRANSACTION');
 
@@ -413,9 +410,14 @@ export const POST = withTiming(async (request: Request) => {
       }
       throw error; // Re-throw other errors
     }
-  } catch (error) {
+  } catch (error: any) {
     if (process.env.NODE_ENV === 'development') console.timeEnd('⏱️ TOTAL-ORDER-CREATION');
-    console.error('Order creation error:', error);
-    return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });
+    console.error('Order creation error:', error?.message || error);
+    console.error('Error code:', error?.code);
+    console.error('Error meta:', JSON.stringify(error?.meta || {}));
+    return NextResponse.json({ 
+      error: 'Failed to create order',
+      detail: process.env.NODE_ENV === 'development' ? error?.message : undefined
+    }, { status: 500 });
   }
 }, '/api/orders');
