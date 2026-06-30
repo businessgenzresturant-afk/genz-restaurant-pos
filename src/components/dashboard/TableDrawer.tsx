@@ -117,13 +117,15 @@ export function TableDrawer({ isOpen, onClose, table, activeOrder, onAddItem, on
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/60 z-[150] backdrop-blur-sm animate-fade-in" onClick={onClose} />
-      
-      {/* 🔧 UX FIX: Proper flexbox layout for scrolling */}
-      <div className={`fixed right-0 top-0 h-full w-full max-w-md bg-background border-l border-border shadow-2xl z-[160] transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col`}>
-        
-        {/* Header - Fixed at top */}
-        <div className="flex-shrink-0 p-6 border-b border-border bg-muted/30">
+      <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
+        <div 
+          className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-fade-in" 
+          onClick={onClose} 
+        />
+        <div className="relative w-full max-w-lg bg-background rounded-3xl border-2 border-border shadow-2xl z-[160] flex flex-col max-h-[90vh] overflow-hidden animate-scale-in">
+          
+          {/* Header - Fixed at top */}
+          <div className="flex-shrink-0 p-6 border-b-2 border-border bg-gradient-to-r from-primary/5 to-primary/10">
           <div className="flex justify-between items-start">
             <div>
               <h2 className="text-2xl font-black text-foreground capitalize">
@@ -348,6 +350,7 @@ export function TableDrawer({ isOpen, onClose, table, activeOrder, onAddItem, on
         </div>
 
       </div>
+    </div>
 
       {/* Cancel Item Modal */}
       {showCancelModal && itemToCancel && (
