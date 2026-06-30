@@ -23,7 +23,7 @@ export default function RestaurantSettingsModal({ isOpen, onClose }: RestaurantS
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<RestaurantSettings>({
     name: 'Gen-Z Restaurant',
-    address: '123 Main Street, City, State - 123456',
+    address: 'Gali No 7, L-97, near Labour Chowk, K-Block, Mahipalpur Village, New Delhi - 110037',
     phone: '+91 9876543210',
     email: 'info@genzrestaurant.com',
     gstNumber: '22AAAAA0000A1Z5',

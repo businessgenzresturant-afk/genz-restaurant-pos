@@ -105,10 +105,10 @@ export const SOUND = {
 
 export const RESTAURANT_INFO = {
   NAME: 'Gen-Z Restaurant',
-  ADDRESS: '29 Main Street, New Delhi-110001',
+  ADDRESS: 'Gali No 7, L-97, near Labour Chowk, K-Block, Mahipalpur Village, New Delhi - 110037',
   GST_NUMBER: '07AABCG1234A1Z5',
   PHONE: '+91 98765-43210',
-  WEBSITE: 'www.gen-z.online',
+  WEBSITE: 'gen-z.online',
   CURRENCY: '₹',
 } as const;
 

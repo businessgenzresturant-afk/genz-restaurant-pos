@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { mergeOrderItems } from '@/lib/orderUtils';
+import { RESTAURANT_INFO } from '@/lib/constants';
 
 interface ReceiptPrintTemplateProps {
   bill: any;
@@ -82,12 +83,12 @@ export function ReceiptPrintTemplate({ bill, onClose }: ReceiptPrintTemplateProp
             />
           </div>
           <div style={{ fontSize:'16px', fontWeight:700, textTransform:'uppercase', letterSpacing:'1px' }}>
-            Gen-Z Restaurant
+            {RESTAURANT_INFO.NAME}
           </div>
           <div style={{ fontSize:'11px', lineHeight:'1.4' }}>
-            <div>123 Main Street, New Delhi - 110001</div>
-            <div>Tel: +91 98765 43210</div>
-            <div>GSTIN: 07AABCG1234A1Z5</div>
+            <div>{RESTAURANT_INFO.ADDRESS}</div>
+            <div>Tel: {RESTAURANT_INFO.PHONE}</div>
+            <div>GSTIN: {RESTAURANT_INFO.GST_NUMBER}</div>
           </div>
           <div style={{ fontSize:'10px', letterSpacing:'1px', textTransform:'uppercase', marginTop:'2px' }}>
             Retail Invoice
