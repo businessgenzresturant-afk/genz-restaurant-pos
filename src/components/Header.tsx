@@ -238,6 +238,20 @@ export default function Header() {
                     </div>
                     {!isAdmin && <Lock className="w-3.5 h-3.5" />}
                   </button>
+
+                  <button 
+                    onClick={() => handleRestrictedAction(() => {
+                      setDropdownOpen(false);
+                      router.push('/customers');
+                    })}
+                    className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-bold transition-colors w-full text-left ${isAdmin ? 'hover:bg-muted text-foreground' : 'text-muted-foreground/60 hover:bg-muted/50'}`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Users className="w-4 h-4" />
+                      Customers
+                    </div>
+                    {!isAdmin && <Lock className="w-3.5 h-3.5" />}
+                  </button>
                   
                   <button 
                     onClick={() => handleRestrictedAction(() => {
