@@ -140,7 +140,6 @@ export default function Header() {
           <Link href="/orders">
             <ActionButton icon={<ClipboardList className="w-5 h-5" />} label="Orders" />
           </Link>
-          <ActionButton icon={<Clock className="w-5 h-5" />} label="Recent" onClick={() => router.push('/orders')} />
           
           <div className="w-px h-8 bg-border/60 mx-2 hidden xl:block" />
           
