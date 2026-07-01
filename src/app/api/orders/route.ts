@@ -225,12 +225,19 @@ export const POST = withTiming(async (request: Request) => {
       }
       
       totalAmount += price * item.quantity;
+      
+      // If skipKds is true, append [SERVED] so KDS ignores this item
+      let instr = item.specialInstructions || null;
+      if (skipKds) {
+        instr = instr ? `${instr} [SERVED]` : '[SERVED]';
+      }
+      
       return {
         menuItemId: item.menuItemId,
         quantity: item.quantity,
         price: price,
         portionType: item.portionType || null,
-        specialInstructions: item.specialInstructions || null
+        specialInstructions: instr
       };
     });
 
@@ -269,15 +276,16 @@ export const POST = withTiming(async (request: Request) => {
         // Only create new order if table has NO active order or order is COMPLETED
         if (currentTable && ['OCCUPIED', 'RUNNING'].includes(currentTable.status) && activeOrder && ['PENDING', 'PREPARING', 'READY', 'SERVED'].includes(activeOrder.status)) {
           // Create new order items
-          // 🔧 BUGFIX: Append [URGENT ADDITION] to running table items so KDS flags them permanently
+          // 🔧 BUGFIX: Append [URGENT ADDITION] to running table items so KDS flags them permanently (unless skipKds)
           await tx.orderItem.createMany({
             data: orderItemsData.map(item => {
-              const instr = item.specialInstructions 
-                ? (skipKds ? item.specialInstructions : `${item.specialInstructions} [URGENT ADDITION]`) 
-                : (skipKds ? null : '[URGENT ADDITION]');
+              let finalInstr = item.specialInstructions;
+              if (!skipKds) {
+                finalInstr = finalInstr ? `${finalInstr} [URGENT ADDITION]` : '[URGENT ADDITION]';
+              }
               return { 
                 ...item, 
-                specialInstructions: instr,
+                specialInstructions: finalInstr,
                 orderId: activeOrder.id
               };
             })
