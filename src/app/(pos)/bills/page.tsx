@@ -456,12 +456,12 @@ export default function BillsPage() {
                       <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider block">
                         Select Payment Mode:
                       </label>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-3 gap-2">
                         <button
                           type="button"
-                          onClick={() => setSelectedPaymentMethod('CASH')}
+                          onClick={() => { setSelectedPaymentMethod('CASH'); setIsSplitPayment(false); }}
                           className={`py-2 px-3 rounded-xl border flex items-center justify-center gap-2 text-sm transition-all ${
-                            selectedPaymentMethod === 'CASH'
+                            selectedPaymentMethod === 'CASH' && !isSplitPayment
                               ? 'border-green-500 bg-green-500/10 text-green-500 font-bold shadow-sm'
                               : 'border-border bg-background hover:bg-muted text-muted-foreground'
                           }`}
@@ -471,9 +471,9 @@ export default function BillsPage() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => setSelectedPaymentMethod('ONLINE')}
+                          onClick={() => { setSelectedPaymentMethod('ONLINE'); setIsSplitPayment(false); }}
                           className={`py-2 px-3 rounded-xl border flex items-center justify-center gap-2 text-sm transition-all ${
-                            selectedPaymentMethod === 'ONLINE'
+                            selectedPaymentMethod === 'ONLINE' && !isSplitPayment
                               ? 'border-primary bg-primary/10 text-primary font-bold shadow-sm'
                               : 'border-border bg-background hover:bg-muted text-muted-foreground'
                           }`}
@@ -481,7 +481,54 @@ export default function BillsPage() {
                           <span>🌐</span>
                           <span>Online</span>
                         </button>
+                        <button
+                          type="button"
+                          onClick={() => { setIsSplitPayment(true); setSelectedPaymentMethod('CASH'); }}
+                          className={`py-2 px-3 rounded-xl border flex items-center justify-center gap-2 text-sm transition-all ${
+                            isSplitPayment
+                              ? 'border-purple-500 bg-purple-500/10 text-purple-500 font-bold shadow-sm'
+                              : 'border-border bg-background hover:bg-muted text-muted-foreground'
+                          }`}
+                        >
+                          <span>➗</span>
+                          <span>Split</span>
+                        </button>
                       </div>
+                      
+                      {isSplitPayment && (
+                        <div className="grid grid-cols-2 gap-4 mt-4 animate-fade-in">
+                          <div>
+                            <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                              Cash Amount
+                            </label>
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">₹</span>
+                              <Input
+                                type="number"
+                                value={cashAmount}
+                                onChange={(e) => setCashAmount(e.target.value)}
+                                className="pl-7 bg-background/50 border-border"
+                                placeholder="0"
+                              />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                              Online Amount
+                            </label>
+                            <div className="relative">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">₹</span>
+                              <Input
+                                type="number"
+                                value={onlineAmount}
+                                onChange={(e) => setOnlineAmount(e.target.value)}
+                                className="pl-7 bg-background/50 border-border"
+                                placeholder="0"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <div className="flex justify-between items-center pt-2 border-t border-border/50">
@@ -518,7 +565,7 @@ export default function BillsPage() {
                       variant="gradient"
                       className="bg-gradient-to-r from-orange-600 to-amber-600 font-bold flex items-center gap-2 rounded-xl"
                     >
-                      {selectedPaymentMethod === 'CASH' ? '💵' : '🌐'} Mark as Paid
+                      {isSplitPayment ? '➗' : (selectedPaymentMethod === 'CASH' ? '💵' : '🌐')} Mark as Paid
                     </Button>
                   </>
                 )}
