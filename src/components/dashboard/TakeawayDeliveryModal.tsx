@@ -122,26 +122,39 @@ export function TakeawayDeliveryModal({
                       <span className="font-black text-primary">₹{order.totalAmount?.toFixed(2) || '0.00'}</span>
                     </div>
                     
-                    <Button 
-                      className={`w-full font-bold shadow-sm bg-${colorClass}-600 hover:bg-${colorClass}-700 active:scale-[0.97] transition-transform`}
-                      disabled={generatingId === order.id}
-                      onClick={async (e) => {
-                        e.stopPropagation();
-                        setGeneratingId(order.id);
-                        try {
-                          await onGenerateBill(order.id);
-                        } finally {
-                          setGeneratingId(null);
-                        }
-                      }}
-                    >
-                      {generatingId === order.id ? (
-                        <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      ) : (
+                    {order.bill ? (
+                      <Button 
+                        className="w-full font-bold shadow-sm bg-blue-600 hover:bg-blue-700 active:scale-[0.97] transition-transform"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.location.href = '/bills';
+                        }}
+                      >
                         <Receipt className="w-4 h-4 mr-2" />
-                      )}
-                      {generatingId === order.id ? 'Generating...' : 'Generate Bill'}
-                    </Button>
+                        View Bill
+                      </Button>
+                    ) : (
+                      <Button 
+                        className={`w-full font-bold shadow-sm bg-${colorClass}-600 hover:bg-${colorClass}-700 active:scale-[0.97] transition-transform`}
+                        disabled={generatingId === order.id}
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          setGeneratingId(order.id);
+                          try {
+                            await onGenerateBill(order.id);
+                          } finally {
+                            setGeneratingId(null);
+                          }
+                        }}
+                      >
+                        {generatingId === order.id ? (
+                          <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <Receipt className="w-4 h-4 mr-2" />
+                        )}
+                        {generatingId === order.id ? 'Generating...' : 'Generate Bill'}
+                      </Button>
+                    )}
                   </div>
                 </div>
               );
