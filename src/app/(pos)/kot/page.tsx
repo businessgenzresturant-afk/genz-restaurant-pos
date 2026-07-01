@@ -157,6 +157,7 @@ function KOTPageContent() {
   const handlePrintTicket = (order: OrderWithItems) => {
     import('@/lib/printUtils').then(({ printReceipt }) => {
       printReceipt(order, 'kot');
+      fetch(`/api/orders/${order.id}/mark-kot`, { method: 'POST' }).catch(console.error);
     });
   };
 
@@ -267,7 +268,14 @@ function KOTPageContent() {
                             {item.quantity}
                           </div>
                           <div className="flex-1 pt-0.5">
-                            <p className="font-bold text-foreground leading-tight text-sm">{item.menuItem.name}</p>
+                            <p className="font-bold text-foreground leading-tight text-sm">
+                              {item.menuItem.name}
+                              {item.portionType && (
+                                <span className="ml-2 text-[10px] uppercase bg-primary/20 text-primary px-1.5 py-0.5 rounded font-black">
+                                  {item.portionType}
+                                </span>
+                              )}
+                            </p>
                             {item.specialInstructions && item.specialInstructions.replace(/\[URGENT ADDITION\]/g, '').replace(/\[SERVED\]/g, '').trim() && (
                               <p className="text-xs font-medium text-destructive mt-1 bg-destructive/10 p-1 rounded border border-destructive/20 inline-block">
                                 ⚠️ {item.specialInstructions.replace(/\[URGENT ADDITION\]/g, '').replace(/\[SERVED\]/g, '').trim()}

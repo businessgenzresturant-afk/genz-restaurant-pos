@@ -310,7 +310,7 @@ export function Dashboard() {
           orderType: selectedOrderType || 'DINE_IN',
           items,
           guests: null,
-          customerName: customerDetails?.customerName || 'Walk-in Customer',
+          customerName: customerDetails?.customerName || null,
           customerPhone: customerDetails?.customerPhone || null,
           skipKds: action === 'SAVE', // True only if we ONLY want to save to dashboard without hitting KDS
           existingOrderId: selectedActiveOrder?.id || null, // Allow appending to Takeaway/Delivery orders
@@ -345,6 +345,7 @@ export function Dashboard() {
       if (action === 'SAVE_PRINT') {
         import('@/lib/printUtils').then(({ printReceipt }) => {
           printReceipt({ ...orderData, order: orderData }, 'kot');
+          fetch(`/api/orders/${orderData.id}/mark-kot`, { method: 'POST' }).catch(console.error);
         });
       } else if (action === 'SAVE_BILL') {
         await handleGenerateBill(orderData.id);
@@ -416,6 +417,19 @@ export function Dashboard() {
     } catch (err: any) {
       toast.error('❌ Failed: ' + (err.message || 'Try again'), { id: toastId, duration: 4000 });
       throw err;
+    }
+  };
+
+  const handlePrintBill = async (billId: string) => {
+    const toastId = toast.loading('🖨️ Preparing receipt...');
+    try {
+      const res = await fetch(`/api/bills/${billId}`);
+      if (!res.ok) throw new Error('Failed to fetch bill details');
+      const fullBill = await res.json();
+      toast.success('Receipt ready', { id: toastId, duration: 2000 });
+      import('@/lib/printUtils').then((m) => m.printReceipt(fullBill));
+    } catch (err) {
+      toast.error('Could not print receipt', { id: toastId });
     }
   };
 
@@ -833,6 +847,7 @@ export function Dashboard() {
             setMenuDrawerOpen(true);
           }}
           onGenerateBill={handleGenerateBill}
+          onPrintBill={handlePrintBill}
           onQuickReorder={handleQuickReorder}
           onMarkAsServed={handleMarkAsServed}
           onTransferClick={() => setTransferTableModalOpen(true)}
@@ -896,6 +911,7 @@ export function Dashboard() {
           activeOrders={activeOrders.filter(o => o.orderType === selectedOrderType)}
           onNewOrder={handleNewOrderFromModal}
           onGenerateBill={handleGenerateBill}
+          onPrintBill={handlePrintBill}
         />
 
         {/* Payment Modal - Opens after Generate Bill */}

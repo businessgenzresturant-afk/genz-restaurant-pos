@@ -514,6 +514,11 @@ function OrdersPageContent() {
                             <div>
                               <p className="font-bold text-foreground line-through decoration-red-500/50">
                                 {item.quantity}× {item.menuItem?.name || 'Unknown Item'}
+                                {item.portionType && (
+                                  <span className="ml-2 text-[10px] uppercase bg-red-500/20 text-red-500 px-1.5 py-0.5 rounded font-black no-underline">
+                                    {item.portionType}
+                                  </span>
+                                )}
                               </p>
                               <p className="text-sm text-red-500/80 font-medium mt-1">
                                 Reason: {item.cancelReason || 'Not specified'}

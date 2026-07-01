@@ -592,6 +592,7 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
               onClick={() => {
                 import('@/lib/printUtils').then(({ printReceipt }) => {
                   printReceipt(order, 'kot');
+                  fetch(`/api/orders/${order.id}/mark-kot`, { method: 'POST' }).catch(console.error);
                 });
                 toast.success('KOT sent to printer!');
               }}
@@ -802,6 +803,7 @@ export default function KDSDisplay({ restaurantId, readOnly = false, enableRecon
               onClick={() => {
                 import('@/lib/printUtils').then(({ printReceipt }) => {
                   printReceipt(selectedOrderSummary, 'kot');
+                  fetch(`/api/orders/${selectedOrderSummary.id}/mark-kot`, { method: 'POST' }).catch(console.error);
                 });
                 toast.success('KOT sent to printer!');
               }}

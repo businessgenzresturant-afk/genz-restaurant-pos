@@ -11,6 +11,7 @@ interface TakeawayDeliveryModalProps {
   activeOrders: any[];
   onNewOrder: () => void;
   onGenerateBill: (orderId: string) => void;
+  onPrintBill?: (billId: string) => void;
 }
 
 export function TakeawayDeliveryModal({
@@ -19,7 +20,8 @@ export function TakeawayDeliveryModal({
   type,
   activeOrders,
   onNewOrder,
-  onGenerateBill
+  onGenerateBill,
+  onPrintBill
 }: TakeawayDeliveryModalProps) {
   const [generatingId, setGeneratingId] = useState<string | null>(null);
   if (!isOpen) return null;
@@ -122,16 +124,16 @@ export function TakeawayDeliveryModal({
                       <span className="font-black text-primary">₹{order.totalAmount?.toFixed(2) || '0.00'}</span>
                     </div>
                     
-                    {order.bill ? (
+                    {(order.paymentStatus === 'PAID' || order.bill?.status === 'PAID') && onPrintBill ? (
                       <Button 
-                        className="w-full font-bold shadow-sm bg-blue-600 hover:bg-blue-700 active:scale-[0.97] transition-transform"
+                        className="w-full font-bold shadow-sm bg-emerald-600 hover:bg-emerald-700 active:scale-[0.97] transition-transform"
                         onClick={(e) => {
                           e.stopPropagation();
-                          window.location.href = '/bills';
+                          if (order.bill?.id) onPrintBill(order.bill.id);
                         }}
                       >
                         <Receipt className="w-4 h-4 mr-2" />
-                        View Bill
+                        Print Bill
                       </Button>
                     ) : (
                       <Button 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { X, Plus, Receipt, Minus, Trash2 } from 'lucide-react';
+import { X, Plus, Receipt, Minus, Trash2, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface TableDrawerProps {
@@ -10,13 +10,14 @@ interface TableDrawerProps {
   activeOrder: any | null;
   onAddItem: (tableId: string | null) => void;
   onGenerateBill: (orderId: string) => void;
+  onPrintBill?: (billId: string) => void;
   onQuickReorder: (menuItemId: string, specialInstructions: string) => void;
   onMarkAsServed: (orderId: string) => void;
   onTransferClick?: () => void;
   onRefresh?: () => void; // For refreshing after item changes
 }
 
-export function TableDrawer({ isOpen, onClose, table, activeOrder, onAddItem, onGenerateBill, onQuickReorder, onMarkAsServed, onTransferClick, onRefresh }: TableDrawerProps) {
+export function TableDrawer({ isOpen, onClose, table, activeOrder, onAddItem, onGenerateBill, onPrintBill, onQuickReorder, onMarkAsServed, onTransferClick, onRefresh }: TableDrawerProps) {
   const [isGeneratingBill, setIsGeneratingBill] = React.useState(false);
   const [isMarkingServed, setIsMarkingServed] = React.useState(false);
   const [isReordering, setIsReordering] = React.useState<string | null>(null);
@@ -186,7 +187,7 @@ export function TableDrawer({ isOpen, onClose, table, activeOrder, onAddItem, on
                 // Auto-merge logic for clean display
                 const mergedItems = activeOrder.items.reduce((acc: any[], item: any) => {
                   const cleanInstr = (item.specialInstructions || '').replace(/\[URGENT ADDITION\]/g, '').replace(/\[SERVED\]/g, '').trim();
-                  const existing = acc.find(i => i.menuItem?.id === item.menuItem?.id && i.cleanInstr === cleanInstr);
+                  const existing = acc.find(i => i.menuItem?.id === item.menuItem?.id && i.cleanInstr === cleanInstr && i.portionType === item.portionType);
                   if (existing) {
                     existing.quantity += item.quantity;
                   } else {
@@ -210,6 +211,11 @@ export function TableDrawer({ isOpen, onClose, table, activeOrder, onAddItem, on
                         <p className={`text-sm font-semibold text-foreground flex-1 leading-tight ${isCancelled ? 'line-through text-red-400' : ''}`}>
                           <span className="text-primary font-bold mr-1.5">{item.quantity}×</span>
                           {item.menuItem?.name || 'Unknown Item'}
+                          {item.portionType && (
+                            <span className="ml-2 text-[10px] uppercase bg-primary/20 text-primary px-1.5 py-0.5 rounded font-black">
+                              {item.portionType}
+                            </span>
+                          )}
                           {isCancelled && <span className="ml-2 text-[10px] font-black text-red-400 uppercase">CANCELLED</span>}
                         </p>
                         {!isCancelled && activeOrder.status !== 'COMPLETED' && (
@@ -320,7 +326,7 @@ export function TableDrawer({ isOpen, onClose, table, activeOrder, onAddItem, on
               )}
             </div>
             
-            {activeOrder && (
+            {activeOrder && activeOrder.paymentStatus !== 'PAID' && activeOrder.bill?.status !== 'PAID' && (
               <Button 
                 className="w-full h-14 text-lg font-bold shadow-lg shadow-indigo-500/20 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.97] transition-transform disabled:opacity-50"
                 disabled={isGeneratingBill}
@@ -344,6 +350,16 @@ export function TableDrawer({ isOpen, onClose, table, activeOrder, onAddItem, on
                     Generate Bill
                   </>
                 )}
+              </Button>
+            )}
+
+            {activeOrder && (activeOrder.paymentStatus === 'PAID' || activeOrder.bill?.status === 'PAID') && onPrintBill && (
+              <Button 
+                className="w-full h-14 text-lg font-bold shadow-lg shadow-emerald-500/20 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.97] transition-transform"
+                onClick={() => activeOrder.bill?.id && onPrintBill(activeOrder.bill.id)}
+              >
+                <Printer className="w-5 h-5 mr-2" />
+                Print Bill
               </Button>
             )}
           </div>

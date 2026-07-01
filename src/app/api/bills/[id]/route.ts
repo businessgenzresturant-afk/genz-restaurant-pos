@@ -235,6 +235,14 @@ export async function PATCH(
         });
       }
 
+      // 🔒 FIX: Always update the order's customerName if provided, even if no phone is given
+      if (sanitizedCustomerName) {
+        await tx.order.update({
+          where: { id: existingBill.orderId },
+          data: { customerName: sanitizedCustomerName }
+        });
+      }
+
       // Update the bill
       // 🔒 BUG-01 FIX: Persist serviceChargeApplied and serviceChargeAmount to DB
       const updatedBill = await tx.bill.update({

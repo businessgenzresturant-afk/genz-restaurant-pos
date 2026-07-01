@@ -200,7 +200,7 @@ export const POST = withTiming(async (request: Request) => {
     const menuItemMap = new Map(menuItems.map(m => [m.id, m]));
 
     // 🔒 SECURITY: Sanitize customer inputs to prevent injection attacks
-    const sanitizedCustomerName = customerName ? sanitizeCustomerInput(customerName) : 'Walk-in Customer';
+    const sanitizedCustomerName = customerName ? sanitizeCustomerInput(customerName) : null;
     const sanitizedCustomerPhone = customerPhone ? sanitizeCustomerInput(customerPhone) : null;
 
     // Calculate total amount and prepare items for creation

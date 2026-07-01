@@ -61,7 +61,7 @@ export const GET = withTiming(async (request: Request) => {
           version: true,
           paymentStatus: true,
           guests: true,
-          bill: { select: { id: true } },
+          bill: { select: { id: true, status: true } },
           table: { select: { id: true, number: true, status: true } },
           items: {
             select: {

@@ -172,6 +172,11 @@ export function TablesOccupiedModal({ isOpen, onClose, tables, activeOrders, onS
                             >
                               <span className="text-primary">{item.quantity}×</span>
                               {item.menuItem?.name || 'Item'}
+                              {item.portionType && (
+                                <span className="ml-1 text-[9px] uppercase bg-primary/20 text-primary px-1 rounded no-underline">
+                                  {item.portionType}
+                                </span>
+                              )}
                             </span>
                           ))}
                         </div>

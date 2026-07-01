@@ -51,8 +51,16 @@ export const printReceipt = async (bill: any, type: 'receipt' | 'kot' = 'receipt
     `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
 
   const isKOT    = type === 'kot';
-  const items    = bill.order?.items ?? bill.items ?? [];
+  const rawItems = bill.order?.items ?? bill.items ?? [];
+  const items    = isKOT 
+    ? rawItems.filter((i: any) => !i.kotPrinted && i.status !== 'CANCELLED') 
+    : rawItems.filter((i: any) => i.status !== 'CANCELLED');
   const merged   = mergeOrderItems(items);
+
+  if (isKOT && merged.length === 0) {
+    console.log('No new unprinted items for KOT');
+    return;
+  }
   const oTime    = new Date(bill.order?.createdAt ?? bill.createdAt ?? Date.now());
   const origin   = window.location.origin;
 
@@ -139,7 +147,7 @@ export const printReceipt = async (bill: any, type: 'receipt' | 'kot' = 'receipt
   
   ${merged.map((item: any) => `
   <div class="row-table">
-    <div class="row-cell-left item-name">${item.menuItem?.name ?? 'Item'}</div>
+    <div class="row-cell-left item-name">${item.menuItem?.name ?? 'Item'} ${item.portionType ? `(${item.portionType})` : ''}</div>
     <div class="row-cell-right item-qty">x${item.quantity}</div>
   </div>
   ${item.cleanInstr ? `<div style="font-size:13px; font-style:italic; padding-left:2mm; margin-top:-1px; margin-bottom:3px;">* ${item.cleanInstr}</div>` : ''}
@@ -284,10 +292,10 @@ table.items th:nth-child(4), table.items td:nth-child(4) { text-align: right; wi
     </thead>
     <tbody>
       ${merged.map((item: any) => {
-        const price = item.menuItem?.price ?? item.price ?? 0;
+        const price = item.price ?? item.menuItem?.price ?? 0;
         const amt = item.quantity * price;
         return `<tr>
-          <td>${item.menuItem?.name ?? 'Item'}</td>
+          <td>${item.menuItem?.name ?? 'Item'} ${item.portionType ? `(${item.portionType})` : ''}</td>
           <td>${item.quantity}</td>
           <td>${fmt(price)}</td>
           <td>${fmt(amt)}</td>

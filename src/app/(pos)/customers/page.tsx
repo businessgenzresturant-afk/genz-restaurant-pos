@@ -195,7 +195,10 @@ export default function CustomersPage() {
                                   <div className="flex items-start gap-2">
                                     <span className="font-bold text-primary">{item.quantity}x</span>
                                     <div>
-                                      <span className="font-medium text-foreground">{item.menuItem?.name || item.specialInstructions || 'Unknown Item'}</span>
+                                      <span className="font-medium text-foreground">
+                                        {item.menuItem?.name || item.specialInstructions || 'Unknown Item'}
+                                        {item.portionType && ` (${item.portionType})`}
+                                      </span>
                                       {item.specialInstructions && item.menuItem?.name !== 'Custom Charge' && (
                                         <p className="text-[10px] text-muted-foreground line-clamp-1">Note: {item.specialInstructions.replace(/\[URGENT ADDITION\]/g, '').replace(/\[SERVED\]/g, '')}</p>
                                       )}

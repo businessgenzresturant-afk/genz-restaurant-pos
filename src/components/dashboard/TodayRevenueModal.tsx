@@ -264,11 +264,11 @@ export function TodayRevenueModal({ isOpen, onClose, todayRevenue }: TodayRevenu
                 {/* Printable receipt box */}
                 <div 
                   id={`receipt-print-content-${selectedBill.id}`}
-                  className="flex-1 bg-card text-card-foreground border border-border/80 rounded-2xl p-5 font-mono text-xs overflow-y-auto custom-scrollbar shadow-inner"
+                  className="flex-1 bg-card text-card-foreground border border-border/80 rounded-2xl p-4 font-mono text-xs overflow-y-auto custom-scrollbar shadow-inner"
                 >
-                  <div className="text-center mb-4">
-                    <div className="flex justify-center mb-2">
-                      <div className="w-16 h-16 rounded-full overflow-hidden bg-white p-0.5 mx-auto">
+                  <div className="text-center mb-3">
+                    <div className="flex justify-center mb-1.5">
+                      <div className="w-14 h-14 rounded-full overflow-hidden bg-white p-0.5 mx-auto">
                         <img src="/images/Gen-z-logo.jpg" alt="Gen-Z POS" className="w-full h-full object-cover rounded-full" />
                       </div>
                     </div>
@@ -304,7 +304,10 @@ export function TodayRevenueModal({ isOpen, onClose, todayRevenue }: TodayRevenu
                     <div className="space-y-1.5 text-[10px]">
                       {selectedBill.order.items.map((item: any, idx: number) => (
                         <div key={idx} className="flex justify-between items-start">
-                          <span>{item.quantity}x {item.menuItem?.name || 'Item'}</span>
+                          <span>
+                            {item.quantity}x {item.menuItem?.name || 'Item'}
+                            {item.portionType && ` (${item.portionType})`}
+                          </span>
                           <span>₹{(item.quantity * item.price).toFixed(2)}</span>
                         </div>
                       ))}

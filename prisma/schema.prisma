@@ -114,6 +114,7 @@ model OrderItem {
   price               Float
   portionType         PortionType?
   status              ItemStatus   @default(ACTIVE)
+  kotPrinted          Boolean      @default(false)
   specialInstructions String?
   cancelReason        String?
   cancelledByUserId   String?

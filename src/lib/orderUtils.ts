@@ -23,12 +23,13 @@ export function mergeOrderItems(items: any[]): any[] {
       .replace(/\[SERVED\]/g, '')
       .trim();
     
-    // Find existing item with same menuItemId and instructions
+    // Find existing item with same menuItemId, instructions, and portionType
     const existing = merged.find(
       (i) => 
         i.menuItem?.id === item.menuItem?.id && 
         i.cleanInstr === cleanInstr &&
-        i.status === item.status // Only merge items with same status
+        i.status === item.status && // Only merge items with same status
+        i.portionType === item.portionType // 🔧 FIX: Only merge items with same portion type
     );
     
     if (existing) {

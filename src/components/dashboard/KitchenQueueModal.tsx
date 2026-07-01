@@ -165,6 +165,11 @@ export function KitchenQueueModal({ isOpen, onClose, activeOrders, onManageOrder
                             <span className="font-bold text-foreground">
                               <span className="text-primary mr-2">{item.quantity}×</span>
                               {item.menuItem?.name || 'Item'}
+                              {item.portionType && (
+                                <span className="ml-1 text-[9px] uppercase bg-primary/20 text-primary px-1 rounded no-underline">
+                                  {item.portionType}
+                                </span>
+                              )}
                             </span>
                             {item.specialInstructions && item.specialInstructions.replace(/\[URGENT ADDITION\]/g, '').replace(/\[SERVED\]/g, '').trim() && (
                               <span className="text-red-500 text-xs italic ml-2">
