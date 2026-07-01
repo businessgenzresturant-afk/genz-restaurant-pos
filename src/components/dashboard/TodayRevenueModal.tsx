@@ -68,10 +68,20 @@ export function TodayRevenueModal({ isOpen, onClose, todayRevenue }: TodayRevenu
     return 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20';
   };
 
-  const totalCash = bills.reduce((acc, bill) => acc + (bill.status === 'PAID' && bill.paymentMethod === 'CASH' ? bill.total : 0), 0);
-  const totalUPI = bills.reduce((acc, bill) => acc + (bill.status === 'PAID' && bill.paymentMethod === 'UPI' ? bill.total : 0), 0);
-  const totalCard = bills.reduce((acc, bill) => acc + (bill.status === 'PAID' && bill.paymentMethod === 'CARD' ? bill.total : 0), 0);
-  const totalOnline = totalUPI + totalCard;
+  const totalCash = bills.reduce((acc, bill) => {
+    if (bill.status !== 'PAID') return acc;
+    if (bill.paymentMethod === 'CASH') return acc + bill.total;
+    if (bill.paymentMethod === 'SPLIT') return acc + (bill.cashAmount || 0);
+    return acc;
+  }, 0);
+
+  const totalOnline = bills.reduce((acc, bill) => {
+    if (bill.status !== 'PAID') return acc;
+    if (bill.paymentMethod === 'UPI' || bill.paymentMethod === 'CARD' || bill.paymentMethod === 'ONLINE') return acc + bill.total;
+    if (bill.paymentMethod === 'SPLIT') return acc + (bill.onlineAmount || 0);
+    return acc;
+  }, 0);
+  
   const totalRealRevenue = totalCash + totalOnline;
 
   if (!isOpen) return null;
