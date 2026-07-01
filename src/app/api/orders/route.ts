@@ -87,7 +87,7 @@ export const POST = withTiming(async (request: Request) => {
 
   try {
     const body = await request.json();
-    const { tableId, items, customerName, customerPhone, orderType, guests, skipKds } = body;
+    const { tableId, items, customerName, customerPhone, orderType, guests, skipKds, existingOrderId } = body;
 
     // Input validation
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -97,9 +97,9 @@ export const POST = withTiming(async (request: Request) => {
       );
     }
     
-    if ((!orderType || orderType === 'DINE_IN') && !tableId) {
+    if ((!orderType || orderType === 'DINE_IN') && !tableId && !existingOrderId) {
       return NextResponse.json(
-        { error: 'tableId is required for DINE_IN orders' },
+        { error: 'tableId or existingOrderId is required for DINE_IN orders' },
         { status: 400 }
       );
     }
@@ -263,18 +263,27 @@ export const POST = withTiming(async (request: Request) => {
         // Find active order INSIDE locked transaction (CRITICAL FIX)
         // 🔧 BUGFIX: Include SERVED orders - customers often add items after being served (running table)
         // Only exclude COMPLETED orders (those that have been billed and paid)
-        const activeOrder = tableId ? await tx.order.findFirst({
-          where: {
-            tableId,
-            status: { notIn: ['COMPLETED'] }  // ✅ Keep SERVED orders active for running tables
-          },
-          orderBy: { createdAt: 'desc' }
-        }) : null;
-
+        let activeOrder = null;
+        if (existingOrderId) {
+          activeOrder = await tx.order.findFirst({
+            where: { id: existingOrderId, status: { notIn: ['COMPLETED'] } }
+          });
+        } else if (tableId) {
+          activeOrder = await tx.order.findFirst({
+            where: {
+              tableId,
+              status: { notIn: ['COMPLETED'] }  // ✅ Keep SERVED orders active for running tables
+            },
+            orderBy: { createdAt: 'desc' }
+          });
+        }
 
         // 🔧 BUGFIX: Append to ANY active order (PENDING/PREPARING/READY/SERVED) - supports running tables
         // Only create new order if table has NO active order or order is COMPLETED
-        if (currentTable && ['OCCUPIED', 'RUNNING'].includes(currentTable.status) && activeOrder && ['PENDING', 'PREPARING', 'READY', 'SERVED'].includes(activeOrder.status)) {
+        const canAppendToTable = currentTable && ['OCCUPIED', 'RUNNING'].includes(currentTable.status) && activeOrder;
+        const canAppendToTakeaway = existingOrderId && activeOrder;
+        
+        if ((canAppendToTable || canAppendToTakeaway) && ['PENDING', 'PREPARING', 'READY', 'SERVED'].includes(activeOrder!.status)) {
           // Create new order items
           // 🔧 BUGFIX: Append [URGENT ADDITION] to running table items so KDS flags them permanently (unless skipKds)
           await tx.orderItem.createMany({
@@ -286,7 +295,7 @@ export const POST = withTiming(async (request: Request) => {
               return { 
                 ...item, 
                 specialInstructions: finalInstr,
-                orderId: activeOrder.id
+                orderId: activeOrder!.id
               };
             })
           });
@@ -316,12 +325,12 @@ export const POST = withTiming(async (request: Request) => {
           // Optimistic locking: Check version before update
           const updatedOrderCount = await tx.order.updateMany({
             where: { 
-              id: activeOrder.id,
-              version: activeOrder.version // Only update if version matches
+              id: activeOrder!.id,
+              version: activeOrder!.version // Only update if version matches
             },
             data: {
               totalAmount: { increment: totalAmount },
-              status: skipKds ? activeOrder.status : 'PENDING', // Reset to PENDING only if we want kitchen notification
+              status: skipKds ? activeOrder!.status : 'PENDING', // Reset to PENDING only if we want kitchen notification
               version: { increment: 1 } // Increment version on every update
             }
           });
@@ -333,7 +342,7 @@ export const POST = withTiming(async (request: Request) => {
 
           // Fetch the updated order with relations
           const updatedOrder = await tx.order.findUnique({
-            where: { id: activeOrder.id },
+            where: { id: activeOrder!.id },
             include: {
               table: true,
               items: {

@@ -84,7 +84,20 @@ export function TakeawayDeliveryModal({
               const elapsedMinutes = Math.floor((new Date().getTime() - new Date(order.createdAt).getTime()) / 60000);
               
               return (
-                <div key={order.id} className="flex flex-col min-h-[160px] p-5 rounded-2xl border-2 border-border bg-card shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+                <div 
+                  key={order.id} 
+                  className="flex flex-col min-h-[160px] p-5 rounded-2xl border-2 border-border bg-card shadow-sm hover:shadow-md transition-shadow relative overflow-hidden cursor-pointer"
+                  onClick={async () => {
+                    if (generatingId !== order.id) {
+                      setGeneratingId(order.id);
+                      try {
+                        await onGenerateBill(order.id);
+                      } finally {
+                        setGeneratingId(null);
+                      }
+                    }
+                  }}
+                >
                   <div className={`absolute top-0 left-0 w-1 h-full bg-${colorClass}-500`} />
                   
                   <div className="flex justify-between items-start mb-3">
@@ -112,7 +125,8 @@ export function TakeawayDeliveryModal({
                     <Button 
                       className={`w-full font-bold shadow-sm bg-${colorClass}-600 hover:bg-${colorClass}-700 active:scale-[0.97] transition-transform`}
                       disabled={generatingId === order.id}
-                      onClick={async () => {
+                      onClick={async (e) => {
+                        e.stopPropagation();
                         setGeneratingId(order.id);
                         try {
                           await onGenerateBill(order.id);

@@ -285,6 +285,7 @@ export function Dashboard() {
   const handleNewOrderFromModal = () => {
     setTakeawayDeliveryModalOpen(false);
     setCustomerDetails(null);
+    setSelectedActiveOrder(null); // Ensure we don't append to a previous order
     setMenuDrawerOpen(true);
   };
 
@@ -315,6 +316,7 @@ export function Dashboard() {
           customerName: customerDetails?.customerName || 'Walk-in Customer',
           customerPhone: customerDetails?.customerPhone || null,
           skipKds: action === 'SAVE', // True only if we ONLY want to save to dashboard without hitting KDS
+          existingOrderId: selectedActiveOrder?.id || null, // Allow appending to Takeaway/Delivery orders
         })
       });
 
