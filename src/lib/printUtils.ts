@@ -228,7 +228,7 @@ table.items th:nth-child(4), table.items td:nth-child(4) { text-align: right; wi
 
   <div class="hr">----------------------------------------</div>
 
-  <div style="font-size:13px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Customer: ${customerName || 'Walk-in'}</div>
+  <div style="font-size:13px; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Customer: ${customerName || (oType === 'DINE_IN' ? 'Dine-in' : oType === 'DELIVERY' ? 'Delivery' : oType === 'PARCEL' ? 'Parcel' : 'Takeaway')}</div>
   
   <div class="row-table">
     <div class="row-cell-left">Date: ${fmtDate(oTime)}</div>
