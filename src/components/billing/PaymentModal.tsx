@@ -29,7 +29,7 @@ const calculateFinalTotal = (bill: any, discountPct: number = 0, pointsAmt: numb
 // Helper function to print receipt
 import { printReceipt } from '@/lib/printUtils';
 
-export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddItem }: PaymentModalProps) {
+export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddItem, onRefreshBill }: PaymentModalProps) {
   const { user, isAdmin, isStaff } = useAuth();
   
   const [paymentConfirmed, setPaymentConfirmed] = useState<'CASH' | 'CARD' | 'UPI' | null>(null);
