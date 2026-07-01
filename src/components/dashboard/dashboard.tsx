@@ -397,7 +397,7 @@ export function Dashboard() {
       setGeneratedBill(newBill);
       setPaymentModalOpen(true);
     } catch (err: any) {
-      toast.error('❌ Failed: ' + (err.message || 'Try again'), { id: toastId });
+      toast.error('❌ Failed: ' + (err.message || 'Try again'), { id: toastId, duration: 4000 });
       throw err;
     }
   };
@@ -894,6 +894,11 @@ export function Dashboard() {
             onAddItem={() => {
               setPaymentModalOpen(false);
               setMenuDrawerOpen(true);
+            }}
+            onRefreshBill={() => {
+              if (generatedBill?.orderId) {
+                handleGenerateBill(generatedBill.orderId);
+              }
             }}
           />
         )}

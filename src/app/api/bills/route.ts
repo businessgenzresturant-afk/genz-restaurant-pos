@@ -214,11 +214,16 @@ export const POST = withTiming(async (request: Request) => {
     
     // CRITICAL FIX: Check if the main order already has a bill
     if (order.bill !== null && order.bill !== undefined) {
-      if (process.env.NODE_ENV === 'development') console.timeEnd('⏱️ TOTAL-BILL-GENERATION');
-      return NextResponse.json(
-        { error: 'This order already has a bill generated. Bill ID: ' + order.bill.id },
-        { status: 400 }
-      );
+      if (order.bill.status === 'PENDING') {
+        // Just delete the old pending bill and let it regenerate with the latest items
+        await prisma.bill.delete({ where: { id: order.bill.id } });
+      } else {
+        if (process.env.NODE_ENV === 'development') console.timeEnd('⏱️ TOTAL-BILL-GENERATION');
+        return NextResponse.json(
+          { error: 'This order already has a bill generated. Bill ID: ' + order.bill.id },
+          { status: 400 }
+        );
+      }
     }
 
     // (READY→SERVED update is handled inside the transaction below)

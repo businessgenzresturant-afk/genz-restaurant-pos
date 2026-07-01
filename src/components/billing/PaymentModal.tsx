@@ -15,6 +15,7 @@ interface PaymentModalProps {
   onClose: () => void;
   onPaymentSuccess: () => void;
   onAddItem?: () => void; // Optional callback to add items
+  onRefreshBill?: () => void; // Optional callback to refresh the bill
 }
 
 // Helper function to calculate final total including GST and service charge
@@ -35,6 +36,12 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
   const [isSplitPayment, setIsSplitPayment] = useState(false);
   const [cashAmount, setCashAmount] = useState<string>('');
   const [onlineAmount, setOnlineAmount] = useState<string>('');
+  
+  // Custom Charge state
+  const [isAddingCustomCharge, setIsAddingCustomCharge] = useState(false);
+  const [customChargeName, setCustomChargeName] = useState('');
+  const [customChargeAmount, setCustomChargeAmount] = useState('');
+  const [isSubmittingCustomCharge, setIsSubmittingCustomCharge] = useState(false);
   
   // Customer and loyalty state
   const [customerPhone, setCustomerPhone] = useState('');
@@ -152,6 +159,7 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
         }, 300);
       }
       
+      toast.success('Payment completed successfully!');
       onPaymentSuccess();
     } catch (error) {
       console.error('Payment error:', error);
@@ -160,6 +168,39 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
       setIsProcessing(false);
     }
   };
+
+  const handleAddCustomCharge = async () => {
+    if (!customChargeName.trim() || !customChargeAmount || isNaN(parseFloat(customChargeAmount))) {
+      toast.error('Please enter a valid name and amount');
+      return;
+    }
+    
+    setIsSubmittingCustomCharge(true);
+    try {
+      const res = await fetch(`/api/orders/${bill.orderId}/custom-charge`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: customChargeName, amount: customChargeAmount })
+      });
+      
+      if (!res.ok) throw new Error('Failed to add custom charge');
+      
+      toast.success('Custom charge added!');
+      setIsAddingCustomCharge(false);
+      setCustomChargeName('');
+      setCustomChargeAmount('');
+      
+      if (onRefreshBill) {
+        onRefreshBill();
+      }
+    } catch (err) {
+      toast.error('Failed to add custom charge');
+    } finally {
+      setIsSubmittingCustomCharge(false);
+    }
+  };
+
+  const isDineIn = bill?.order?.orderType === 'DINE_IN';
 
   if (!isOpen) return null;
 
@@ -237,13 +278,58 @@ export function PaymentModal({ bill, isOpen, onClose, onPaymentSuccess, onAddIte
 
               {/* Add Item Button */}
               {onAddItem && (
-                <button
-                  onClick={onAddItem}
-                  className="w-full mt-4 p-3 border-2 border-dashed border-border hover:border-primary/50 rounded-lg flex items-center justify-center gap-2 text-muted-foreground hover:text-primary transition-colors"
-                >
-                  <Plus className="w-5 h-5" />
-                  <span className="font-semibold">Add Item</span>
-                </button>
+                <div className="mt-4 flex gap-2">
+                  <button
+                    onClick={onAddItem}
+                    className="flex-1 p-3 border-2 border-dashed border-border hover:border-primary/50 rounded-lg flex items-center justify-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    <Plus className="w-5 h-5" />
+                    <span className="font-semibold">Add Item</span>
+                  </button>
+                  <button
+                    onClick={() => setIsAddingCustomCharge(!isAddingCustomCharge)}
+                    className="flex-1 p-3 border-2 border-dashed border-border hover:border-primary/50 rounded-lg flex items-center justify-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    <Plus className="w-5 h-5" />
+                    <span className="font-semibold">Custom Charge</span>
+                  </button>
+                </div>
+              )}
+              
+              {isAddingCustomCharge && (
+                <div className="mt-3 p-4 bg-muted/50 rounded-lg border border-border space-y-3">
+                  <h4 className="text-sm font-bold">Add Custom Charge</h4>
+                  <Input
+                    placeholder="Charge Name (e.g. Birthday Setup)"
+                    value={customChargeName}
+                    onChange={(e) => setCustomChargeName(e.target.value)}
+                    className="h-9 text-sm"
+                  />
+                  <Input
+                    type="number"
+                    placeholder="Amount (₹)"
+                    value={customChargeAmount}
+                    onChange={(e) => setCustomChargeAmount(e.target.value)}
+                    className="h-9 text-sm"
+                  />
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="outline" 
+                      className="flex-1 h-9" 
+                      onClick={() => setIsAddingCustomCharge(false)}
+                      disabled={isSubmittingCustomCharge}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      className="flex-1 h-9 bg-primary" 
+                      onClick={handleAddCustomCharge}
+                      disabled={isSubmittingCustomCharge}
+                    >
+                      {isSubmittingCustomCharge ? 'Adding...' : 'Add Charge'}
+                    </Button>
+                  </div>
+                </div>
               )}
             </div>
 
