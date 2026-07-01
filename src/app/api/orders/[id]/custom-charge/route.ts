@@ -4,13 +4,13 @@ import { checkAuth } from '@/lib/api-auth';
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const auth = await checkAuth(request);
   if (auth.error) return auth.error;
 
   try {
-    const orderId = params.id;
+    const { id: orderId } = await params;
     const { name, amount } = await request.json();
     
     if (!name || !amount || isNaN(parseFloat(amount))) {
